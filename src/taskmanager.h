@@ -5,7 +5,7 @@
 #include "timinggroup.h"
 #include "LinkedList.h"
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
   class TaskManager;
   class ScheduleManager;

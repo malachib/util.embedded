@@ -1,7 +1,7 @@
 
 #include "taskmanager.h"
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
   void TaskManager::sleep(ITask& task)
   {

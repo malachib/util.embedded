@@ -2,7 +2,7 @@
 
 //#include <avr/io.h>
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
   /*
 bool serialOutput(byte input,void*)

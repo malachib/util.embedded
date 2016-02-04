@@ -3,7 +3,7 @@
 
 //#define DEBUG2
 
-namespace Mal_Lib
+namespace FactUtilEmbedded
 {
 #if DEBUG
   int StateMachineBase::idSeed = 0;

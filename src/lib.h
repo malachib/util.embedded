@@ -37,9 +37,7 @@ typedef unsigned char byte;
 template<class T> inline Print& operator <<(Print& obj, T arg) { obj.print(arg); return obj; }
 #endif
 
-#define UTILEMBEDDED_NAMESPACE_NAME Mal_Lib
-
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
 
 struct IHandler
@@ -490,4 +488,8 @@ void ObserverMessenger<T>::observe(IObservable* observable)
 }
 
 }
+
+namespace Mal_Lib = FactUtilEmbedded;
+namespace util = FactUtilEmbedded;
+
 #endif

@@ -13,7 +13,7 @@
 
 //#define ALL_OBSERVABLE
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
   template <class TState>
   class WrappedStateMachine;

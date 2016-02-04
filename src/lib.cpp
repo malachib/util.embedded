@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 #endif
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
 Led::Led(uint8_t pinNumber, bool autoInitOutput) : DigitalPin(pinNumber)
 {

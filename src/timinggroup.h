@@ -3,7 +3,7 @@
 
 #include "lib.h"
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
   class TimingGroupBase
   {

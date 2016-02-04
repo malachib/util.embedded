@@ -1,7 +1,7 @@
 #include "lib.h"
 #include "LinkedList.h"
 
-namespace UTILEMBEDDED_NAMESPACE_NAME
+namespace FactUtilEmbedded
 {
 void SinglyLinkedList::insertAtBeginning(SinglyLinkedNode* node)
 {
