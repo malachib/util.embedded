@@ -3,6 +3,7 @@
 
 #include "lib.h"
 #include "timinggroup.h"
+#include "LinkedList.h"
 
 namespace Mal_Lib
 {
@@ -21,9 +22,9 @@ namespace Mal_Lib
     virtual void schedule(ScheduleManager* sm) = 0;
     virtual void begin(TimingGroup& tg) = 0;
 
-    // returns < 0 if wakeup < target time 
+    // returns < 0 if wakeup < target time
     // returns 0 if target time == wakeup time
-    // returns > 0 if wakeup > target time 
+    // returns > 0 if wakeup > target time
     // TODO: give this an "error range" which shall also involve
     // extra lookups during ScheduleManager::execute - to accomodate Special
     // situations where only approx time is known during scheduling

@@ -1,4 +1,5 @@
 #include "lib.h"
+#include "LinkedList.h"
 
 namespace Mal_Lib
 {
