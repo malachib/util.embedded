@@ -7,10 +7,12 @@ class IMenuHandler : public util::IHandler
 
 };
 
-
+class ConsoleMenuHandler;
 
 class IMenu
 {
+  friend ConsoleMenuHandler;
+
 public:
   struct Parameters
   {
@@ -49,13 +51,24 @@ class Console : public IMenu
 
 public:
 
-protected:
-  void showMenu(Parameters p);
-
 public:
   void handler();
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 };
+
+// More C++-ish version of ConsoleMenuDef
+class ConsoleMenuHandler : public Console
+{
+  IMenu* breadCrumb[4];
+  uint8_t breadCrumbPos = 0;
+
+protected:
+  virtual void handleCommand(Parameters p) override;
+  virtual void showPrompt() override;
+};
+
+
+
 
 // temporary until we fully enable this inside Console class itself
 #ifdef SAML_SERIES

@@ -55,3 +55,21 @@ void Console::handler()
       inputLine[inputPos++] = received;
   }
 }
+
+
+void ConsoleMenuHandler::handleCommand(Parameters p)
+{
+
+}
+
+
+void ConsoleMenuHandler::showPrompt()
+{
+  for(int i = 0; i < breadCrumbPos; i++)
+  {
+    breadCrumb[i]->showPrompt();
+    if(i != (breadCrumbPos - 1)) cout << F(" ");
+  }
+
+  cout << F("> ");
+}
