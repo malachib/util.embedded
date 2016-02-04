@@ -1,7 +1,7 @@
 
 #include "taskmanager.h"
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
   void TaskManager::sleep(ITask& task)
   {
@@ -206,7 +206,7 @@ namespace Mal_Lib
       // slide this one just in before it
       sm->insert(*onOrJustAfter, *this);
     else
-      // if no node is found on or after our target time, then it's an 
+      // if no node is found on or after our target time, then it's an
       // empty list so append to end
       sm->append(*this);
   }

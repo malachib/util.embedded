@@ -5,7 +5,7 @@
 #include "timinggroup.h"
 #include "LinkedList.h"
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
   class TaskManager;
   class ScheduleManager;

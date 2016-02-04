@@ -1,7 +1,7 @@
 #include "lib.h"
 #include "LinkedList.h"
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
 void SinglyLinkedList::insertAtBeginning(SinglyLinkedNode* node)
 {

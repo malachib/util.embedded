@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
 
 class DoublyLinkedList;

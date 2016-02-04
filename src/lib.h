@@ -37,7 +37,9 @@ typedef unsigned char byte;
 template<class T> inline Print& operator <<(Print& obj, T arg) { obj.print(arg); return obj; }
 #endif
 
-namespace Mal_Lib
+#define UTILEMBEDDED_NAMESPACE_NAME Mal_Lib
+
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
 
 struct IHandler

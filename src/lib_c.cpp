@@ -2,7 +2,7 @@
 
 //#include <avr/io.h>
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
   /*
 bool serialOutput(byte input,void*)
@@ -10,7 +10,7 @@ bool serialOutput(byte input,void*)
   if(input == 0)
   {
     Serial.println();
-    return false;  
+    return false;
   }
   else
   {
@@ -56,7 +56,7 @@ void pgm_extract_string(const char* input, char* output)
 void pgm_extract_bytes(byte* input, bool (*foo)(byte,void*), void* meta = NULL)
 {
   byte result;
-  
+
   do
   {
     result = pgm_read_byte_near(input++);
@@ -67,7 +67,7 @@ void pgm_extract_bytes(byte* input, bool (*foo)(byte,void*), void* meta = NULL)
 void pgm_extract_bytes(byte* input, Stream* output, bool (*shouldContinue)(byte,void*), void* meta = NULL)
 {
   byte result;
-  
+
   do
   {
     result = pgm_read_byte_near(input++);

@@ -3,7 +3,7 @@
 
 #include "lib.h"
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
   class TimingGroupBase
   {

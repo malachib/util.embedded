@@ -13,7 +13,7 @@
 
 //#define ALL_OBSERVABLE
 
-namespace Mal_Lib
+namespace UTILEMBEDDED_NAMESPACE_NAME
 {
   template <class TState>
   class WrappedStateMachine;
