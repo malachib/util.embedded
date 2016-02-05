@@ -30,14 +30,14 @@ namespace FactUtilEmbedded
       public IObservable
 
   {
-
+/*
     union Notifier
     {
       IObserver* observer;
       ObservableArray observableArray;
       //ObservableLinkedList* observableLinkedList; // this one we're very likely stuck with dynamic allocation, so might as well use pointer here
       // TODO: put the message-box in here
-    };
+    };*/
 
     IObserver* observer;
 

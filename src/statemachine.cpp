@@ -62,7 +62,7 @@ namespace FactUtilEmbedded
   {
     switch(currentState)
     {
-      case ToggleStates::On:
+      case On:
         handler.On();
 
       case OnWaiting:
