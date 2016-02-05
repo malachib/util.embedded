@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lib.h"
+#include <LinkedList.h>
 
 class IMenuHandler : public util::IHandler
 {
@@ -9,10 +10,8 @@ class IMenuHandler : public util::IHandler
 
 class ConsoleMenuHandler;
 
-class IMenu
+class IMenuBase
 {
-  friend ConsoleMenuHandler;
-
 public:
   struct Parameters
   {
@@ -29,17 +28,16 @@ public:
       return p;
     }
   };
+};
+
+class IMenu : public IMenuBase
+{
+  friend ConsoleMenuHandler;
 
 protected:
   virtual void showPrompt() = 0;
   virtual void handleCommand(Parameters p) = 0;
 };
-
-class Menu : public IMenu
-{
-
-};
-
 
 // Glues I/O logic to menu (interacts with Serial, etc)
 class Console : public IMenu
@@ -56,8 +54,28 @@ public:
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 };
 
+
+class Menu :
+  public IMenu,
+  public util::IHandler2<IMenu::Parameters, IMenu*>,
+  public util::SinglyLinkedNode
+{
+
+};
+
+class MenuEnumerator
+{
+  util::SinglyLinkedList menus;
+
+protected:
+  void add(Menu& menu);
+  Menu* canHandle(IMenu::Parameters p);
+};
+
+
+
 // More C++-ish version of ConsoleMenuDef
-class ConsoleMenuHandler : public Console
+class ConsoleMenuHandler : public Console, public MenuEnumerator
 {
   IMenu* breadCrumb[4];
   uint8_t breadCrumbPos = 0;
@@ -66,6 +84,7 @@ protected:
   virtual void handleCommand(Parameters p) override;
   virtual void showPrompt() override;
 };
+
 
 
 

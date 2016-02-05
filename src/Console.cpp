@@ -59,7 +59,8 @@ void Console::handler()
 
 void ConsoleMenuHandler::handleCommand(Parameters p)
 {
-
+  Menu* menu = canHandle(p);
+  if(menu != NULL) menu->handleCommand(p);
 }
 
 
@@ -72,4 +73,25 @@ void ConsoleMenuHandler::showPrompt()
   }
 
   cout << F("> ");
+}
+
+
+void MenuEnumerator::add(Menu& menu)
+{
+  menus.add(&menu);
+}
+
+Menu* MenuEnumerator::canHandle(IMenu::Parameters p)
+{
+  Menu* menu = (Menu*) menus.getHead();
+
+  while(menu != NULL)
+  {
+    if(menu->canHandle(p))
+      return menu;
+
+    menu = (Menu*) menu->getNext();
+  }
+
+  return NULL;
 }
