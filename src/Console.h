@@ -17,6 +17,7 @@ class IMenuHandler : public util::IHandler
 };
 
 class ConsoleMenuHandler;
+class Console;
 
 class IMenuBase
 {
@@ -25,6 +26,10 @@ public:
   {
     char** parameters;
     uint8_t count;
+
+    #ifdef CONSOLE_FEATURE_MULTICONSOLE
+    Console* console;
+    #endif
 
     Parameters(char** parameters, int count) :
       parameters(parameters), count(count) {}
@@ -45,6 +50,8 @@ class IMenu : public IMenuBase
 protected:
   virtual void showPrompt() = 0;
   virtual void handleCommand(Parameters p) = 0;
+
+  static void showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding);
 };
 
 // Glues I/O logic to menu (interacts with Serial, etc)

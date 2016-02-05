@@ -117,13 +117,7 @@ void ConsoleMenuHandler::showHelp(Parameters p)
       Menu* menu = (Menu*) node;
 
       cout << F("  ");
-      // FIX: some Print classes don't seem to return proper bytes-written
-      size_t nameLength = strlen_P((const char*) menu->getName());
-      //size_t nameLength = cout.print(menu->getName());
-      cout.print(menu->getName());
-      size_t paddingLength = 16 - nameLength;
-      while(paddingLength-- > 0) cout.print(' ');
-      cout.print(menu->getDescription());
+      showKeyValuePair(menu->getName(), menu->getDescription(), 16);
       cout.println();
     }
   }
@@ -156,6 +150,7 @@ bool ConsoleMenuHandler::processInput(char received)
       const char* commandName = (const char*) menu->getName();
       if(strncmp_P(inputLine, commandName, getInputPos()) == 0)
       {
+        // TODO: make an appendToInputLine_P
         char temp[32];
 
         strcpy_P(temp, commandName + getInputPos());
@@ -216,4 +211,17 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
 void MenuGeneric::handleCommand(IMenu::Parameters p)
 {
   handler(p);
+}
+
+void IMenu::showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding)
+{
+  // FIX: some Print classes don't seem to return proper bytes-written
+  size_t nameLength = strlen_P((const char*) key);
+  //size_t nameLength = cout.print(menu->getName());
+  cout.print(key);
+  if(keyPadding > nameLength)
+    keyPadding -= nameLength;
+
+  while(keyPadding-- > 0) cout.print(' ');
+  cout.print(value);
 }
