@@ -1,17 +1,31 @@
 #include "Console.h"
 
+#ifndef AVR
+// samd is supposed to have a strncmp_P mapping to regular strncmp,
+// but doesn't for some reason (probably platformio outdated) so do it here
+#define strncmp_P(s1, s2, n) strncmp((s1), (s2), (n))
+#endif
+
 using namespace FactUtilEmbedded;
+
 
 void Console::handler()
 {
   while(cin.available() > 0)
   {
     char received = cin.read();
-    cout << received;
 
-    // newline received, actually perform action
+#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
+    if(processInput(received))
+    {
+
+    }
+    else
+#endif
     if(received == '\n' || received == 13)
     {
+      cout.println();
+
       int paramCounter = 0;
       char* parameters[10];
 
@@ -20,7 +34,6 @@ void Console::handler()
       // No input = just show prompt again
       if(inputPos == 0)
       {
-        cout.println();
         showPrompt();
         return;
       }
@@ -54,7 +67,10 @@ void Console::handler()
       inputPos = 0;
     }
     else
+    {
+      cout << received;
       inputLine[inputPos++] = received;
+    }
   }
 }
 
@@ -124,6 +140,37 @@ void ConsoleMenuHandler::showPrompt()
 
   cout << F("> ");
 }
+
+#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+bool ConsoleMenuHandler::processInput(char received)
+{
+  // look for tab character
+  if(received == 9)
+  {
+    char* inputLine = getInputLine();
+
+    SinglyLinkedNode* node = getHeadMenu();
+    for(; node != NULL; node = node->getNext())
+    {
+      Menu* menu = (Menu*) node;
+      const char* commandName = (const char*) menu->getName();
+      if(strncmp_P(inputLine, commandName, getInputPos()) == 0)
+      {
+        char temp[32];
+
+        strcpy_P(temp, commandName + getInputPos());
+
+        cout << temp;
+
+        appendToInputLine(temp);
+      }
+    }
+    return true;
+  }
+  else
+    return false;
+}
+#endif
 
 
 void MenuEnumerator::add(Menu& menu)

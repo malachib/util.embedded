@@ -3,6 +3,11 @@
 #include "lib.h"
 #include <LinkedList.h>
 
+
+#define CONSOLE_FEATURE_AUTOCOMPLETE 1
+#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
+//#define CONSOLE_FEATURE_MULTICONSOLE
+
 namespace FactUtilEmbedded
 {
 
@@ -49,11 +54,32 @@ class Console : public IMenu
   uint8_t inputPos = 0;
   //Print& cout; // TODO
   //Print& cin;
+protected:
+  char* getInputLine()
+  {
+    // we don't normally keep uninitialized values zeroed out, so do it here
+    inputLine[inputPos] = 0;
+    return inputLine;
+  }
+
+  // pos = pos within input line to copy to
+  void appendToInputLine(char* src)
+  {
+    while(*src != 0) inputLine[inputPos++] = *src++;
+  }
+
+  uint8_t getInputPos() { return inputPos; }
 
 public:
 
 public:
   void handler();
+#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
+  // return value of true means input was processed and needs no further processing.
+  // note that process does not mean command executed, but only that the one character
+  // was handled in a specific way (i.e. tab completion)
+  virtual bool processInput(char c) { return false; }
+#endif
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 };
 
@@ -165,6 +191,10 @@ class ConsoleMenuHandler : public Console, public MenuEnumerator
 {
   IMenu* breadCrumb[4];
   uint8_t breadCrumbPos = 0;
+
+#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+  virtual bool processInput(char received) override;
+#endif
 
 protected:
   virtual void handleCommand(Parameters p) override;
