@@ -65,6 +65,8 @@ protected:
   const __FlashStringHelper* name;
   const __FlashStringHelper* description;
 
+  MenuBase() {}
+
 public:
   MenuBase(const __FlashStringHelper* name, const __FlashStringHelper* description) :
     name(name), description(description)
@@ -100,6 +102,8 @@ class Menu :
 protected:
   virtual void showPrompt() override;
 
+  Menu() {}
+
 public:
   Menu(const __FlashStringHelper* name, const __FlashStringHelper* description) :
     MenuBase(name, description) {}
@@ -110,12 +114,46 @@ public:
   virtual IMenu* canHandle(IMenu::Parameters input) override;
 };
 
+typedef void (*menuHandler)(IMenu::Parameters);
+
+
+// We allow MenuGeneric some deferred initialization because Global initialization
+// doesn't work well for PSTR and anonymous function pointers
+class MenuGeneric : public Menu
+{
+  menuHandler handler;
+
+protected:
+  virtual void handleCommand(Parameters p) override;
+
+public:
+  MenuGeneric() {}
+
+  MenuGeneric(menuHandler handler) :
+    Menu(name, description) { this->handler = handler; }
+
+  void setDesc(const __FlashStringHelper* name, const __FlashStringHelper* description)
+  {
+    this->name = name;
+    this->description = description;
+  }
+
+  void setHandler(menuHandler handler) { this->handler = handler; }
+};
+
 class MenuEnumerator
 {
   SinglyLinkedList menus;
 
 protected:
   void add(Menu& menu);
+  void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
+  void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description, menuHandler handler)
+  {
+    add(menu, name, description);
+    menu.setHandler(handler);
+  }
+
   Menu* canHandle(IMenu::Parameters p);
   SinglyLinkedNode* getHeadMenu() { return menus.getHead(); }
 };

@@ -63,7 +63,7 @@ void ConsoleMenuHandler::handleCommand(Parameters p)
 {
   Menu* menu = canHandle(p);
   if(menu != NULL)
-    menu->handleCommand(p);
+    menu->handleCommand(p.inc());
   else if(strcmp_P(*p.parameters, PSTR("help")) == 0)
   {
     showHelp(p.inc());
@@ -102,8 +102,8 @@ void ConsoleMenuHandler::showHelp(Parameters p)
 
       cout << F("  ");
       size_t nameLength = cout.print(menu->getName());
-      uint8_t paddingLength = 25 - nameLength;
-      while(paddingLength > 0) cout.print(' ');
+      size_t paddingLength = 16 - nameLength;
+      while(paddingLength-- > 0) cout.print(' ');
       cout.print(menu->getDescription());
       cout.println();
     }
@@ -116,7 +116,7 @@ void ConsoleMenuHandler::showPrompt()
   for(int i = 0; i < breadCrumbPos; i++)
   {
     breadCrumb[i]->showPrompt();
-    if(i != (breadCrumbPos - 1)) cout << F(" ");
+    if(i != (breadCrumbPos - 1)) cout << ' ';
   }
 
   cout << F("> ");
@@ -125,6 +125,12 @@ void ConsoleMenuHandler::showPrompt()
 
 void MenuEnumerator::add(Menu& menu)
 {
+  menus.add(&menu);
+}
+
+void MenuEnumerator::add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
+{
+  menu.setDesc(name, description);
   menus.add(&menu);
 }
 
@@ -155,4 +161,9 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
     return this;
   else
     return NULL;
+}
+
+void MenuGeneric::handleCommand(IMenu::Parameters p)
+{
+  handler(p);
 }
