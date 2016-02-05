@@ -101,7 +101,10 @@ void ConsoleMenuHandler::showHelp(Parameters p)
       Menu* menu = (Menu*) node;
 
       cout << F("  ");
-      size_t nameLength = cout.print(menu->getName());
+      // FIX: some Print classes don't seem to return proper bytes-written
+      size_t nameLength = strlen_P((const char*) menu->getName());
+      //size_t nameLength = cout.print(menu->getName());
+      cout.print(menu->getName());
       size_t paddingLength = 16 - nameLength;
       while(paddingLength-- > 0) cout.print(' ');
       cout.print(menu->getDescription());
