@@ -3,6 +3,9 @@
 #include "lib.h"
 #include <LinkedList.h>
 
+namespace FactUtilEmbedded
+{
+
 class IMenuHandler : public util::IHandler
 {
 
@@ -55,21 +58,63 @@ public:
 };
 
 
+class MenuBase
+{
+protected:
+  // name & description are always PROGMEM residents
+  const __FlashStringHelper* name;
+  const __FlashStringHelper* description;
+
+public:
+  MenuBase(const __FlashStringHelper* name, const __FlashStringHelper* description) :
+    name(name), description(description)
+  {
+    //this->name = (const char*) name;
+    //this->description = (const char*) description;
+  }
+
+  MenuBase(const char* name, const char* description) :
+    name((const __FlashStringHelper*) name),
+    description((const __FlashStringHelper*) description)
+  {
+
+  }
+  /*
+  bool canHandle(Console::Parameters p)
+  {
+    return strcmp_P(p.parameters[0], (const char*) name) == 0;
+  }*/
+};
+
+
+
 class Menu :
+  public MenuBase,
   public IMenu,
   public util::IHandler2<IMenu::Parameters, IMenu*>,
   public util::SinglyLinkedNode
 {
+protected:
+  virtual void showPrompt() override;
 
+public:
+  Menu(const __FlashStringHelper* name, const __FlashStringHelper* description) :
+    MenuBase(name, description) {}
+
+  Menu(const char* name, const char* description) :
+    MenuBase(name, description) {}
+
+  virtual IMenu* canHandle(IMenu::Parameters input) override;
 };
 
 class MenuEnumerator
 {
-  util::SinglyLinkedList menus;
+  SinglyLinkedList menus;
 
 protected:
   void add(Menu& menu);
   Menu* canHandle(IMenu::Parameters p);
+  SinglyLinkedNode* getHeadMenu() { return menus.getHead(); }
 };
 
 
@@ -83,11 +128,13 @@ class ConsoleMenuHandler : public Console, public MenuEnumerator
 protected:
   virtual void handleCommand(Parameters p) override;
   virtual void showPrompt() override;
+
+  void showHelp(Parameters p);
 };
 
 
 
-
+}
 
 // temporary until we fully enable this inside Console class itself
 #ifdef SAML_SERIES

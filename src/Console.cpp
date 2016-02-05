@@ -1,5 +1,7 @@
 #include "Console.h"
 
+using namespace FactUtilEmbedded;
+
 void Console::handler()
 {
   while(cin.available() > 0)
@@ -60,7 +62,24 @@ void Console::handler()
 void ConsoleMenuHandler::handleCommand(Parameters p)
 {
   Menu* menu = canHandle(p);
-  if(menu != NULL) menu->handleCommand(p);
+  if(menu != NULL)
+    menu->handleCommand(p);
+  else if(strcmp_P(*p.parameters, PSTR("help")) == 0)
+  {
+    showHelp(p.inc());
+  }
+}
+
+
+void ConsoleMenuHandler::showHelp(Parameters p)
+{
+  if(p.count == 0)
+  {
+    for(SinglyLinkedNode* node = getHeadMenu(); node != NULL; node = node->getNext())
+    {
+
+    }
+  }
 }
 
 
@@ -94,4 +113,18 @@ Menu* MenuEnumerator::canHandle(IMenu::Parameters p)
   }
 
   return NULL;
+}
+
+
+void Menu::showPrompt()
+{
+  cout << name;
+}
+
+IMenu* Menu::canHandle(IMenu::Parameters p)
+{
+  if(strcmp_P(p.parameters[0], (const char*) name) == 0)
+    return this;
+  else
+    return NULL;
 }
