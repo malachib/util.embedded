@@ -79,6 +79,9 @@ public:
   {
 
   }
+
+  const __FlashStringHelper* getName() { return name; }
+  const __FlashStringHelper* getDescription() { return description; }
   /*
   bool canHandle(Console::Parameters p)
   {

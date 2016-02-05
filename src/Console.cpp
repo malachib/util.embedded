@@ -68,6 +68,12 @@ void ConsoleMenuHandler::handleCommand(Parameters p)
   {
     showHelp(p.inc());
   }
+  else
+  {
+    cout.println();
+    cout << F("Unrecognized command: ") << *p.parameters;
+    cout.println();
+  }
 }
 
 
@@ -75,9 +81,31 @@ void ConsoleMenuHandler::showHelp(Parameters p)
 {
   if(p.count == 0)
   {
-    for(SinglyLinkedNode* node = getHeadMenu(); node != NULL; node = node->getNext())
-    {
+    SinglyLinkedNode* node = getHeadMenu();
 
+    cout.println();
+
+    if(node == NULL)
+    {
+      cout << F("No commands registered");
+      return;
+    }
+
+    cout << F("Following commands are available: ");
+
+    cout.println();
+    cout.println();
+
+    for(; node != NULL; node = node->getNext())
+    {
+      Menu* menu = (Menu*) node;
+
+      cout << F("  ");
+      size_t nameLength = cout.print(menu->getName());
+      uint8_t paddingLength = 25 - nameLength;
+      while(paddingLength > 0) cout.print(' ');
+      cout.print(menu->getDescription());
+      cout.println();
     }
   }
 }
