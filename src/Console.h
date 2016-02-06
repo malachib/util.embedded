@@ -1,11 +1,5 @@
 #pragma once
 
-#define CONSOLE_FEATURE_AUTOCOMPLETE 1
-#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
-//#define CONSOLE_FEATURE_MULTICONSOLE
-//#define CONSOLE_BEHAVIOR_PROPAGATE
-
-
 #include "lib.h"
 #include "Menu.h"
 #include <LinkedList.h>
@@ -58,88 +52,6 @@ public:
 };
 
 
-class MenuBase
-{
-protected:
-  // name & description are always PROGMEM residents
-  const __FlashStringHelper* name;
-  const __FlashStringHelper* description;
-
-  MenuBase() {}
-
-public:
-  MenuBase(const __FlashStringHelper* name, const __FlashStringHelper* description) :
-    name(name), description(description)
-  {
-    //this->name = (const char*) name;
-    //this->description = (const char*) description;
-  }
-
-  MenuBase(const char* name, const char* description) :
-    name((const __FlashStringHelper*) name),
-    description((const __FlashStringHelper*) description)
-  {
-
-  }
-
-  const __FlashStringHelper* getName() { return name; }
-  const __FlashStringHelper* getDescription() { return description; }
-  /*
-  bool canHandle(Console::Parameters p)
-  {
-    return strcmp_P(p.parameters[0], (const char*) name) == 0;
-  }*/
-};
-
-
-
-class Menu :
-  public MenuBase,
-  public IMenu,
-  public util::IHandler2<IMenu::Parameters, IMenu*>,
-  public util::SinglyLinkedNode
-{
-protected:
-  virtual void showPrompt() override;
-
-  Menu() {}
-
-public:
-  Menu(const __FlashStringHelper* name, const __FlashStringHelper* description) :
-    MenuBase(name, description) {}
-
-  Menu(const char* name, const char* description) :
-    MenuBase(name, description) {}
-
-  virtual IMenu* canHandle(IMenu::Parameters input) override;
-};
-
-typedef void (*menuHandler)(IMenu::Parameters);
-
-
-// We allow MenuGeneric some deferred initialization because Global initialization
-// doesn't work well for PSTR and anonymous function pointers
-class MenuGeneric : public Menu
-{
-  menuHandler handler;
-
-protected:
-  virtual void handleCommand(Parameters p) override;
-
-public:
-  MenuGeneric() {}
-
-  MenuGeneric(menuHandler handler) :
-    Menu(name, description) { this->handler = handler; }
-
-  void setDesc(const __FlashStringHelper* name, const __FlashStringHelper* description)
-  {
-    this->name = name;
-    this->description = description;
-  }
-
-  void setHandler(menuHandler handler) { this->handler = handler; }
-};
 
 class MenuEnumerator
 {

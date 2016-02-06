@@ -71,7 +71,7 @@ void Console::handler()
 
 void ConsoleMenuHandler::handleCommand(Parameters p)
 {
-  breadCrumb[breadCrumbPos - 1]->handleCommand(p);
+  getActiveMenu()->handleCommand(p);
 }
 
 
