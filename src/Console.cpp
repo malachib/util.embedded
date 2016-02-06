@@ -58,7 +58,7 @@ void Console::handler()
         }
       }
 
-      handleCommand(Parameters(parameters, paramCounter + 1));
+      handleCommand(Parameters(parameters, paramCounter + 1, this));
 
       cout.println();
 

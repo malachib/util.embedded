@@ -7,6 +7,7 @@
 #define CONSOLE_FEATURE_AUTOCOMPLETE 1
 #define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
 //#define CONSOLE_FEATURE_MULTICONSOLE
+//#define CONSOLE_BEHAVIOR_PROPAGATE
 
 namespace FactUtilEmbedded
 {
@@ -14,6 +15,14 @@ namespace FactUtilEmbedded
 class IMenuHandler : public util::IHandler
 {
 
+};
+
+
+class IEnterable
+{
+protected:
+  virtual void enter() = 0;
+  virtual void exit() = 0;
 };
 
 class ConsoleMenuHandler;
@@ -28,16 +37,24 @@ public:
     char** parameters;
     uint8_t count;
 
-    #ifdef CONSOLE_FEATURE_MULTICONSOLE
+#ifdef CONSOLE_BEHAVIOR_PROPAGATE
     Console* console;
-    #endif
+#endif
 
-    Parameters(char** parameters, int count) :
-      parameters(parameters), count(count) {}
+    Parameters(char** parameters, int count, Console* console) :
+      parameters(parameters), count(count)
+#ifdef CONSOLE_BEHAVIOR_PROPAGATE
+      ,console(console)
+#endif
+      {}
 
     Parameters inc()
     {
-      Parameters p(parameters + 1, count - 1);
+#ifdef CONSOLE_BEHAVIOR_PROPAGATE
+      Parameters p(parameters + 1, count - 1, console);
+#else
+      Parameters p(parameters + 1, count - 1, NULL);
+#endif
 
       return p;
     }
