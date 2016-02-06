@@ -4,8 +4,8 @@
 #include <LinkedList.h>
 
 
-#define CONSOLE_FEATURE_AUTOCOMPLETE 1
-#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
+//#define CONSOLE_FEATURE_AUTOCOMPLETE 1
+//#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
 //#define CONSOLE_FEATURE_MULTICONSOLE
 
 namespace FactUtilEmbedded
@@ -18,6 +18,7 @@ class IMenuHandler : public util::IHandler
 
 class ConsoleMenuHandler;
 class Console;
+class MenuHandler;
 
 class IMenuBase
 {
@@ -46,6 +47,7 @@ public:
 class IMenu : public IMenuBase
 {
   friend ConsoleMenuHandler;
+  friend MenuHandler;
 
 protected:
   virtual void showPrompt() = 0;
@@ -192,9 +194,19 @@ protected:
 };
 
 
+// Special menu item which in turn can handle enumeration of menu items
+class MenuHandler : public Menu, public MenuEnumerator
+{
+protected:
+    virtual void handleCommand(Parameters p) override;
+    virtual Menu* canHandle(Parameters p) override;
+
+    void showHelp(Parameters p);
+};
+
 
 // More C++-ish version of ConsoleMenuDef
-class ConsoleMenuHandler : public Console, public MenuEnumerator
+class ConsoleMenuHandler : public Console
 {
   IMenu* breadCrumb[4];
   uint8_t breadCrumbPos = 0;
@@ -207,7 +219,12 @@ protected:
   virtual void handleCommand(Parameters p) override;
   virtual void showPrompt() override;
 
-  void showHelp(Parameters p);
+public:
+  ConsoleMenuHandler(IMenu* rootMenu)
+  {
+    breadCrumb[0] = rootMenu;
+    breadCrumbPos = 1;
+  }
 };
 
 

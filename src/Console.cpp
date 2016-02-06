@@ -74,8 +74,12 @@ void Console::handler()
   }
 }
 
+Menu* MenuHandler::canHandle(Parameters p)
+{
+  return MenuEnumerator::canHandle(p);
+}
 
-void ConsoleMenuHandler::handleCommand(Parameters p)
+void MenuHandler::handleCommand(Parameters p)
 {
   Menu* menu = canHandle(p);
   if(menu != NULL)
@@ -93,7 +97,7 @@ void ConsoleMenuHandler::handleCommand(Parameters p)
 }
 
 
-void ConsoleMenuHandler::showHelp(Parameters p)
+void MenuHandler::showHelp(Parameters p)
 {
   if(p.count == 0)
   {
@@ -122,6 +126,12 @@ void ConsoleMenuHandler::showHelp(Parameters p)
     }
   }
 }
+
+void ConsoleMenuHandler::handleCommand(Parameters p)
+{
+  breadCrumb[breadCrumbPos - 1]->handleCommand(p);
+}
+
 
 
 void ConsoleMenuHandler::showPrompt()
