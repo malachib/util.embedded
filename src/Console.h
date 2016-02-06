@@ -4,8 +4,8 @@
 #include <LinkedList.h>
 
 
-//#define CONSOLE_FEATURE_AUTOCOMPLETE 1
-//#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
+#define CONSOLE_FEATURE_AUTOCOMPLETE 1
+#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 1
 //#define CONSOLE_FEATURE_MULTICONSOLE
 
 namespace FactUtilEmbedded
@@ -52,6 +52,12 @@ class IMenu : public IMenuBase
 protected:
   virtual void showPrompt() = 0;
   virtual void handleCommand(Parameters p) = 0;
+#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
+  // return value of true means input was processed and needs no further processing.
+  // note that process does not mean command executed, but only that the one character
+  // was handled in a specific way (i.e. tab completion)
+  virtual bool processInput(Console* console, char c) { return false; }
+#endif
 
   static void showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding);
 };
@@ -63,7 +69,7 @@ class Console : public IMenu
   uint8_t inputPos = 0;
   //Print& cout; // TODO
   //Print& cin;
-protected:
+public:
   char* getInputLine()
   {
     // we don't normally keep uninitialized values zeroed out, so do it here
@@ -83,12 +89,6 @@ public:
 
 public:
   void handler();
-#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
-  // return value of true means input was processed and needs no further processing.
-  // note that process does not mean command executed, but only that the one character
-  // was handled in a specific way (i.e. tab completion)
-  virtual bool processInput(char c) { return false; }
-#endif
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 };
 
@@ -202,17 +202,24 @@ protected:
     virtual Menu* canHandle(Parameters p) override;
 
     void showHelp(Parameters p);
+
+public:
+#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+  virtual bool processInput(Console* console, char received) override;
+#endif
 };
 
 
-// More C++-ish version of ConsoleMenuDef
+// More C++-ish version of ConsoleMenuDef.
+// this class specifically exists to handle breadcrumb behavior.  Menu behavior itself
+// is managed at the MenuHandler level
 class ConsoleMenuHandler : public Console
 {
   IMenu* breadCrumb[4];
   uint8_t breadCrumbPos = 0;
 
 #if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
-  virtual bool processInput(char received) override;
+  virtual bool processInput(Console* console, char received) override;
 #endif
 
 protected:
@@ -225,6 +232,8 @@ public:
     breadCrumb[0] = rootMenu;
     breadCrumbPos = 1;
   }
+
+  IMenu* getActiveMenu() { return breadCrumb[breadCrumbPos - 1]; }
 };
 
 

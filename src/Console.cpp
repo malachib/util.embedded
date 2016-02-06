@@ -16,7 +16,7 @@ void Console::handler()
     char received = cin.read();
 
 #ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
-    if(processInput(received))
+    if(processInput(this, received))
     {
 
     }
@@ -146,28 +146,35 @@ void ConsoleMenuHandler::showPrompt()
 }
 
 #if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
-bool ConsoleMenuHandler::processInput(char received)
+bool ConsoleMenuHandler::processInput(Console* console, char received)
+{
+  return getActiveMenu()->processInput(console, received);
+}
+
+
+bool MenuHandler::processInput(Console* console, char received)
 {
   // look for tab character
   if(received == 9)
   {
-    char* inputLine = getInputLine();
+    char* inputLine = console->getInputLine();
+    uint8_t inputPos = console->getInputPos();
 
     SinglyLinkedNode* node = getHeadMenu();
     for(; node != NULL; node = node->getNext())
     {
       Menu* menu = (Menu*) node;
       const char* commandName = (const char*) menu->getName();
-      if(strncmp_P(inputLine, commandName, getInputPos()) == 0)
+      if(strncmp_P(inputLine, commandName, inputPos) == 0)
       {
         // TODO: make an appendToInputLine_P
         char temp[32];
 
-        strcpy_P(temp, commandName + getInputPos());
+        strcpy_P(temp, commandName + inputPos);
 
         cout << temp;
 
-        appendToInputLine(temp);
+        console->appendToInputLine(temp);
       }
     }
     return true;
