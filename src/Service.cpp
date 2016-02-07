@@ -10,7 +10,7 @@ bool Service::init(const __FlashStringHelper*  (*initFunc)())
     state = Initialized;
 }
 
-bool Service::init2(const __FlashStringHelper*  (*initFunc)(const __FlashStringHelper** subStatus))
+bool Service::init(const __FlashStringHelper*  (*initFunc)(const __FlashStringHelper** subStatus))
 {
   state = Initializing;
   statusMessage = initFunc(&statusMessage);
