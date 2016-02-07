@@ -136,11 +136,25 @@ void NestedMenuHandler::handleCommand(Parameters p)
   if(strcmp_P(*p.parameters, PSTR("cd")) == 0)
   {
     IMenu* handleAble = canHandle(p.inc());
-    
+
     if(handleAble)
     {
       selected = handleAble;
     }
   }
+}
 
+void NestedMenuHandler::showPrompt()
+{
+  // TODO: We can turn getName into showLocalPrompt if we want to go even more OOP
+  cout << getName();
+  if(getSelected())
+  {
+    cout << ' ';
+    getSelected()->showPrompt();
+  }
+  else
+  {
+    cout << '>';
+  }
 }

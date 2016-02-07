@@ -7,6 +7,7 @@ namespace FactUtilEmbedded
   class Console;
   class MenuHandler;
   class ConsoleMenuHandler;
+  class NestedMenuHandler;
 
   class IMenuBase
   {
@@ -44,6 +45,7 @@ namespace FactUtilEmbedded
   {
     friend ConsoleMenuHandler;
     friend MenuHandler;
+    friend NestedMenuHandler;
 
   protected:
     virtual void showPrompt() = 0;

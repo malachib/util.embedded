@@ -88,10 +88,14 @@ public:
 
 class NestedMenuHandler : MenuHandler
 {
+  // represents menu which has been 'cd'd into , or NULL if none has been
   IMenu* selected;
 
 protected:
+    IMenu* getSelected() { return selected; }
+    
     virtual void handleCommand(Parameters p) override;
+    virtual void showPrompt() override;
 public:
 };
 
