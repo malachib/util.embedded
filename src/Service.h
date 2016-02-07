@@ -20,6 +20,10 @@ protected:
   };
 
   void setState(State state) { this->state = state; }
+  State getState() { return state; }
+
+  // true = all dependencies satisfied, false = dependency did't initiailze
+  bool awaitDependency(Service* dependsOn);
 
 private:
   State state;
@@ -27,8 +31,9 @@ private:
 
 public:
   bool start(initErrorStatus initFunc);
-  // FIX: figure out overloading better so that we can have a better name than 'init2'
+  bool start(initErrorStatus initFunc, Service* dependsOn);
   bool start(initFullStatus initFunc);
+  bool start(initFullStatus initFunc, Service* dependsOn);
   bool start(initBasic initFunc)
   {
     state = Initializing;
