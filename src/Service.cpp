@@ -1,6 +1,6 @@
 #include "Service.h"
 
-bool Service::init(const __FlashStringHelper*  (*initFunc)())
+bool Service::start(initErrorStatus initFunc)
 {
   state = Initializing;
   statusMessage = initFunc();
@@ -10,7 +10,7 @@ bool Service::init(const __FlashStringHelper*  (*initFunc)())
     state = Initialized;
 }
 
-bool Service::init2(const __FlashStringHelper*  (*initFunc)(const __FlashStringHelper** subStatus))
+bool Service::start(initFullStatus initFunc)
 {
   state = Initializing;
   statusMessage = initFunc(&statusMessage);
