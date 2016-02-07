@@ -1,6 +1,6 @@
 #include "Initializer.h"
 
-bool Initializer::init(const __FlashStringHelper*  (*initFunc)())
+bool Service::init(const __FlashStringHelper*  (*initFunc)())
 {
   state = Initializing;
   statusMessage = initFunc();
@@ -10,7 +10,7 @@ bool Initializer::init(const __FlashStringHelper*  (*initFunc)())
     state = Initialized;
 }
 
-bool Initializer::init2(const __FlashStringHelper*  (*initFunc)(const __FlashStringHelper** subStatus))
+bool Service::init2(const __FlashStringHelper*  (*initFunc)(const __FlashStringHelper** subStatus))
 {
   state = Initializing;
   statusMessage = initFunc(&statusMessage);
@@ -20,7 +20,7 @@ bool Initializer::init2(const __FlashStringHelper*  (*initFunc)(const __FlashStr
     state = Initialized;
 }
 
-const __FlashStringHelper* Initializer::getStatus()
+const __FlashStringHelper* Service::getStatus()
 {
   switch(state)
   {

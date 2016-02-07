@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-class Initializer
+class Service
 {
   enum State : uint8_t
   {
