@@ -18,7 +18,7 @@ class Service
 public:
   bool init(const __FlashStringHelper* (*initFunc)(void));
   // FIX: figure out overloading better so that we can have a better name than 'init2'
-  bool init(const __FlashStringHelper* (*initFunc)(const __FlashStringHelper** subStatus));
+  bool init2(const __FlashStringHelper* (*initFunc)(const __FlashStringHelper** subStatus));
 
   const __FlashStringHelper* getStatus();
   const __FlashStringHelper* getStatusMessage() { return statusMessage; }
