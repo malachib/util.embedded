@@ -86,6 +86,15 @@ public:
 #endif
 };
 
+class NestedMenuHandler : MenuHandler
+{
+  IMenu* selected;
+
+protected:
+    virtual void handleCommand(Parameters p) override;
+public:
+};
+
 
 // More C++-ish version of ConsoleMenuDef.
 // this class specifically exists to handle breadcrumb behavior.  Menu behavior itself

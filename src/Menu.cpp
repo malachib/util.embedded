@@ -130,3 +130,17 @@ void IMenu::showKeyValuePair(const __FlashStringHelper* key, const __FlashString
   while(keyPadding-- > 0) cout.print(' ');
   cout.print(value);
 }
+
+void NestedMenuHandler::handleCommand(Parameters p)
+{
+  if(strcmp_P(*p.parameters, PSTR("cd")) == 0)
+  {
+    IMenu* handleAble = canHandle(p.inc());
+    
+    if(handleAble)
+    {
+      selected = handleAble;
+    }
+  }
+
+}
