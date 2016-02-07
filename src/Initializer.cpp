@@ -1,11 +1,32 @@
 #include "Initializer.h"
 
-bool Initializer::Initialize(const __FlashStringHelper*  (*initFunc)())
+bool Initializer::init(const __FlashStringHelper*  (*initFunc)())
 {
   state = Initializing;
-  errorMessage = initFunc();
-  if(errorMessage)
+  statusMessage = initFunc();
+  if(statusMessage)
     state = Error;
   else
     state = Initialized;
+}
+
+bool Initializer::init2(const __FlashStringHelper*  (*initFunc)(const __FlashStringHelper** subStatus))
+{
+  state = Initializing;
+  statusMessage = initFunc(&statusMessage);
+  if(statusMessage)
+    state = Error;
+  else
+    state = Initialized;
+}
+
+const __FlashStringHelper* Initializer::getStatus()
+{
+  switch(state)
+  {
+    case Unstarted: return F("Waiting to initialize");
+    case Initializing: return F("Initializing");
+    case Initialized: return F("Initialized");
+    case Error: return F("Error");
+  }
 }
