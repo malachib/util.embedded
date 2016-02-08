@@ -4,7 +4,6 @@
 #include "Menu.h"
 #include <LinkedList.h>
 
-
 namespace FactUtilEmbedded
 {
 
@@ -93,7 +92,7 @@ class NestedMenuHandler : MenuHandler
 
 protected:
     IMenu* getSelected() { return selected; }
-    
+
     virtual void handleCommand(Parameters p) override;
     virtual void showPrompt() override;
 public:

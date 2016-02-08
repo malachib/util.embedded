@@ -1,12 +1,18 @@
 #pragma once
 
-#ifndef MEMORY_OPT
+// If not specified, optimize for both code and data
+#ifdef MEMORY_OPT
+#define MEMORY_OPT_CODE
+#define MEMORY_OPT_DATA
+#endif
+
+#ifndef MEMORY_OPT_CODE
 #define CONSOLE_FEATURE_FULL
 #endif
 
 #ifdef CONSOLE_FEATURE_FULL
 #define CONSOLE_FEATURE_AUTOCOMPLETE
-#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR 
+#define CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
 #endif
 //#define CONSOLE_FEATURE_MULTICONSOLE
 //#define CONSOLE_BEHAVIOR_PROPAGATE

@@ -4,6 +4,15 @@
 using namespace FactUtilEmbedded;
 
 
+#ifdef MEMORY_OPT_CODE
+#define ERROR_UNRECOGNIZED_COMMAND "Unrecognized: "
+#define INFO_AVAILABLE_COMMAND "Available: "
+#else
+#define ERROR_UNRECOGNIZED_COMMAND "Unrecognized command: "
+#define INFO_AVAILABLE_COMMAND "Following commands are available: "
+#endif
+
+
 #ifndef AVR
 // samd is supposed to have a strncmp_P mapping to regular strncmp,
 // but doesn't for some reason (probably platformio outdated) so do it here
@@ -28,7 +37,7 @@ void MenuHandler::handleCommand(Parameters p)
   else
   {
     cout.println();
-    cout << F("Unrecognized command: ") << *p.parameters;
+    cout << F(ERROR_UNRECOGNIZED_COMMAND) << *p.parameters;
     cout.println();
   }
 }
@@ -42,13 +51,15 @@ void MenuHandler::showHelp(Parameters p)
 
     cout.println();
 
+#ifndef MEMORY_OPT_CODE
     if(node == NULL)
     {
       cout << F("No commands registered");
       return;
     }
+#endif
 
-    cout << F("Following commands are available: ");
+    cout << F(INFO_AVAILABLE_COMMAND);
 
     cout.println();
     cout.println();

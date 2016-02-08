@@ -2,6 +2,12 @@
 
 using namespace FactUtilEmbedded;
 
+#ifdef MEMORY_OPT_DATA
+#define CONSOLE_BEHAVIOR_MAX_PARAMETER 4
+#else
+#define CONSOLE_BEHAVIOR_MAX_PARAMETER 10
+#endif
+
 
 void Console::handler()
 {
@@ -21,7 +27,7 @@ void Console::handler()
       cout.println();
 
       int paramCounter = 0;
-      char* parameters[10];
+      char* parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
 
       inputLine[inputPos] = 0;
 
