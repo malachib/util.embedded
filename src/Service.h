@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <EventManager.h>
 
 #define SERVICE_ERROR ((const __FlashStringHelper*) Service::genericError)
 
@@ -59,6 +60,8 @@ public:
   const __FlashStringHelper* getStatusMessage() { return statusMessage; }
 
   static const char genericError[] PROGMEM;
+
+  Event<const char*> stateUpdated;
 };
 
 class IService
