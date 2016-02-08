@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#define SERVICE_ERROR ((const __FlashStringHelper*) Service::genericError)
+
 typedef void (*initBasic)(void);
 typedef const __FlashStringHelper* (*initErrorStatus)(void);
 typedef const __FlashStringHelper* (*initFullStatus)(const __FlashStringHelper** status);
@@ -43,6 +45,8 @@ public:
 
   const __FlashStringHelper* getStatus();
   const __FlashStringHelper* getStatusMessage() { return statusMessage; }
+
+  static const char genericError[] PROGMEM;
 };
 
 class IService

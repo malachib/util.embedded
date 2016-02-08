@@ -1,5 +1,7 @@
 #include "Service.h"
 
+const char Service::genericError[] PROGMEM = "Unable to initialize";
+
 bool Service::start(initErrorStatus initFunc)
 {
   state = Initializing;
