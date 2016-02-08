@@ -9,8 +9,14 @@ typedef const __FlashStringHelper* (*initErrorStatus)(void);
 typedef const bool (*initErrorStatus2)(const __FlashStringHelper** status);
 typedef const __FlashStringHelper* (*initFullStatus)(const __FlashStringHelper** status);
 
+class Service;
+
+typedef const void (*startService1)(Service& service);
+typedef const bool (*startService2);
+
 // aka lightweight service
 // TODO: consider begin/end paradigm instead of start/stop , since Arduino world prefers that
+// TODO: refactor state machine and make Service into one --
 class Service
 {
 protected:
@@ -45,6 +51,9 @@ public:
     initFunc();
     state = Initialized;
   }
+
+  void start(startService1);
+  void start(startService2);
 
   const __FlashStringHelper* getStatus();
   const __FlashStringHelper* getStatusMessage() { return statusMessage; }
