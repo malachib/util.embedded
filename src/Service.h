@@ -6,6 +6,7 @@
 
 typedef void (*initBasic)(void);
 typedef const __FlashStringHelper* (*initErrorStatus)(void);
+typedef const bool (*initErrorStatus2)(const __FlashStringHelper** status);
 typedef const __FlashStringHelper* (*initFullStatus)(const __FlashStringHelper** status);
 
 // aka lightweight service
@@ -34,6 +35,8 @@ private:
 public:
   bool start(initErrorStatus initFunc);
   bool start(initErrorStatus initFunc, Service* dependsOn);
+  bool start(initErrorStatus2 initFunc);
+  bool start(initErrorStatus2 initFunc, Service* dependsOn);
   bool start(initFullStatus initFunc);
   bool start(initFullStatus initFunc, Service* dependsOn);
   bool start(initBasic initFunc)

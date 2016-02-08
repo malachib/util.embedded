@@ -18,6 +18,23 @@ bool Service::start(initErrorStatus initFunc)
   }
 }
 
+
+bool Service::start(initErrorStatus2 initFunc)
+{
+  state = Initializing;
+  if(initFunc(&statusMessage))
+  {
+    state = Initialized;
+    return true;
+  }
+  else
+  {
+    state = Error;
+    return false;
+  }
+}
+
+
 bool Service::start(initErrorStatus initFunc, Service* dependsOn)
 {
   if(!awaitDependency(dependsOn))
@@ -28,6 +45,20 @@ bool Service::start(initErrorStatus initFunc, Service* dependsOn)
 
   return start(initFunc);
 }
+
+
+bool Service::start(initErrorStatus2 initFunc, Service* dependsOn)
+{
+  if(!awaitDependency(dependsOn))
+  {
+    state = Error;
+    return false;
+  }
+
+  return start(initFunc);
+}
+
+
 
 bool Service::start(initFullStatus initFunc)
 {
