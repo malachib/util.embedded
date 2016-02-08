@@ -1,6 +1,6 @@
 #include "Service.h"
 
-const char Service::genericError[] PROGMEM = "Unable to initialize";
+const char Service::genericError[] PROGMEM = "Init failure";
 
 bool Service::start(initErrorStatus initFunc)
 {
@@ -102,7 +102,7 @@ bool Service::awaitDependency(Service* dependsOn)
 
     if(dependsOn->getState() == Error)
     {
-      statusMessage = F("Cannot initialize due to dependency failure");
+      statusMessage = F("Dependency failure");
       return false;
     }
   }
