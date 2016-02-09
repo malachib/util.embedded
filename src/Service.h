@@ -37,8 +37,8 @@ protected:
   enum State : uint8_t
   {
     Unstarted = 0,
-    Initializing = 1,
-    Initialized = 2,
+    Starting = 1,
+    Started = 2,
     Error = 3
   };
 
@@ -67,9 +67,9 @@ public:
   bool start(initFullStatus initFunc, LightweightService* dependsOn);
   bool start(initBasic initFunc)
   {
-    state = Initializing;
+    state = Starting;
     initFunc();
-    state = Initialized;
+    state = Started;
   }
 
   const __FlashStringHelper* getStatus();

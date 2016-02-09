@@ -4,7 +4,7 @@ const char LightweightService::genericError[] PROGMEM = "Init failure";
 
 bool LightweightService::start(initErrorStatus initFunc)
 {
-  state = Initializing;
+  state = Starting;
   statusMessage = initFunc();
   if(statusMessage)
   {
@@ -13,7 +13,7 @@ bool LightweightService::start(initErrorStatus initFunc)
   }
   else
   {
-    state = Initialized;
+    state = Started;
     return true;
   }
 }
@@ -21,10 +21,10 @@ bool LightweightService::start(initErrorStatus initFunc)
 
 bool LightweightService::start(initErrorStatus2 initFunc)
 {
-  state = Initializing;
+  state = Starting;
   if(initFunc(&statusMessage))
   {
-    state = Initialized;
+    state = Started;
     return true;
   }
   else
@@ -62,7 +62,7 @@ bool LightweightService::start(initErrorStatus2 initFunc, LightweightService* de
 
 bool LightweightService::start(initFullStatus initFunc)
 {
-  state = Initializing;
+  state = Starting;
   statusMessage = initFunc(&statusMessage);
   if(statusMessage)
   {
@@ -71,7 +71,7 @@ bool LightweightService::start(initFullStatus initFunc)
   }
   else
   {
-    state = Initialized;
+    state = Started;
     return true;
   }
 }
@@ -95,7 +95,7 @@ bool LightweightService::awaitDependency(LightweightService* dependsOn)
   if(dependsOn)
   {
     // TODO: once I have a unified overflow watcher, do timeout logic here (20s)
-    while(dependsOn->getState() == Unstarted || dependsOn->getState() == Initializing)
+    while(dependsOn->getState() == Unstarted || dependsOn->getState() == Starting)
     {
       yield();
     }
@@ -114,9 +114,9 @@ const __FlashStringHelper* LightweightService::getStatus()
 {
   switch(state)
   {
-    case Unstarted: return F("Waiting to initialize");
-    case Initializing: return F("Initializing");
-    case Initialized: return F("Initialized");
+    case Unstarted: return F("Waiting to start");
+    case Starting: return F("Starting");
+    case Started: return F("Started");
     case Error: return F("Error");
   }
 }
@@ -124,9 +124,9 @@ const __FlashStringHelper* LightweightService::getStatus()
 void Service::start(const __FlashStringHelper* name, startService1 startFunc)
 {
   setName(name);
-  setState(Initializing);
+  setState(Starting);
   if(startFunc(*this))
-    setState(Initialized);
+    setState(Started);
   else
     setState(Error);
 }
