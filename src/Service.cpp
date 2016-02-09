@@ -1,8 +1,8 @@
 #include "Service.h"
 
-const char Service::genericError[] PROGMEM = "Init failure";
+const char LightweightService::genericError[] PROGMEM = "Init failure";
 
-bool Service::start(initErrorStatus initFunc)
+bool LightweightService::start(initErrorStatus initFunc)
 {
   state = Initializing;
   statusMessage = initFunc();
@@ -19,7 +19,7 @@ bool Service::start(initErrorStatus initFunc)
 }
 
 
-bool Service::start(initErrorStatus2 initFunc)
+bool LightweightService::start(initErrorStatus2 initFunc)
 {
   state = Initializing;
   if(initFunc(&statusMessage))
@@ -35,7 +35,7 @@ bool Service::start(initErrorStatus2 initFunc)
 }
 
 
-bool Service::start(initErrorStatus initFunc, Service* dependsOn)
+bool LightweightService::start(initErrorStatus initFunc, Service* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
@@ -47,7 +47,7 @@ bool Service::start(initErrorStatus initFunc, Service* dependsOn)
 }
 
 
-bool Service::start(initErrorStatus2 initFunc, Service* dependsOn)
+bool LightweightService::start(initErrorStatus2 initFunc, Service* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
@@ -60,7 +60,7 @@ bool Service::start(initErrorStatus2 initFunc, Service* dependsOn)
 
 
 
-bool Service::start(initFullStatus initFunc)
+bool LightweightService::start(initFullStatus initFunc)
 {
   state = Initializing;
   statusMessage = initFunc(&statusMessage);
@@ -77,7 +77,7 @@ bool Service::start(initFullStatus initFunc)
 }
 
 
-bool Service::start(initFullStatus initFunc, Service* dependsOn)
+bool LightweightService::start(initFullStatus initFunc, Service* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
@@ -90,7 +90,7 @@ bool Service::start(initFullStatus initFunc, Service* dependsOn)
 
 
 
-bool Service::awaitDependency(Service* dependsOn)
+bool LightweightService::awaitDependency(LightweightService* dependsOn)
 {
   if(dependsOn)
   {
@@ -110,7 +110,7 @@ bool Service::awaitDependency(Service* dependsOn)
   return true;
 }
 
-const __FlashStringHelper* Service::getStatus()
+const __FlashStringHelper* LightweightService::getStatus()
 {
   switch(state)
   {

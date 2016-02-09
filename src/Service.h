@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <EventManager.h>
 
-#define SERVICE_ERROR ((const __FlashStringHelper*) Service::genericError)
+#define SERVICE_ERROR ((const __FlashStringHelper*) LightweightService::genericError)
 
 typedef void (*initBasic)(void);
 typedef const __FlashStringHelper* (*initErrorStatus)(void);
@@ -15,10 +15,22 @@ class Service;
 typedef const void (*startService1)(Service& service);
 typedef const bool (*startService2);
 
+class Named
+{
+  const __FlashStringHelper* name;
+
+protected:
+  Named(const __FlashStringHelper* name) : name(name) {}
+
+  void setName(const __FlashStringHelper* name) { this->name = name; }
+public:
+  const __FlashStringHelper* getName();
+};
+
 // aka lightweight service
 // TODO: consider begin/end paradigm instead of start/stop , since Arduino world prefers that
 // TODO: refactor state machine and make Service into one --
-class Service
+class LightweightService
 {
 protected:
   enum State : uint8_t
@@ -33,7 +45,7 @@ protected:
   State getState() { return state; }
 
   // true = all dependencies satisfied, false = dependency did't initiailze
-  bool awaitDependency(Service* dependsOn);
+  bool awaitDependency(LightweightService* dependsOn);
 
 private:
   State state;
@@ -53,15 +65,19 @@ public:
     state = Initialized;
   }
 
-  void start(startService1);
-  void start(startService2);
-
   const __FlashStringHelper* getStatus();
   const __FlashStringHelper* getStatusMessage() { return statusMessage; }
 
   static const char genericError[] PROGMEM;
+};
 
+class Service : public LightweightService//, public Named
+{
+public:
   Event<Service*> stateUpdated;
+
+  //void start(startService1);
+  //void start(startService2);
 };
 
 class IService
