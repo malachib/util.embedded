@@ -80,6 +80,7 @@ protected:
 };
 
 
+// be sure sizeof(T) == sizeof(void*)
 template <class T>
 class Event : public HandleBase
 {
@@ -87,5 +88,10 @@ public:
   void add(void (*callback)(T parameter))
   {
     HandleBase::add(&eventManager, (void*)callback);
+  }
+
+  void invoke(T parameter)
+  {
+    eventManager.invoke(handle, (void*) parameter);
   }
 };

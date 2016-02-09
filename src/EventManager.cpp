@@ -31,6 +31,7 @@ HandleManager::handle HandleManager::init(void* data)
     {
       hEval.data = data;
       hEval.next = nullHandle;
+      return i + 1;
     }
   }
 }
@@ -58,6 +59,7 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
       lastHandle->next = i + 1; // remember we bump forward one so that we can use 0 as NULL handle
       hEval.data = data;
       hEval.next = nullHandle;
+      return i + 1;
     }
   }
 }

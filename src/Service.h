@@ -61,7 +61,7 @@ public:
 
   static const char genericError[] PROGMEM;
 
-  Event<const char*> stateUpdated;
+  Event<Service*> stateUpdated;
 };
 
 class IService
