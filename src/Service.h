@@ -25,7 +25,7 @@ protected:
 
   void setName(const __FlashStringHelper* name) { this->name = name; }
 public:
-  const __FlashStringHelper* getName();
+  const __FlashStringHelper* getName() { return name; }
 };
 
 // aka lightweight service
@@ -80,6 +80,13 @@ public:
 
 class Service : public LightweightService, public Named
 {
+protected:
+  void setState(State state)
+  {
+    LightweightService::setState(state);
+    statusUpdated.invoke(this);
+  }
+
 public:
   // fired when state or status message changes
   Event<Service*> statusUpdated;

@@ -126,7 +126,7 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc)
   setName(name);
   setState(Initializing);
   if(startFunc(*this))
-    setState(Error);
-  else
     setState(Initialized);
+  else
+    setState(Error);
 }
