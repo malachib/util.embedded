@@ -1,4 +1,5 @@
 #include "Service.h"
+#include "lib.h"
 
 const char LightweightService::genericError[] PROGMEM = "Init failure";
 
@@ -92,6 +93,10 @@ bool LightweightService::start(initFullStatus initFunc, LightweightService* depe
 
 bool LightweightService::awaitDependency(LightweightService* dependsOn)
 {
+#if DEBUG
+  Serial.println(F("awaitDependency"));
+#endif
+
   if(dependsOn)
   {
     // TODO: once I have a unified overflow watcher, do timeout logic here (20s)
@@ -126,7 +131,11 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc)
   setName(name);
   setState(Starting);
   if(startFunc(*this))
+  {
+    // reset status message to NULL without firing event, since setState will
+    LightweightService::setStatusMessage(NULL);
     setState(Started);
+  }
   else
     setState(Error);
 }
