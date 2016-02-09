@@ -35,7 +35,7 @@ bool LightweightService::start(initErrorStatus2 initFunc)
 }
 
 
-bool LightweightService::start(initErrorStatus initFunc, Service* dependsOn)
+bool LightweightService::start(initErrorStatus initFunc, LightweightService* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
@@ -47,7 +47,7 @@ bool LightweightService::start(initErrorStatus initFunc, Service* dependsOn)
 }
 
 
-bool LightweightService::start(initErrorStatus2 initFunc, Service* dependsOn)
+bool LightweightService::start(initErrorStatus2 initFunc, LightweightService* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
@@ -77,7 +77,7 @@ bool LightweightService::start(initFullStatus initFunc)
 }
 
 
-bool LightweightService::start(initFullStatus initFunc, Service* dependsOn)
+bool LightweightService::start(initFullStatus initFunc, LightweightService* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
@@ -119,4 +119,14 @@ const __FlashStringHelper* LightweightService::getStatus()
     case Initialized: return F("Initialized");
     case Error: return F("Error");
   }
+}
+
+void Service::start(const __FlashStringHelper* name, startService1 startFunc)
+{
+  setName(name);
+  setState(Initializing);
+  if(startFunc(*this))
+    setState(Error);
+  else
+    setState(Initialized);
 }

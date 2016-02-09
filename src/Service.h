@@ -12,14 +12,15 @@ typedef const __FlashStringHelper* (*initFullStatus)(const __FlashStringHelper**
 
 class Service;
 
-typedef const void (*startService1)(Service& service);
-typedef const bool (*startService2);
+typedef bool (*startService1)(Service& service);
+typedef bool (*startService2);
 
 class Named
 {
   const __FlashStringHelper* name;
 
 protected:
+  Named() {}
   Named(const __FlashStringHelper* name) : name(name) {}
 
   void setName(const __FlashStringHelper* name) { this->name = name; }
@@ -51,13 +52,19 @@ private:
   State state;
   const __FlashStringHelper* statusMessage;
 
+protected:
+  void setStatusMessage(const __FlashStringHelper* statusMessage)
+  {
+    this->statusMessage = statusMessage;
+  }
+
 public:
   bool start(initErrorStatus initFunc);
-  bool start(initErrorStatus initFunc, Service* dependsOn);
+  bool start(initErrorStatus initFunc, LightweightService* dependsOn);
   bool start(initErrorStatus2 initFunc);
-  bool start(initErrorStatus2 initFunc, Service* dependsOn);
+  bool start(initErrorStatus2 initFunc, LightweightService* dependsOn);
   bool start(initFullStatus initFunc);
-  bool start(initFullStatus initFunc, Service* dependsOn);
+  bool start(initFullStatus initFunc, LightweightService* dependsOn);
   bool start(initBasic initFunc)
   {
     state = Initializing;
@@ -71,13 +78,22 @@ public:
   static const char genericError[] PROGMEM;
 };
 
-class Service : public LightweightService//, public Named
+class Service : public LightweightService, public Named
 {
 public:
-  Event<Service*> stateUpdated;
+  // fired when state or status message changes
+  Event<Service*> statusUpdated;
 
-  //void start(startService1);
-  //void start(startService2);
+  void start(const __FlashStringHelper* name, startService1);
+  void start(const __FlashStringHelper* name, startService2);
+
+  // TODO: iron out fact that these shouldn't be public (use private / protected)
+  // base class
+  void setStatusMessage(const __FlashStringHelper* statusMessage)
+  {
+    LightweightService::setStatusMessage(statusMessage);
+    statusUpdated.invoke(this);
+  }
 };
 
 class IService
@@ -93,7 +109,7 @@ class RestartableService : public Service
 
 };
 
-inline Print& operator <<(Print& p, Service& arg)
+inline Print& operator <<(Print& p, LightweightService& arg)
 {
   p.print(arg.getStatus());
   if(arg.getStatusMessage() != NULL)
