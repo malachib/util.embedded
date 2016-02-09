@@ -84,12 +84,16 @@ protected:
   void setState(State state)
   {
     LightweightService::setState(state);
+#ifdef SERVICE_FEATURE_EVENTS
     statusUpdated.invoke(this);
+#endif
   }
 
 public:
+#ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
   Event<Service*> statusUpdated;
+#endif
 
   void start(const __FlashStringHelper* name, startService1);
   void start(const __FlashStringHelper* name, startService2);
@@ -99,7 +103,9 @@ public:
   void setStatusMessage(const __FlashStringHelper* statusMessage)
   {
     LightweightService::setStatusMessage(statusMessage);
+#ifdef SERVICE_FEATURE_EVENTS
     statusUpdated.invoke(this);
+#endif
   }
 };
 

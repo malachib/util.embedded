@@ -1,12 +1,18 @@
 #include <Arduino.h>
 
+#include "features.h"
+
 // Thank you Mikael Patel for inspiration https://github.com/mikaelpatel/Arduino-Scheduler/blob/master/Scheduler/Queue.h
 
 
 typedef void (*eventCallback)(void* parameter);
 
 #ifndef HANDLEMANAGER_CAPACITY
-#define HANDLEMANAGER_CAPACITY 20
+#if MEMORY_OPT_DATA
+#define HANDLEMANAGER_CAPACITY 15
+#else
+#define HANDLEMANAGER_CAPACITY 30
+#endif
 #endif
 
 class HandleManager
