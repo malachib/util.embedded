@@ -50,12 +50,13 @@ namespace FactUtilEmbedded
   protected:
     virtual void showPrompt() = 0;
     virtual void handleCommand(Parameters p) = 0;
-  #ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
     // return value of true means input was processed and needs no further processing.
     // note that process does not mean command executed, but only that the one character
     // was handled in a specific way (i.e. tab completion)
-    virtual bool processInput(Console* console, char c) { return false; }
-  #endif
+#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
+    virtual
+#endif
+    bool processInput(Console* console, char c) { return false; }
 
     static void showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding);
   };

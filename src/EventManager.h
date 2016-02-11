@@ -8,7 +8,7 @@
 typedef void (*eventCallback)(void* parameter);
 
 #ifndef HANDLEMANAGER_CAPACITY
-#if MEMORY_OPT_DATA
+#ifdef MEMORY_OPT_DATA
 #define HANDLEMANAGER_CAPACITY 15
 #else
 #define HANDLEMANAGER_CAPACITY 30
@@ -18,7 +18,7 @@ typedef void (*eventCallback)(void* parameter);
 class HandleManager
 {
 public:
-  static const int nullHandle = 0;
+  static const uint8_t nullHandle = 0;
   typedef uint8_t handle;
 
 protected:

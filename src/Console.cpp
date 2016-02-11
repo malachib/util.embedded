@@ -9,19 +9,21 @@ using namespace FactUtilEmbedded;
 #endif
 
 
+// TODO: refactor code so that handler is an inline call and processInput
+// contains all the smarts (not inline call).  This way, we can enable/disable
+// CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR feature from an #include rather than
+// a -D switch
 void Console::handler()
 {
   while(cin.available() > 0)
   {
     char received = cin.read();
 
-#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
     if(processInput(this, received))
     {
 
     }
     else
-#endif
     if(received == '\n' || received == 13)
     {
       cout.println();
