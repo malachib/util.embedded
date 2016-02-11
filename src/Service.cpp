@@ -20,6 +20,7 @@ bool LightweightService::start(initErrorStatus initFunc)
 }
 
 
+
 bool LightweightService::start(initErrorStatus2 initFunc)
 {
   state = Starting;
@@ -119,7 +120,11 @@ const __FlashStringHelper* LightweightService::getStatus()
 {
   switch(state)
   {
+#ifdef MEMORY_OPT_CODE
+    case Unstarted: return F("Unstarted");
+#else
     case Unstarted: return F("Waiting to start");
+#endif
     case Starting: return F("Starting");
     case Started: return F("Started");
     case Error: return F("Error");

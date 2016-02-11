@@ -2,8 +2,8 @@
 
 // If not specified, optimize for both code and data
 #ifdef MEMORY_OPT
-#define MEMORY_OPT_CODE
-#define MEMORY_OPT_DATA
+#define MEMORY_OPT_CODE   // Optimize down code SIZE
+#define MEMORY_OPT_DATA   // Optimize down data SIZE
 #endif
 
 #ifndef MEMORY_OPT_CODE
