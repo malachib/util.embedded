@@ -1,6 +1,7 @@
 #pragma once
 
 #include "features.h"
+#include "Handler.h"
 
 namespace FactUtilEmbedded
 {
@@ -62,7 +63,7 @@ namespace FactUtilEmbedded
   };
 
   class MenuEnumerator;
-  
+
   class MenuBase
   {
     friend MenuEnumerator;
@@ -109,8 +110,8 @@ namespace FactUtilEmbedded
   class Menu :
     public MenuBase,
     public IMenu,
-    public util::IHandler2<IMenu::Parameters, IMenu*>,
-    public util::SinglyLinkedNode
+    public IHandler2<IMenu::Parameters, IMenu*>,
+    public SinglyLinkedNode
   {
   protected:
     virtual void showPrompt() override;
@@ -146,18 +147,5 @@ namespace FactUtilEmbedded
       Menu(name, description) { this->handler = handler; }
 
     void setHandler(menuHandler handler) { this->handler = handler; }
-  };
-
-  class Service;
-
-  class MenuService : public Menu
-  {
-    Service& service;
-
-  protected:
-    virtual void handleCommand(Parameters p) override;
-  public:
-    MenuService(Service& service) : service(service) {}
-
   };
 }

@@ -17,6 +17,7 @@ class Service;
 
 typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
+typedef void (*startServiceInvoker)(startService1 startFunc, Service& service);
 
 class Named
 {
@@ -83,8 +84,12 @@ public:
   bool isInitialized() { return getState() == Started; }
 };
 
+class MenuService;
+
 class Service : public LightweightService, public Named
 {
+  friend MenuService;
+
 protected:
   void setState(State state)
   {
@@ -95,6 +100,12 @@ protected:
   }
 
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+  void setInvoker(startServiceInvoker invoker)
+  {
+    this->invoker = invoker;
+  }
+
+  startServiceInvoker invoker; // FIX: kludgey - this helps us invoke on a different "thread" if desired
   startService1 startFunc;
 #endif
 
@@ -109,6 +120,11 @@ public:
   void restart(startService1);
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
   void restart();
+  void start(const __FlashStringHelper* name, startService1 startFunc, startServiceInvoker invoker)
+  {
+    this->invoker = invoker;
+    start(name, startFunc);
+  }
 #endif
 
   //void restart(startService1) { }

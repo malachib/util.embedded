@@ -1,6 +1,6 @@
 #include "Console.h"
 #include "Menu.h"
-#include "Service.h"
+//#include "Service.h"
 
 using namespace FactUtilEmbedded;
 
@@ -169,10 +169,4 @@ void NestedMenuHandler::showPrompt()
   {
     cout << '>';
   }
-}
-
-
-void MenuService::handleCommand(Parameters p)
-{
-  service.restart();
 }
