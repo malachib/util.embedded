@@ -3,6 +3,9 @@
 #include <Arduino.h>
 #include <EventManager.h>
 
+namespace FactUtilEmbedded
+{
+
 #define SERVICE_ERROR ((const __FlashStringHelper*) LightweightService::genericError)
 
 typedef void (*initBasic)(void);
@@ -143,4 +146,5 @@ inline Print& operator <<(Print& p, LightweightService& arg)
     p.print(arg.getStatusMessage());
   }
   return p;
+}
 }

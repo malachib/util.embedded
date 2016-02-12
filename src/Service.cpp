@@ -1,6 +1,9 @@
 #include "Service.h"
 #include "lib.h"
 
+namespace FactUtilEmbedded
+{
+
 const char LightweightService::genericError[] PROGMEM = "Init failure";
 
 bool LightweightService::start(initErrorStatus initFunc)
@@ -159,3 +162,4 @@ void Service::restart()
   restart(startFunc);
 }
 #endif
+}

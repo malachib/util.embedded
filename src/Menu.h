@@ -143,4 +143,18 @@ namespace FactUtilEmbedded
 
     void setHandler(menuHandler handler) { this->handler = handler; }
   };
+
+/*
+  class Service;
+
+  class MenuService : public Menu
+  {
+    const Service& service;
+
+  protected:
+    virtual void handleCommand(Parameters p) override;
+  public:
+    MenuService(Service& service);
+
+  }; */
 }
