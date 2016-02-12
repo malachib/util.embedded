@@ -3,6 +3,8 @@
 #include "Service.h"
 #include "Menu.h"
 
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+
 namespace FactUtilEmbedded
 {
 
@@ -20,3 +22,5 @@ public:
 };
 
 }
+
+#endif

@@ -156,6 +156,22 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc)
   restart(startFunc);
 }
 
+void Service::start(const __FlashStringHelper* name, startService1 startFunc, LightweightService* dependsOn)
+{
+  if(!awaitDependency(dependsOn))
+  {
+    setState(Error);
+    return;
+  }
+
+#ifdef SERVICE_FEATURE_RETAINED_DEPENDENCY
+  this->dependsOn = dependsOn;
+#endif
+
+  start(name, startFunc);
+}
+
+
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
 void Service::restart()
 {

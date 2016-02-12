@@ -109,6 +109,10 @@ protected:
   startService1 startFunc;
 #endif
 
+#ifdef SERVICE_FEATURE_RETAINED_DEPENDENCY
+  LightweightService* dependsOn;
+#endif
+
 public:
 #ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
@@ -116,15 +120,11 @@ public:
 #endif
 
   void start(const __FlashStringHelper* name, startService1);
+  void start(const __FlashStringHelper* name, startService1, LightweightService* dependsOn);
   void start(const __FlashStringHelper* name, startService2);
   void restart(startService1);
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
   void restart();
-  void start(const __FlashStringHelper* name, startService1 startFunc, startServiceInvoker invoker)
-  {
-    this->invoker = invoker;
-    start(name, startFunc);
-  }
 #endif
 
   //void restart(startService1) { }

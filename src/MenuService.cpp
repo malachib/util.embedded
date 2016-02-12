@@ -1,5 +1,7 @@
 #include "MenuService.h"
 
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+
 namespace FactUtilEmbedded
 {
 
@@ -14,3 +16,5 @@ MenuService::MenuService(Service& service, startServiceInvoker invoker) : servic
 }
 
 }
+
+#endif
