@@ -61,14 +61,24 @@ namespace FactUtilEmbedded
     static void showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding);
   };
 
+  class MenuEnumerator;
+  
   class MenuBase
   {
+    friend MenuEnumerator;
+
   protected:
     // name & description are always PROGMEM residents
     const __FlashStringHelper* name;
     const __FlashStringHelper* description;
 
     MenuBase() {}
+
+    void setDesc(const __FlashStringHelper* name, const __FlashStringHelper* description)
+    {
+      this->name = name;
+      this->description = description;
+    }
 
   public:
     MenuBase(const __FlashStringHelper* name, const __FlashStringHelper* description) :
@@ -135,26 +145,19 @@ namespace FactUtilEmbedded
     MenuGeneric(menuHandler handler) :
       Menu(name, description) { this->handler = handler; }
 
-    void setDesc(const __FlashStringHelper* name, const __FlashStringHelper* description)
-    {
-      this->name = name;
-      this->description = description;
-    }
-
     void setHandler(menuHandler handler) { this->handler = handler; }
   };
 
-/*
   class Service;
 
   class MenuService : public Menu
   {
-    const Service& service;
+    Service& service;
 
   protected:
     virtual void handleCommand(Parameters p) override;
   public:
-    MenuService(Service& service);
+    MenuService(Service& service) : service(service) {}
 
-  }; */
+  };
 }

@@ -107,7 +107,7 @@ void MenuEnumerator::add(Menu& menu)
   menus.add(&menu);
 }
 
-void MenuEnumerator::add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
+void MenuEnumerator::add(Menu& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
 {
   menu.setDesc(name, description);
   menus.add(&menu);

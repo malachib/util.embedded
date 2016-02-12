@@ -58,7 +58,7 @@ class MenuEnumerator
 
 protected:
   void add(Menu& menu);
-  void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
+  void add(Menu& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
   void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description, menuHandler handler)
   {
     add(menu, name, description);
