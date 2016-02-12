@@ -6,9 +6,12 @@
 #define MEMORY_OPT_DATA   // Optimize down data SIZE
 #endif
 
-#ifndef MEMORY_OPT_CODE
+#if !defined(MEMORY_OPT_CODE)
 #define CONSOLE_FEATURE_FULL
+#if !defined(MEMORY_OPT_DATA) || MEMORY_OPT_DATA < 1
 #define SERVICE_FEATURE_FULL
+#else
+#endif
 #endif
 
 #ifdef CONSOLE_FEATURE_FULL
@@ -18,6 +21,7 @@
 
 #ifdef SERVICE_FEATURE_FULL
 #define SERVICE_FEATURE_EVENTS
+#define SERVICE_FEATURE_RETAINED_STARTFUNC
 #endif
 //#define CONSOLE_FEATURE_MULTICONSOLE
 //#define CONSOLE_BEHAVIOR_PROPAGATE

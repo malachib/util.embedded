@@ -131,9 +131,8 @@ const __FlashStringHelper* LightweightService::getStatus()
   }
 }
 
-void Service::start(const __FlashStringHelper* name, startService1 startFunc)
+void Service::restart(startService1 startFunc)
 {
-  setName(name);
   setState(Starting);
   if(startFunc(*this))
   {
@@ -144,3 +143,19 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc)
   else
     setState(Error);
 }
+
+void Service::start(const __FlashStringHelper* name, startService1 startFunc)
+{
+  setName(name);
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+  this->startFunc = startFunc;
+#endif
+  restart(startFunc);
+}
+
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+void Service::restart()
+{
+  restart(startFunc);
+}
+#endif

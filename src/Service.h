@@ -91,6 +91,10 @@ protected:
 #endif
   }
 
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+  startService1 startFunc;
+#endif
+
 public:
 #ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
@@ -99,6 +103,11 @@ public:
 
   void start(const __FlashStringHelper* name, startService1);
   void start(const __FlashStringHelper* name, startService2);
+  void restart(startService1);
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+  void restart();
+#endif
+
   //void restart(startService1) { }
 
   // TODO: iron out fact that these shouldn't be public (use private / protected)
