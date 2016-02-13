@@ -17,7 +17,7 @@ class Service;
 
 typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
-typedef void (*startServiceInvoker)(startService1 startFunc, Service& service);
+typedef void (*startServiceInvoker)(startService1 startFunc, Service* service);
 
 class Named
 {
