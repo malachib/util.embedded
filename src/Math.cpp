@@ -1,5 +1,5 @@
 #include "Math.h"
-
+//#include <math.h>
 
 class FloatConversion
 {
@@ -11,6 +11,32 @@ public:
   outputCharFunc outputChar;
 
   void dtostrf_helper();
+
+  static double pow(double base, uint16_t exponent)
+  {
+    double value = base;
+
+    while(exponent-- > 0)
+      value *= base;
+
+    return value;
+  }
+  // fixes rounding for value since everything is "floor" and not 'round'
+  void roundFixer(uint8_t prec)
+  {
+    //double _divisor = 10 ^ 2;
+    //double _divisor = pow10(prec);
+    double _divisor = pow(10, prec);
+    //double _divisor = 0;
+    Serial << F("before: ");
+    Serial.print(value, 8);
+    Serial.println();
+    double adjuster = (1.0 / _divisor) * 0.5;
+    value += adjuster;
+    Serial << F("after: ");
+    Serial.print(value, 8);
+    Serial.println();
+  }
 };
 
 void FloatConversion::dtostrf_helper()
@@ -45,6 +71,8 @@ void dtostrf_func(double value, uint8_t prec, outputCharFunc outputChar, void* c
   fc.outputChar = outputChar;
   fc.context = context;
   fc.divisor = 100000000000;
+
+  fc.roundFixer(prec);
 
   if(value < 0)
   {
