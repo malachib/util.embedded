@@ -46,7 +46,11 @@ void dtostrf_func(double value, uint8_t prec, outputCharFunc outputChar, void* c
   fc.context = context;
   fc.divisor = 100000000000;
 
-  if(value < 0) outputChar(context, '-');
+  if(value < 0)
+  {
+    outputChar(context, '-');
+    fc.value *= -1;
+  }
 
   while(fc.divisor > 0.1)
     fc.dtostrf_helper();
