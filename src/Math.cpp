@@ -28,14 +28,14 @@ public:
     //double _divisor = pow10(prec);
     double _divisor = pow(10, prec);
     //double _divisor = 0;
-    Serial << F("before: ");
-    Serial.print(value, 8);
-    Serial.println();
+    //Serial << F("before: ");
+    //Serial.print(value, 8);
+    //Serial.println();
     double adjuster = (1.0 / _divisor) * 0.5;
     value += adjuster;
-    Serial << F("after: ");
-    Serial.print(value, 8);
-    Serial.println();
+    //Serial << F("after: ");
+    //Serial.print(value, 8);
+    //Serial.println();
   }
 };
 
