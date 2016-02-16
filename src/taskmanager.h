@@ -1,8 +1,8 @@
 #ifndef _mal_taskmanager
 #define _mal_taskmanager
 
-#include "lib.h"
-#include "timinggroup.h"
+#include "fact/lib.h"
+#include "fact/timinggroup.h"
 #include "LinkedList.h"
 
 namespace FactUtilEmbedded
