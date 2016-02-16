@@ -2,7 +2,8 @@
 
 struct FakeFloat
 {
-  int32_t integer = 0;
+  bool negative = false;
+  uint16_t integer = 0;
   uint32_t decimal = 0;
 
   // prec = how many decimal places out "decimal" value of 1 is
@@ -22,4 +23,6 @@ struct FakeFloat
 
     return false;
   }
+
+  void subtract(FakeFloat& subtractor);
 };
