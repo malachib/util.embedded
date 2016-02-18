@@ -20,7 +20,7 @@ class IGNSS_raw : public IDriver
 {
 public:
   VIRTUAL uint16_t getContextSize() ABSTRACT;
-  VIRTUAL void initializeContext(void* ctx) { };
+  VIRTUAL void initContext(void* ctx) { };
 
   //VIRTUAL bool read() ABSTRACT;
   VIRTUAL bool getGNSS(void* context, GNSS_raw_ext* data) ABSTRACT;
