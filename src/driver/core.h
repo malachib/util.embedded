@@ -51,11 +51,12 @@ public:
 
   VIRTUAL TInterface* newInstance(void* instance, ...) OVERRIDE
   {
-    return new (instance) TClass();
+    va_list args;
+    return new (instance) TClass(args);
   }
 };
 
-#define FACTORY_NEW(factory) factory.newInstance(alloca(factory.getInstanceSize()))
+#define FACTORY_NEW(factory, ...) factory.newInstance(alloca(factory.getInstanceSize()), ## __VA_ARGS__)
 
 class DriverManager
 {

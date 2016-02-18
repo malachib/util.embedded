@@ -3,43 +3,23 @@
 #include "core.h"
 
 namespace driver {
-namespace gnss
-{
 
 #define DEVICE_GNSS_FEATURE_DECIMAL 0x01
 
-struct GNSS_raw
+enum GnssFields
 {
-  /*
-  enum Fields
-  {
-    LATITUDE,
-    LONGITUDE,
-    SPEED,
-    HEADING,
-    TIMESTAMP,
-    ALTITUDE,
-    LATP,
-    LONGP
-  }; */
-
-  char* latitude;
-  char* longitude;
+  GNSS_LATITUDE,
+  GNSS_LONGITUDE,
+  GNSS_SPEED,
+  GNSS_HEADING,
+  GNSS_TIMESTAMP,
+  GNSS_ALTITUDE,
+  GNSS_LATP,
+  GNSS_LONGP
 };
 
-struct GNSS_raw_ext : GNSS_raw
-{
-  char* timestamp;
-  char* speed;
-  char* heading;
-  char* altitude;
-};
 
-struct GNSS_raw_ext_degrees : GNSS_raw_ext
-{
-  char* latp;
-  char* longp;
-};
+typedef bool (*IGNSS_raw_token_callback)(GnssFields field, char* value, void* context);
 
 class IGNSS_raw : public IDriver
 {
@@ -48,7 +28,7 @@ public:
   VIRTUAL void initContext(void* ctx) { };
 
   //VIRTUAL bool read() ABSTRACT;
-  VIRTUAL bool getGNSS(void* context, GNSS_raw_ext* data) ABSTRACT;
+  VIRTUAL bool getGNSS(IGNSS_raw_token_callback callback, void* context = NULL) ABSTRACT;
 };
 
 
@@ -60,5 +40,4 @@ public:
     double* heading = NULL,
     double* altitude = NULL) ABSTRACT;
 };
-}
 }
