@@ -23,14 +23,14 @@ public:
   VIRTUAL void initializeContext(void* ctx) { };
 
   //VIRTUAL bool read() ABSTRACT;
-  VIRTUAL void getGPS(GNSS_raw* data) ABSTRACT;
+  VIRTUAL bool getGNSS(void* context, GNSS_raw_ext* data) ABSTRACT;
 };
 
 
 class IGNSS : public IDriver
 {
 public:
-  VIRTUAL bool getGPS(double* latitude, double* longitude,
+  VIRTUAL bool getGNSS(double* latitude, double* longitude,
     double* speed_kph = NULL,
     double* heading = NULL,
     double* altitude = NULL) ABSTRACT;

@@ -5,7 +5,7 @@
 #ifdef DRIVER_FEATURE_VTABLE
 #define VIRTUAL virtual
 #define ABSTRACT = 0;
-#define OVERRIDE override;
+#define OVERRIDE override
 #else
 #define VIRTUAL
 #define ABSTRACT
@@ -17,7 +17,8 @@
 
 class IDriver
 {
-  enum DeviceType
+public:
+  enum DeviceType : uint16_t
   {
     GNSS
   };
@@ -25,9 +26,18 @@ class IDriver
   struct MetaData
   {
     uint16_t deviceType;
-    uint16_t features;
+    uint16_t features = 0;
   };
 
+
+  VIRTUAL MetaData getMetaData() ABSTRACT;
+};
+
+
+class DriverManager
+{
+  //SinglyLinkedList drivers;
+
 public:
-  VIRTUAL MetaData& getMetaData() ABSTRACT;
+  void add(IDriver& driver);
 };
