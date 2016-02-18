@@ -2,8 +2,27 @@
 
 #include "core.h"
 
+namespace driver {
+namespace gnss
+{
+
+#define DEVICE_GNSS_FEATURE_DECIMAL 0x01
+
 struct GNSS_raw
 {
+  /*
+  enum Fields
+  {
+    LATITUDE,
+    LONGITUDE,
+    SPEED,
+    HEADING,
+    TIMESTAMP,
+    ALTITUDE,
+    LATP,
+    LONGP
+  }; */
+
   char* latitude;
   char* longitude;
 };
@@ -14,6 +33,12 @@ struct GNSS_raw_ext : GNSS_raw
   char* speed;
   char* heading;
   char* altitude;
+};
+
+struct GNSS_raw_ext_degrees : GNSS_raw_ext
+{
+  char* latp;
+  char* longp;
 };
 
 class IGNSS_raw : public IDriver
@@ -35,3 +60,5 @@ public:
     double* heading = NULL,
     double* altitude = NULL) ABSTRACT;
 };
+}
+}

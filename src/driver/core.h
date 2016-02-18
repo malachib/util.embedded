@@ -12,7 +12,6 @@
 #define OVERRIDE
 #endif
 
-//#define DEVICE_GNSS_FEATURE
 
 
 class IDriver
@@ -33,6 +32,30 @@ public:
   VIRTUAL MetaData getMetaData() ABSTRACT;
 };
 
+template <class T>
+class IInstanceFactory
+{
+public:
+  VIRTUAL uint16_t getInstanceSize() ABSTRACT;
+  VIRTUAL T* newInstance(void* instance, ...) ABSTRACT;
+};
+
+template <class TInterface, class TClass>
+class IInstanceFactoryImpl : public IInstanceFactory<TInterface>
+{
+public:
+  VIRTUAL uint16_t getInstanceSize() OVERRIDE
+  {
+    return sizeof(TClass);
+  }
+
+  VIRTUAL TInterface* newInstance(void* instance, ...) OVERRIDE
+  {
+    return new (instance) TClass();
+  }
+};
+
+#define FACTORY_NEW(factory) factory.newInstance(alloca(factory.getInstanceSize()))
 
 class DriverManager
 {
@@ -41,3 +64,11 @@ class DriverManager
 public:
   void add(IDriver& driver);
 };
+
+// placement syntax not supported out of the box for Arduino
+// but this article helps us out:
+// http://arduino.stackexchange.com/questions/1484/allocate-object-memory-statically-intialize-it-dynamically
+inline void* operator new(size_t size, void* ptr)
+{
+    return ptr;
+}
