@@ -66,6 +66,7 @@ public:
   void add(IDriver& driver);
 };
 
+#ifndef NODUINO
 // placement syntax not supported out of the box for Arduino
 // but this article helps us out:
 // http://arduino.stackexchange.com/questions/1484/allocate-object-memory-statically-intialize-it-dynamically
@@ -73,3 +74,4 @@ inline void* operator new(size_t size, void* ptr)
 {
     return ptr;
 }
+#endif
