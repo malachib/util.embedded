@@ -9,6 +9,8 @@ bool Tokenizer::isDelimiter(char input)
   {
     if(input == *d)
       return true;
+    if(input == 0)
+      return true;
 
     d++;
   }

@@ -19,6 +19,12 @@ public:
   bool parse(char input);
   bool isDelimiter(char input);
 
+  uint8_t parseToken(char* input)
+  {
+    while(!parse(*input++));
+    return bufferPos;
+  }
+
   char* getBuffer() { return buffer; }
 
   void reset()
@@ -51,7 +57,7 @@ public:
 
   void advance()
   {
-    buffer += bufferPos;
+    buffer += bufferPos + 1;
     bufferPos = 0;
   }
 
