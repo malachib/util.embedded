@@ -13,7 +13,7 @@ CC_DEBUG = -c
 #CC_DEBUG = -g -c
 
 _OBJS = Console.o EventManager.o statemachine.o Handler.o taskmanager.o lib_c.o \
-	lib.o LinkedList.o Math.o Menu.o MenuService.o Service.o Arduino.o
+	lib.o LinkedList.o Math.o Menu.o MenuService.o Service.o Arduino.o Main.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 $(OUT): $(OBJS)
