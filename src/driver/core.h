@@ -32,16 +32,16 @@ public:
   VIRTUAL MetaData getMetaData() ABSTRACT;
 };
 
-template <class T>
+template <class T, class TParameter>
 class IInstanceFactory
 {
 public:
   VIRTUAL uint16_t getInstanceSize() ABSTRACT;
-  VIRTUAL T* newInstance(void* instance, ...) ABSTRACT;
+  VIRTUAL T* newInstance(void* instance, TParameter parameter, ...) ABSTRACT;
 };
 
-template <class TInterface, class TClass>
-class IInstanceFactoryImpl : public IInstanceFactory<TInterface>
+template <class TInterface, class TClass, class TParameter>
+class IInstanceFactoryImpl : public IInstanceFactory<TInterface, TParameter>
 {
 public:
   VIRTUAL uint16_t getInstanceSize() OVERRIDE
@@ -50,14 +50,14 @@ public:
   }
 
   // FIX: broken - can't use variadic without one formal parameter (see constructor)
-  VIRTUAL TInterface* newInstance(void* instance, ...) OVERRIDE
+  VIRTUAL TInterface* newInstance(void* instance, TParameter parameter, ...) OVERRIDE
   {
     va_list args;
-    return new (instance) TClass(args);
+    return new (instance) TClass(parameter, args);
   }
 };
 
-#define FACTORY_NEW(factory, ...) factory.newInstance(alloca(factory.getInstanceSize()), ## __VA_ARGS__)
+#define FACTORY_NEW(factory, parameter, ...) factory.newInstance(alloca(factory.getInstanceSize()), parameter, ## __VA_ARGS__)
 
 class DriverManager
 {
