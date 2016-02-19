@@ -19,11 +19,16 @@
 #define NODUINO 1
 #endif
 
+
+#ifdef NODUINO
+#include <stdint.h>
+#else
 // MS unit tests define these for arm_neon
 #if !defined(MS_CPP_UNITTESTFRAMEWORK) && !defined(ARDUINO) && !defined(_UINT32_T)
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned long uint32_t;
+#endif
 #endif
 
 

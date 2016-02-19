@@ -1,6 +1,12 @@
-#include <Arduino.h>
+#pragma once
 
-#include "features.h"
+#include <Arduino.h>
+// FIX: NODUINO is clunky check to ensure we grab our own uint8_t & friends
+// however really we should try to grab it from stdint.h
+#ifdef NODUINO
+#include "fact/lib.h"
+#endif
+#include "fact/features.h"
 
 // Thank you Mikael Patel for inspiration https://github.com/mikaelpatel/Arduino-Scheduler/blob/master/Scheduler/Queue.h
 

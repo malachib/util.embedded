@@ -1,3 +1,13 @@
+#pragma once
+
+// FIX: NODUINO is clunky check to ensure we grab our own uint8_t & friends
+// however really we should try to grab it from stdint.h
+
+#ifdef NODUINO
+#include "fact/lib.h"
+#endif
+
+
 template <class TInput, class TOutput>
 class TokenizerBase
 {
