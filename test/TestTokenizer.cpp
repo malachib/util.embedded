@@ -59,15 +59,11 @@ SCENARIO( "Tokenizing tests", "[tokenizer]" )
 
     std::string token = tokenizer.parseTokenDestructive();
     REQUIRE(token == "ABC");
-    tokenizer.advance();
 
     token = tokenizer.parseTokenDestructive();
     REQUIRE(token == "DEF");
-    tokenizer.advance();
 
     token = tokenizer.parseTokenDestructive();
     REQUIRE(token == "GHI");
-    tokenizer.advance();
-
   }
 }

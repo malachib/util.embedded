@@ -53,6 +53,8 @@ public:
     return bufferPos;
   }
 
+  // grabs a token, parses it, appends a \0 (destructive) and auto-advances
+  // to next token
   char* parseTokenDestructive();
 
   void advance()

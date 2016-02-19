@@ -50,5 +50,9 @@ char* TokenizerInPlace::parseTokenDestructive()
 
   // destructively write to original buffer , cuz I know it's safe
   // in this context - we'll be overwriting the comma
-  return getBufferDestructive();
+  char* buffer = getBufferDestructive();
+
+  advance();
+
+  return buffer;
 }
