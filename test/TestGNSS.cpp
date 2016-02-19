@@ -34,20 +34,24 @@ bool getGNSS_helper_d(IGNSS_raw::token_callback callback, char* input, GnssField
 
 }
 
-bool getGNSS_helper(IGNSS_raw::token_callback callback, char* input, GnssFields* fieldOrder, uint8_t fieldCount, void* context)
+bool getGNSS_helper(IGNSS_raw::token_callback callback, char* input, char* buffer, GnssFields* fieldOrder, uint8_t fieldCount, void* context)
 {
-  char buffer[20];
-
   Tokenizer tokenizer(buffer,",");
 
   for(int i = 0; i < fieldCount; i++)
   {
+    INFO("Got input: " << input);
+
     input += tokenizer.parseToken(input);
 
     char* token = tokenizer.getBuffer();
 
+    INFO("Got token: " << token);
+
     if(!callback(fieldOrder[i], token, context))
       return false;
+
+    if(i == fieldCount - 1) {  REQUIRE(*input == 0); }
 
     tokenizer.reset();
   }
@@ -61,14 +65,16 @@ GnssFields fieldOrder[] =
   // skip altitude (#5) to test for false positives
   GNSS_LATP, GNSS_LONGP
 };
-char buffer[] = "1,2,12.0,14.0,XZ,,ABC";
+
+#define INPUT_BUFFER "1,2,12.0,14.0,XZ,,ABC"
+char inputBuffer[] = INPUT_BUFFER;
 
 
 bool Dummy_GNSS_raw::getGNSS(IGNSS_raw::token_callback callback, void* context)
 {
-  return getGNSS_helper_d(callback, buffer, fieldOrder,
+  return getGNSS_helper_d(callback, inputBuffer, fieldOrder,
     sizeof(fieldOrder) / sizeof(GnssFields), context );
-  TokenizerInPlace tokenizer(buffer,",");
+  TokenizerInPlace tokenizer(inputBuffer,",");
   for(int i = 0; i < 5; i++)
   {
     char* token = tokenizer.parseTokenDestructive();
@@ -78,12 +84,26 @@ bool Dummy_GNSS_raw::getGNSS(IGNSS_raw::token_callback callback, void* context)
   return true;
 }
 
+struct Context
+{
+  // inputBuffer shouldn't live in this callback context.
+  // it would be more an instance field or a IGNSS_raw-level context
+  //char* inputBuffer;
+
+  // fulfilled is an array representing which GNSS fields have shown up
+  // it's mapped directly to GNSS id, so for example, GNSS_ALTITUDE = 5
+  // but for these tests we don't use GNSS_ALTITUDE, therefore fulfilled[5]
+  // will remain as 'false'
+  bool* fulfilled;
+};
+
 bool token_callback(GnssFields field, char* _token, void* context)
 {
   std::string token = _token;
-  auto fulfilled = (bool*) context;
+  auto ctx = (Context*) context;
+  //auto fulfilled = (bool*) context;
 
-  fulfilled[(int)field] = true;
+  ctx->fulfilled[(int)field] = true;
 
   switch((int)field)
   {
@@ -131,33 +151,42 @@ SCENARIO( "GNSS synthetic tests", "[gnss]" )
   {
     bool fulfilled[] = { false, false, false, false, false, false, false, false };
 
-    /*
+    Context context;
+
+    //context.inputBuffer = inputBuffer;
+    context.fulfilled = fulfilled;
+
     WHEN("doing it non-destructively")
     {
-      getGNSS_helper(token_callback, buffer, fieldOrder,
-        sizeof(fieldOrder) / sizeof(GnssFields), fulfilled);
+      char tempBuffer[20];
+
+      getGNSS_helper(token_callback, inputBuffer, tempBuffer, fieldOrder,
+        sizeof(fieldOrder) / sizeof(GnssFields), &context);
 
       for(int i = 0; i < 7; i++)
       {
         // we specifically don't get that field
         if(i == 5) continue;
-        INFO("Checking: " << i);
-        REQUIRE(fulfilled[i] == true);
-      }
-    } */
-    
-    WHEN("doing it destructively")
-    {
-      gnss_raw.getGNSS(token_callback, fulfilled);
-
-      for(int i = 0; i < 7; i++)
-      {
-        // we specifically don't get that field
-        if(i == 5) continue;
-        INFO("Checking: " << i);
-        REQUIRE(fulfilled[i] == true);
+        INFO("GNSS field: " << i);
+        REQUIRE(context.fulfilled[i] == true);
       }
     }
 
+    WHEN("doing it destructively")
+    {
+      gnss_raw.getGNSS(token_callback, &context);
+
+      for(int i = 0; i < 7; i++)
+      {
+        // we specifically don't get that field
+        if(i == 5) continue;
+        INFO("GNSS field: " << i);
+        REQUIRE(context.fulfilled[i] == true);
+      }
+    }
+
+    // doesn't work since inputBuffer has indeed been changed
+    //REQUIRE(std::string(inputBuffer) == INPUT_BUFFER);
+    //REQUIRE(std::string(context.inputBuffer) == INPUT_BUFFER);
   }
 }

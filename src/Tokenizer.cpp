@@ -5,11 +5,11 @@ bool Tokenizer::isDelimiter(char input)
 {
   const char* d = delimiters;
 
+  if(input == 0) return true;
+
   while(*d)
   {
     if(input == *d)
-      return true;
-    if(input == 0)
       return true;
 
     d++;

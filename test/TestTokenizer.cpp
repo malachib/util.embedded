@@ -19,10 +19,10 @@ SCENARIO( "Tokenizing tests", "[tokenizer]" )
     //WHEN("checking for ABC")
     {
       auto len = tokenizer.parseToken(input);
-      input += len + 1; // because ',' turns into '\0' which doesn't count in len
+      input += len;
       std::string token = tokenizer.getBuffer();
       std::string _input = input;
-      REQUIRE(len == 3);
+      REQUIRE(len == 4);
       REQUIRE(token == "ABC");
       REQUIRE(_input == "DEF,GHI");
       //printf("\r\ninput = %s", input);
@@ -34,10 +34,10 @@ SCENARIO( "Tokenizing tests", "[tokenizer]" )
       strcpy(buffer, "DEF");
       tokenizer.reset();
       auto len = tokenizer.parseToken(input);
-      input += len + 1; // because ',' turns into '\0' which doesn't count in len
+      input += len;
       std::string _input = input;
       std::string token2 = tokenizer.getBuffer();
-      REQUIRE(len == 3);
+      REQUIRE(len == 4);
       REQUIRE(_input == "GHI");
       REQUIRE(token2 == "DEF");
       //printf("\r\ninput = %s", input);

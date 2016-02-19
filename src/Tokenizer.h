@@ -19,10 +19,18 @@ public:
   bool parse(char input);
   bool isDelimiter(char input);
 
+  // returns length of token including trailing \0
+  // meaning that an actual return value of 0 means end-of-input
+  // and no token can be found
   uint8_t parseToken(char* input)
   {
+    if(*input == 0) return 0;
+
     while(!parse(*input++));
-    return bufferPos;
+    // include \0 so that caller can += their input
+    // remember 'input' itself is expected to be \0 terminated, so
+    // + 1 at worst should put us right on the already-existing \0
+    return bufferPos + 1;
   }
 
   char* getBuffer() { return buffer; }
