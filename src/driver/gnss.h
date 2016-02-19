@@ -31,6 +31,8 @@ public:
 
   //VIRTUAL bool read() ABSTRACT;
   VIRTUAL bool getGNSS(token_callback callback, void* context = NULL) ABSTRACT;
+
+  static const __FlashStringHelper* getFieldString(GnssFields field);
 };
 
 
