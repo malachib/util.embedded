@@ -6,7 +6,7 @@ namespace driver {
 
 #define DEVICE_GNSS_FEATURE_DECIMAL 0x01
 
-enum GnssFields
+enum GnssFields : uint8_t
 {
   GNSS_LATITUDE,
   GNSS_LONGITUDE,
