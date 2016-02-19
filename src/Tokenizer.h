@@ -6,14 +6,14 @@ public:
 
 class Tokenizer : TokenizerBase<char, char*>
 {
-  char* delimiters;
+  const char* delimiters;
 
 protected:
   uint8_t bufferPos = 0;
   char* buffer;
 
 public:
-  Tokenizer(char* buffer, char* delimiters) : buffer(buffer), delimiters(delimiters)
+  Tokenizer(char* buffer, const char* delimiters) : buffer(buffer), delimiters(delimiters)
   {}
 
   bool parse(char input);
@@ -35,7 +35,7 @@ public:
 class TokenizerInPlace : public Tokenizer
 {
 public:
-  TokenizerInPlace(char* buffer, char* delimiters) :
+  TokenizerInPlace(char* buffer, const char* delimiters) :
     Tokenizer(buffer, delimiters)
   {}
 

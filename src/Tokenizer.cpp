@@ -3,7 +3,7 @@
 
 bool Tokenizer::isDelimiter(char input)
 {
-  char* d = delimiters;
+  const char* d = delimiters;
 
   while(*d)
   {
