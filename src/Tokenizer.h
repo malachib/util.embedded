@@ -40,6 +40,14 @@ public:
   {}
 
   bool parse();
+  uint8_t parseToken()
+  {
+    while(!parse());
+
+    return bufferPos;
+  }
+
+  char* parseTokenDestructive();
 
   void advance()
   {
@@ -56,4 +64,25 @@ public:
     buffer[bufferPos] = 0;
     return buffer;
   }
+
+#if UNUSED
+  // destructively parse a sequence for one item
+  template <class T>
+  bool parseSequencedD(T id,
+    bool (*callback)(T id, char* buffer, void* context),
+    void* context)
+  {
+    char* token = parseTokenDestructive();
+
+    // callback can abort the call early.  This is not an error, but rather
+    // the consumer telling us we don't need to process anything further
+    if(!callback(id, token, context))
+      return false;
+
+    // move just past the token found
+    advance();
+
+    return true;
+  }
+#endif
 };

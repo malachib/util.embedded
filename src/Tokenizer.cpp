@@ -39,3 +39,14 @@ bool TokenizerInPlace::parse()
   bufferPos++;
   return false;
 }
+
+
+char* TokenizerInPlace::parseTokenDestructive()
+{
+  // loop through and find token
+  parseToken();
+
+  // destructively write to original buffer , cuz I know it's safe
+  // in this context - we'll be overwriting the comma
+  return getBufferDestructive();
+}
