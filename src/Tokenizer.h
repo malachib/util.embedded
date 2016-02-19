@@ -6,9 +6,11 @@ public:
 
 class Tokenizer : TokenizerBase<char, char*>
 {
-  char* buffer;
   char* delimiters;
+
+protected:
   uint8_t bufferPos = 0;
+  char* buffer;
 
 public:
   Tokenizer(char* buffer, char* delimiters) : buffer(buffer), delimiters(delimiters)
@@ -16,6 +18,26 @@ public:
 
   bool parse(char input);
   bool isDelimiter(char input);
-  
-  char* getBuffer();
+
+  char* getBuffer() { return buffer; }
+
+  void reset()
+  {
+    bufferPos = 0;
+  }
+};
+
+
+class TokenizerInPlace : public Tokenizer
+{
+public:
+  bool parse();
+
+  void reset()
+  {
+    buffer += bufferPos;
+    bufferPos = 0;
+  }
+
+  uint8_t getLength() { return bufferPos; }
 };

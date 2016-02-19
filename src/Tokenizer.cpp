@@ -29,3 +29,9 @@ bool Tokenizer::parse(char input)
     return false;
   }
 }
+
+
+bool TokenizerInPlace::parse()
+{
+  return isDelimiter(buffer[bufferPos++]);
+}
