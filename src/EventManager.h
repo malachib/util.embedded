@@ -15,9 +15,9 @@ typedef void (*eventCallback)(void* parameter);
 
 #ifndef HANDLEMANAGER_CAPACITY
 #ifdef MEMORY_OPT_DATA
-#define HANDLEMANAGER_CAPACITY 15
+#define HANDLEMANAGER_CAPACITY 10
 #else
-#define HANDLEMANAGER_CAPACITY 30
+#define HANDLEMANAGER_CAPACITY 20
 #endif
 #endif
 

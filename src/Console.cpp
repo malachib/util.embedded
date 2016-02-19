@@ -2,10 +2,11 @@
 
 using namespace FactUtilEmbedded;
 
+// technically this is a stack opt
 #ifdef MEMORY_OPT_DATA
 #define CONSOLE_BEHAVIOR_MAX_PARAMETER 4
 #else
-#define CONSOLE_BEHAVIOR_MAX_PARAMETER 10
+#define CONSOLE_BEHAVIOR_MAX_PARAMETER 8
 #endif
 
 
