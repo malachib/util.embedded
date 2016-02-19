@@ -21,16 +21,16 @@ enum GnssFields
 };
 
 
-typedef bool (*IGNSS_raw_token_callback)(GnssFields field, char* value, void* context);
-
 class IGNSS_raw : public IDriver
 {
 public:
+  typedef bool (*token_callback)(GnssFields field, char* value, void* context);
+
   VIRTUAL uint16_t getContextSize() ABSTRACT;
   VIRTUAL void initContext(void* ctx) { };
 
   //VIRTUAL bool read() ABSTRACT;
-  VIRTUAL bool getGNSS(IGNSS_raw_token_callback callback, void* context = NULL) ABSTRACT;
+  VIRTUAL bool getGNSS(token_callback callback, void* context = NULL) ABSTRACT;
 };
 
 
