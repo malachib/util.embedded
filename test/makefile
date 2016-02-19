@@ -1,4 +1,7 @@
-CC = g++
+ifndef CXX
+CXX = g++
+endif
+CC = $(CXX)
 ODIR = ../obj
 SDIR = .
 OUT = test
@@ -8,7 +11,7 @@ INCLUDE2 = ../src
 INCLUDE_NODUINO = noduino
 INC = -I$(INCLUDE) -I$(INCLUDE2) -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
-CFLAGS = --std=c++11 -g
+CFLAGS = --std=gnu++11 -g
 CC_DEBUG = -c
 #CC_DEBUG = -g -c
 
