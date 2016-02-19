@@ -49,6 +49,7 @@ public:
     return sizeof(TClass);
   }
 
+  // FIX: broken - can't use variadic without one formal parameter (see constructor)
   VIRTUAL TInterface* newInstance(void* instance, ...) OVERRIDE
   {
     va_list args;
