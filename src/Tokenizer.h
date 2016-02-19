@@ -44,8 +44,10 @@ public:
 
 // Use when buffer is already allocated elsewhere, we
 // can re-use it via this mechanism - just note that
-// null char (0) is not appended, so inspect getLength()
-// to know how long the found token is
+// null char (0) is not assumed to be appended, so either
+// inspect getLength() to know how long the found token is,
+// or use the destructive operations which write back
+// to the buffer
 class TokenizerInPlace : public Tokenizer
 {
 public:
@@ -53,7 +55,9 @@ public:
     Tokenizer(buffer, delimiters)
   {}
 
+  // parse a single character from buffer and advance
   bool parse();
+
   uint8_t parseToken()
   {
     while(!parse());
@@ -71,6 +75,7 @@ public:
     bufferPos = 0;
   }
 
+  // return length of discovered buffer sans \0
   uint8_t getLength() { return bufferPos; }
 
   // If we know it's safe to modify original buffer at the delimiter, then we can
