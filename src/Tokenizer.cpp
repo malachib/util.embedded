@@ -33,5 +33,9 @@ bool Tokenizer::parse(char input)
 
 bool TokenizerInPlace::parse()
 {
-  return isDelimiter(buffer[bufferPos++]);
+  if(isDelimiter(buffer[bufferPos]))
+    return true;
+
+  bufferPos++;
+  return false;
 }
