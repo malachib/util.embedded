@@ -73,24 +73,17 @@ public:
     return buffer;
   }
 
-#if UNUSED
-  // destructively parse a sequence for one item
+  // destructively parse a token + issues a callback with results
   template <class T>
-  bool parseSequencedD(T id,
+  bool parseTokenDestructive(T id,
     bool (*callback)(T id, char* buffer, void* context),
-    void* context)
+    void* context = NULL)
   {
+    // grab token, append \0 and auto-advance
     char* token = parseTokenDestructive();
 
-    // callback can abort the call early.  This is not an error, but rather
+    // callback indicates whether to abort the call early.  This is not an error, but rather
     // the consumer telling us we don't need to process anything further
-    if(!callback(id, token, context))
-      return false;
-
-    // move just past the token found
-    advance();
-
-    return true;
+    return callback(id, token, context);
   }
-#endif
 };
