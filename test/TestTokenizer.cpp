@@ -57,7 +57,17 @@ SCENARIO( "Tokenizing tests", "[tokenizer]" )
 
     TokenizerInPlace tokenizer(input,",");
 
-    char* token = tokenizer.parseTokenDestructive();
-    REQUIRE(strcmp(token, "ABC") == 0);
+    std::string token = tokenizer.parseTokenDestructive();
+    REQUIRE(token == "ABC");
+    tokenizer.advance();
+
+    token = tokenizer.parseTokenDestructive();
+    REQUIRE(token == "DEF");
+    tokenizer.advance();
+
+    token = tokenizer.parseTokenDestructive();
+    REQUIRE(token == "GHI");
+    tokenizer.advance();
+
   }
 }
