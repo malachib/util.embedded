@@ -114,11 +114,16 @@ protected:
 #endif
 
 public:
+  Service() {}
+  Service(const char* name) : Named((const __FlashStringHelper*)name) {}
+
 #ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
   Event<Service*> statusUpdated;
 #endif
 
+  // TODO: phase out explicit naming in favor of constructor-named,
+  // this way unstarted services are still named
   void start(const __FlashStringHelper* name, startService1);
   void start(const __FlashStringHelper* name, startService1, LightweightService* dependsOn);
   void start(const __FlashStringHelper* name, startService2);
