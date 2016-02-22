@@ -116,6 +116,12 @@ protected:
 public:
   Service() {}
   Service(const char* name) : Named((const __FlashStringHelper*)name) {}
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+  Service(const char* name, startService1 startFunc) : Named((const __FlashStringHelper*)name)
+  {
+    this->startFunc = startFunc;
+  }
+#endif
 
 #ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
