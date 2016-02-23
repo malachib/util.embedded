@@ -77,7 +77,7 @@ void Console::handler()
 #ifdef DEBUG
         cout << F("Max len");
 #else
-        cout << 7; // old ASCII beep
+        cout << (char)7; // old ASCII beep
 #endif
         return;
       }
