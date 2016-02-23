@@ -126,11 +126,23 @@ public:
 template <class T>
 class EventWrapper
 {
+  Event<T> events;
+
 protected:
   // protected constructor makes re-assigning  more difficult
+  // (which is what we want)
   EventWrapper() {}
 
-  Event<T> events;
+  void invoke(T parameter)
+  {
+    events.invoke(parameter);
+  }
+
+  EventWrapper operator()(T parameter)
+  {
+    invoke(parameter);
+    return *this;
+  }
 
 public:
   operator Event<T>&() const
@@ -146,13 +158,12 @@ public:
 };
 
 
+#define LOCAL_EVENT(T) class Event : public EventWrapper<T*> { friend T; }
+
 template <class T>
 class PropertyWithEvents
 {
-  class Event : public EventWrapper<PropertyWithEvents*>
-  {
-    friend PropertyWithEvents;
-  };
+  LOCAL_EVENT(PropertyWithEvents);
 
   T value;
 
@@ -161,7 +172,7 @@ protected:
   {
     this->value = value;
 #ifdef SERVICE_FEATURE_EVENTS
-    updated.events.invoke(this);
+    updated.invoke(this);
 #endif
   }
 
@@ -199,12 +210,6 @@ class STR_Property : public PropertyWithEvents<const char*>
 public:
   STR_Property() {}
   STR_Property(const char* value) : PropertyWithEvents(value) {}
-  /*
-  STR_Property& operator = (const char* value)
-  {
-    setValue((char*)value);
-    return *this;
-  } */
 };
 
 class PubSTR_Property : public STR_Property

@@ -91,6 +91,8 @@ class Service : public LightweightService, public Named
 {
   friend MenuService;
 
+  LOCAL_EVENT(Service);
+
 protected:
   void setState(State state)
   {
@@ -126,7 +128,7 @@ public:
 
 #ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
-  Event<Service*> statusUpdated;
+  Event statusUpdated;
 #endif
 
   // TODO: phase out explicit naming in favor of constructor-named,

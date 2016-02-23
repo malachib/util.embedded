@@ -46,7 +46,7 @@ SCENARIO( "Service class tests", "[services]" )
     }
     WHEN("Stopping the service")
     {
-
+      //
     }
   }
 }
