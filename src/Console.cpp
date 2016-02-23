@@ -71,6 +71,17 @@ void Console::handler()
     }
     else
     {
+#ifdef FACT_LIB_STRICT
+      if(inputPos == CONSOLE_INPUTLINE_MAX - 1)
+      {
+#ifdef DEBUG
+        cout << F("Max len")
+#else
+        cout << 7; // old ASCII beep
+#endif
+        return;
+      }
+#endif
       cout << received;
       inputLine[inputPos++] = received;
     }

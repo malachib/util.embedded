@@ -135,6 +135,10 @@ public:
 
 }
 
+#ifdef CONSOLE_STREAM
+#define cout CONSOLE_STREAM
+#define cin CONSOLE_STREAM
+#else
 // temporary until we fully enable this inside Console class itself
 #ifdef SAML_SERIES
 #define cout SerialUSB
@@ -142,4 +146,5 @@ public:
 #else
 #define cout Serial
 #define cin Serial
+#endif
 #endif
