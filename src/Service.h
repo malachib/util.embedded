@@ -153,6 +153,8 @@ public:
 
 class IService
 {
+  PSTR_Property statusMessage;
+  
 protected:
   virtual void start() = 0;
   virtual void stop() {};

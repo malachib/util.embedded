@@ -107,3 +107,34 @@ public:
     eventManager.invoke(handle, (void*) parameter);
   }
 };
+
+
+template <class T>
+class PropertyWithEvents
+{
+#ifdef SERVICE_FEATURE_EVENTS
+  // fired when state or status message changes
+  Event<PropertyWithEvents*> updated;
+#endif
+
+  T value;
+
+protected:
+  void setValue(T value)
+  {
+    this->value = value;
+#ifdef SERVICE_FEATURE_EVENTS
+    updated.invoke(this);
+#endif
+  }
+
+public:
+  PropertyWithEvents(T value) : value(value) {}
+  PropertyWithEvents() {}
+
+  T getValue() { return value; }
+  operator T() { return getValue(); }
+};
+
+class PSTR_Property : public PropertyWithEvents<const __FlashStringHelper*> {};
+class STR_Property : public PropertyWithEvents<char*> {};
