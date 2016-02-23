@@ -76,6 +76,10 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
 {
   Handle* lastHandle;
 
+#ifdef FACT_LIB_STRICT
+  if(h == nullHandle) return nullHandle;
+#endif
+
   // finds last handle in chain - CPU expensive
   while(h != nullHandle)
   {
@@ -99,7 +103,7 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
   }
 
   // FIX: returning null handle here not tested
-  return 0;
+  return nullHandle;
 }
 
 

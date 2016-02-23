@@ -16,11 +16,10 @@ public:
 
 class Tokenizer : TokenizerBase<char, char*>
 {
-  const char* delimiters;
-
 protected:
   uint8_t bufferPos = 0;
   char* buffer;
+  const char* delimiters;
 
 public:
   Tokenizer(char* buffer, const char* delimiters) : buffer(buffer), delimiters(delimiters)

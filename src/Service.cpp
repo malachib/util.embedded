@@ -132,6 +132,9 @@ const __FlashStringHelper* LightweightService::getStatus()
     case Starting: return F("Starting");
     case Started: return F("Started");
     case Error: return F("Error");
+#ifdef FACT_LIB_STRICT
+    default: return F("Unknown");
+#endif
   }
 }
 
