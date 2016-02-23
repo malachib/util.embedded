@@ -121,22 +121,38 @@ public:
 };
 
 
+// wrapper class to more comfortably expose raw event class without
+// exposing invoke() ability
+template <class T>
+class EventWrapper
+{
+protected:
+  // protected constructor makes re-assigning  more difficult
+  EventWrapper() {}
+
+  Event<T> events;
+
+public:
+  operator Event<T>&() const
+  {
+    return events;
+  }
+
+  EventWrapper& operator+=(void (*callback)(T parameter))
+  {
+    events += callback;
+    return *this;
+  }
+};
+
+
 template <class T>
 class PropertyWithEvents
 {
-  struct data
+  class Event : public EventWrapper<PropertyWithEvents*>
   {
-    Event<PropertyWithEvents*> events;
-
-    operator Event<PropertyWithEvents*>&() const
-    {
-      return events;
-    }
+    friend PropertyWithEvents;
   };
-#ifdef SERVICE_FEATURE_EVENTS
-  // fired when state or status message changes
-  Event<PropertyWithEvents*> updated;
-#endif
 
   T value;
 
@@ -145,11 +161,16 @@ protected:
   {
     this->value = value;
 #ifdef SERVICE_FEATURE_EVENTS
-    updated(this);
+    updated.events.invoke(this);
 #endif
   }
 
 public:
+#ifdef SERVICE_FEATURE_EVENTS
+  // fired when state or status message changes
+  Event updated;
+#endif
+
   PropertyWithEvents(T value) : value(value) {}
   PropertyWithEvents() {}
 
