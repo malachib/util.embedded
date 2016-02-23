@@ -54,7 +54,7 @@ protected:
 
 private:
   State state;
-  const __FlashStringHelper* statusMessage;
+  const __FlashStringHelper* statusMessage = emptyString;
 
 protected:
   void setStatusMessage(const __FlashStringHelper* statusMessage)
@@ -69,7 +69,7 @@ public:
   bool start(initErrorStatus2 initFunc, LightweightService* dependsOn);
   bool start(initFullStatus initFunc);
   bool start(initFullStatus initFunc, LightweightService* dependsOn);
-  bool start(initBasic initFunc)
+  void start(initBasic initFunc)
   {
     state = Starting;
     initFunc();
@@ -80,6 +80,7 @@ public:
   const __FlashStringHelper* getStatusMessage() { return statusMessage; }
 
   static const char genericError[] PROGMEM;
+  static const char emptyString[] PROGMEM;
 
   bool isInitialized() { return getState() == Started; }
 };
@@ -136,6 +137,7 @@ public:
   void restart(startService1);
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
   void restart();
+  bool start();
 #endif
 
   //void restart(startService1) { }
@@ -154,7 +156,7 @@ public:
 class IService
 {
   PSTR_Property statusMessage;
-  
+
 protected:
   virtual void start() = 0;
   virtual void stop() {};

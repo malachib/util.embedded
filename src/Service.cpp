@@ -5,6 +5,7 @@ namespace FactUtilEmbedded
 {
 
 const char LightweightService::genericError[] PROGMEM = "Init failure";
+const char LightweightService::emptyString[] PROGMEM = "";
 
 bool LightweightService::start(initErrorStatus initFunc)
 {
@@ -171,6 +172,22 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc, Li
   start(name, startFunc);
 }
 
+
+bool Service::start()
+{
+  setState(Starting);
+  if(!startFunc(*this))
+  {
+    setState(Error);
+    return false;
+  }
+  else
+  {
+    setState(Started);
+    return true;
+  }
+
+}
 
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
 void Service::restart()
