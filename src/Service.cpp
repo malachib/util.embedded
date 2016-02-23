@@ -175,9 +175,11 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc, Li
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
 void Service::restart()
 {
-  if(invoker) invoker(startFunc, this);
-
-  restart(startFunc);
+  setState(Starting);
+  if(invoker)
+    invoker(startFunc, this);
+  else
+    restart(startFunc);
 }
 #endif
 }
