@@ -18,6 +18,38 @@ HandleManager::handle HandleManager::findFree()
   return nullHandle;
 }*/
 
+void HandleManager::init()
+{
+  // look for any free ones.  somewhat CPU expensive, but we shouldn't be adding/removing
+  // events so often - mainly firing them
+  for(uint8_t i = 0; i < HANDLEMANAGER_CAPACITY; i++)
+  {
+    Handle& hEval = handles[i];
+
+    hEval.data = NULL;
+  }
+}
+
+
+uint8_t HandleManager::available()
+{
+  uint8_t avail = 0;
+
+  // look for any free ones.  somewhat CPU expensive, but we shouldn't be adding/removing
+  // events so often - mainly firing them
+  for(uint8_t i = 0; i < HANDLEMANAGER_CAPACITY; i++)
+  {
+    Handle& hEval = handles[i];
+
+    if(hEval.data == NULL)
+      avail++;
+  }
+
+  return avail;
+}
+
+
+
 // initialize a new list of handles starting with the first item
 HandleManager::handle HandleManager::init(void* data)
 {
@@ -69,6 +101,17 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
   // FIX: returning null handle here not tested
   return 0;
 }
+
+
+// need to look thru entire list to build list backwards, so that
+// we can find head node -- OR, pass in head node to begin with
+/*
+void HandleManager::remove(handle h)
+{
+  Handle* hToRemove = getHandle(h);
+
+}
+*/
 
 void EventManager::invoke(HandleManager::handle h, void* parameter)
 {

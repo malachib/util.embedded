@@ -48,6 +48,10 @@ protected:
   handle findFree();
 
 public:
+  // clears and initializes handle list overall
+  void init();
+  uint8_t available();
+
   // initializes a new handle list
   handle init(void* data);
   // appends a handle to an existing handle list
