@@ -21,7 +21,7 @@ HandleManager::handle HandleManager::findFree()
 // initialize a new list of handles starting with the first item
 HandleManager::handle HandleManager::init(void* data)
 {
-  // look for any free ones (somewhat CPU expensive, but we shouldn't be adding/removing)
+  // look for any free ones.  somewhat CPU expensive, but we shouldn't be adding/removing
   // events so often - mainly firing them
   for(uint8_t i = 0; i < HANDLEMANAGER_CAPACITY; i++)
   {
@@ -34,6 +34,9 @@ HandleManager::handle HandleManager::init(void* data)
       return i + 1;
     }
   }
+
+  // FIX: returning null handle here not tested
+  return 0;
 }
 
 // add a handle onto an already initialized list of handles
@@ -62,6 +65,9 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
       return i + 1;
     }
   }
+
+  // FIX: returning null handle here not tested
+  return 0;
 }
 
 void EventManager::invoke(HandleManager::handle h, void* parameter)

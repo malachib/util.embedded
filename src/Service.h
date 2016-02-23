@@ -54,7 +54,7 @@ protected:
 
 private:
   State state;
-  const __FlashStringHelper* statusMessage = emptyString;
+  const __FlashStringHelper* statusMessage = (const __FlashStringHelper*) emptyString;
 
 protected:
   void setStatusMessage(const __FlashStringHelper* statusMessage)

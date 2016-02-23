@@ -63,3 +63,8 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
     }
   }
 }
+
+SCENARIO("Handle subsystem", "[handles]")
+{
+  
+}
