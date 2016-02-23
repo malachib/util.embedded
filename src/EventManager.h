@@ -102,9 +102,21 @@ public:
     HandleBase::add(&eventManager, (void*)callback);
   }
 
+  Event& operator+=(void (*callback)(T parameter))
+  {
+    add(callback);
+    return *this;
+  }
+
   void invoke(T parameter)
   {
     eventManager.invoke(handle, (void*) parameter);
+  }
+
+  Event& operator()(T parameter)
+  {
+    invoke(parameter);
+    return *this;
   }
 };
 
@@ -112,6 +124,15 @@ public:
 template <class T>
 class PropertyWithEvents
 {
+  struct data
+  {
+    Event<PropertyWithEvents*> events;
+
+    operator Event<PropertyWithEvents*>&() const
+    {
+      return events;
+    }
+  };
 #ifdef SERVICE_FEATURE_EVENTS
   // fired when state or status message changes
   Event<PropertyWithEvents*> updated;
@@ -124,7 +145,7 @@ protected:
   {
     this->value = value;
 #ifdef SERVICE_FEATURE_EVENTS
-    updated.invoke(this);
+    updated(this);
 #endif
   }
 
@@ -134,23 +155,41 @@ public:
 
   T getValue() { return value; }
   operator T() { return getValue(); }
-  PropertyWithEvents<T>& operator = (T value)
+
+  PropertyWithEvents<T>& operator = (PropertyWithEvents<T> source)
   {
-    setValue(value);
+    setValue(source);
     return *this;
   }
 
+
   void addUpdatedEvent(void (*callback)(PropertyWithEvents* parameter))
   {
-    updated.add(callback);
+#ifdef SERVICE_FEATURE_EVENTS
+    updated += callback;
+#endif
   }
 };
 
+
 class PSTR_Property : public PropertyWithEvents<const __FlashStringHelper*> {};
-class STR_Property : public PropertyWithEvents<char*> {};
+class STR_Property : public PropertyWithEvents<const char*>
+{
+public:
+  STR_Property() {}
+  STR_Property(const char* value) : PropertyWithEvents(value) {}
+  /*
+  STR_Property& operator = (const char* value)
+  {
+    setValue((char*)value);
+    return *this;
+  } */
+};
 
 class PubSTR_Property : public STR_Property
 {
 public:
-  void setValue(char* value) { STR_Property::setValue(value); }
+  PubSTR_Property() {}
+  PubSTR_Property(const char* value) : STR_Property(value) {}
+  void setValue(const char* value) { STR_Property::setValue(value); }
 };

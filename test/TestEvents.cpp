@@ -7,9 +7,9 @@
 
 
 int counter = 0;
-char* eventValue;
+const char* eventValue;
 
-void eventResponder(PropertyWithEvents<char*>* e)
+void eventResponder(PropertyWithEvents<const char*>* e)
 {
   eventValue = *e;
   counter++;
@@ -17,25 +17,33 @@ void eventResponder(PropertyWithEvents<char*>* e)
 
 SCENARIO( "Event/Handle manager tests", "[events]" )
 {
-  PubSTR_Property strProperty;
-  std::string str = "TEST";
-
   GIVEN("A small event-property class")
   {
-    strProperty.addUpdatedEvent(eventResponder);
-    strProperty.setValue("TEST");
+  PubSTR_Property strProperty;
+  std::string str = "TEST";
+  strProperty.addUpdatedEvent(eventResponder);
 
-    REQUIRE(counter == 1);
-    REQUIRE(str == eventValue);
+    WHEN("Doing basic operations")
+    {
+      strProperty.setValue("TEST");
 
-    strProperty.setValue("TEST2");
-    str = "TEST2";
+      REQUIRE(counter == 1);
+      REQUIRE(str == eventValue);
 
-    REQUIRE(counter == 2);
-    REQUIRE(str == eventValue);
-  }
-  WHEN("Using equality operator")
-  {
+      strProperty.setValue("TEST2");
+      str = "TEST2";
 
+      REQUIRE(counter == 2);
+      REQUIRE(str == eventValue);
+    }
+    WHEN("Using equality operator")
+    {
+      strProperty = "123";
+
+      str = "123";
+
+      REQUIRE(counter == 3);
+      REQUIRE(str == eventValue);
+    }
   }
 }
