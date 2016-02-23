@@ -75,7 +75,7 @@ public:
   void invoke(handle event, void* parameter);
   handle addEvent(handle event, eventCallback callback)
   {
-    HandleManager::add(event, (void*) callback);
+    return HandleManager::add(event, (void*) callback);
   }
   void removeEvent(handle handle);
 };
@@ -134,7 +134,23 @@ public:
 
   T getValue() { return value; }
   operator T() { return getValue(); }
+  PropertyWithEvents<T>& operator = (T value)
+  {
+    setValue(value);
+    return *this;
+  }
+
+  void addUpdatedEvent(void (*callback)(PropertyWithEvents* parameter))
+  {
+    updated.add(callback);
+  }
 };
 
 class PSTR_Property : public PropertyWithEvents<const __FlashStringHelper*> {};
 class STR_Property : public PropertyWithEvents<char*> {};
+
+class PubSTR_Property : public STR_Property
+{
+public:
+  void setValue(char* value) { STR_Property::setValue(value); }
+};
