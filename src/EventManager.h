@@ -21,6 +21,10 @@ typedef void (*eventCallback)(void* parameter);
 #endif
 #endif
 
+// handle manager is like a set of linked lists coexisting in one pool
+// a handle is a member of a particular list of handles.  Each handle has
+// a singly-linked node pointing to the next handle until nullHandle is
+// reached
 class HandleManager
 {
 public:
@@ -45,7 +49,31 @@ private:
   Handle handles[HANDLEMANAGER_CAPACITY];
 
 protected:
-  handle findFree();
+  // allocate a data handle
+  static handle alloc(Handle* handles, uint8_t capacity, void* data)
+  {
+    // look for any free ones (somewhat CPU expensive, but we shouldn't be adding/removing)
+    // events so often - mainly firing them
+    for(uint8_t i = 0; i < capacity; i++)
+    {
+      Handle& hEval = handles[i];
+
+      if(hEval.getData() == NULL)
+      {
+        hEval.data = data;
+        hEval.next = nullHandle;
+        return i + 1;
+      }
+    }
+
+    return nullHandle;
+  }
+
+  // allocate a data handle
+  handle alloc(void* data)
+  {
+    return alloc(handles, HANDLEMANAGER_CAPACITY, data);
+  }
 
 public:
   // clears and initializes handle list overall

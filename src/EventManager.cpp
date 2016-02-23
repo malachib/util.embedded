@@ -53,22 +53,7 @@ uint8_t HandleManager::available()
 // initialize a new list of handles starting with the first item
 HandleManager::handle HandleManager::init(void* data)
 {
-  // look for any free ones.  somewhat CPU expensive, but we shouldn't be adding/removing
-  // events so often - mainly firing them
-  for(uint8_t i = 0; i < HANDLEMANAGER_CAPACITY; i++)
-  {
-    Handle& hEval = handles[i];
-
-    if(hEval.getData() == NULL)
-    {
-      hEval.data = data;
-      hEval.next = nullHandle;
-      return i + 1;
-    }
-  }
-
-  // FIX: returning null handle here not tested
-  return 0;
+  return alloc(data);
 }
 
 // add a handle onto an already initialized list of handles
@@ -87,23 +72,7 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
     h = lastHandle->getNext();
   }
 
-  // look for any free ones (somewhat CPU expensive, but we shouldn't be adding/removing)
-  // events so often - mainly firing them
-  for(uint8_t i = 0; i < HANDLEMANAGER_CAPACITY; i++)
-  {
-    Handle& hEval = handles[i];
-
-    if(hEval.getData() == NULL)
-    {
-      lastHandle->next = i + 1; // remember we bump forward one so that we can use 0 as NULL handle
-      hEval.data = data;
-      hEval.next = nullHandle;
-      return i + 1;
-    }
-  }
-
-  // FIX: returning null handle here not tested
-  return nullHandle;
+  return lastHandle->next = alloc(data);
 }
 
 
