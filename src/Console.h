@@ -4,6 +4,12 @@
 #include "Menu.h"
 #include "LinkedList.h"
 
+#if MEMORY_OPT_DATA
+#define CONSOLE_INPUTLINE_MAX 40
+#else
+#define CONSOLE_INPUTLINE_MAX 80
+#endif
+
 namespace FactUtilEmbedded
 {
 
@@ -23,7 +29,7 @@ protected:
 // Glues I/O logic to menu (interacts with Serial, etc)
 class Console : public IMenu
 {
-  char inputLine[128];
+  char inputLine[CONSOLE_INPUTLINE_MAX];
   uint8_t inputPos = 0;
   //Print& cout; // TODO
   //Print& cin;
