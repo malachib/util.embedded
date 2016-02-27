@@ -148,3 +148,11 @@ public:
 #define cin Serial
 #endif
 #endif
+
+#ifdef CONSOLE_STREAM_EXTERN
+// FIX: pretty kludgey
+#if CONSOLE_STREAM_EXTERN == SoftwareSerial
+#include <SoftwareSerial.h>
+#endif
+extern CONSOLE_STREAM_EXTERN cout;
+#endif

@@ -333,5 +333,14 @@ public:
     ObserverMessenger<byte>(messages, size)
     {}
 };
+
+template <class TState>
+class StateMachineStatic
+{
+  static TState state;
+protected:
+  TState getState() { return state; }
+};
+
 }
 #endif
