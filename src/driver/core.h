@@ -9,7 +9,7 @@
 #define OVERRIDE override
 #else
 #define VIRTUAL
-#define ABSTRACT
+#define ABSTRACT {}
 #define OVERRIDE
 #endif
 
