@@ -18,7 +18,8 @@ CC_DEBUG = -c
 _OBJS = Console.o EventManager.o statemachine.o Handler.o taskmanager.o lib_c.o \
 	lib.o LinkedList.o Math.o Menu.o MenuService.o Service.o Arduino.o Main.o \
 	Tokenizer.o \
-	TestTokenizer.o TestGNSS.o TestDriverCore.o TestEvents.o TestService.o TestHandles.o
+	TestTokenizer.o TestGNSS.o TestDriverCore.o TestEvents.o TestService.o TestHandles.o \
+	TestDriver.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 $(OUT): $(OBJS)
