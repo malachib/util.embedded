@@ -5,7 +5,7 @@
 
 #ifdef DRIVER_FEATURE_VTABLE
 #define VIRTUAL virtual
-#define ABSTRACT = 0;
+#define ABSTRACT = 0
 #define OVERRIDE override
 #else
 #define VIRTUAL
