@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../fact/features.h"
+#include <stdarg.h>
 
 #ifdef DRIVER_FEATURE_VTABLE
 #define VIRTUAL virtual
