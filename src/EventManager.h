@@ -87,6 +87,10 @@ public:
   // appends a handle to an existing handle list
   handle add(handle handle, void* data);
   void remove(handle handle);
+  // clears this and all subsequent handles in the
+  // list.  note does not gauruntee any handles preceding
+  // this handle in the list are cleared
+  void clear(handle handle);
   Handle* getHandle(handle handle) { return &handles[handle - 1]; }
 };
 
@@ -152,6 +156,11 @@ public:
     invoke(parameter);
     return *this;
   }
+
+  void clear()
+  {
+    eventManager.clear(handle);
+  }
 };
 
 
@@ -189,6 +198,8 @@ public:
     events += callback;
     return *this;
   }
+
+  void clear() { events.clear(); }
 };
 
 

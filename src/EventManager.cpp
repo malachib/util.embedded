@@ -86,6 +86,18 @@ void HandleManager::remove(handle h)
 }
 */
 
+
+void HandleManager::clear(handle h)
+{
+  while(h != nullHandle)
+  {
+    Handle* hToRemove = getHandle(h);
+    h = hToRemove->getNext();
+    hToRemove->data = NULL;
+    hToRemove->next = NULL;
+  }
+}
+
 void EventManager::invoke(HandleManager::handle h, void* parameter)
 {
   while(h != nullHandle)
