@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: add a 2nd parameter, since the sender/this pointer can be weak by itself
+// TODO: make wrappers so that this pointer is passed automatically
 #include <Arduino.h>
 // FIX: NODUINO is clunky check to ensure we grab our own uint8_t & friends
 // however really we should try to grab it from stdint.h
@@ -191,6 +193,7 @@ public:
 
 
 #define LOCAL_EVENT(T) class Event : public EventWrapper<T*> { friend T; }
+//#define DECLARE_EVENT(P) class : public EventWrapper<P*> { friend P; }
 
 template <class T>
 class PropertyWithEvents
