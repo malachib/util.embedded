@@ -25,6 +25,25 @@ void eventResponder2(PropertyWithEvents<const char*>* e)
   //printf("eventResponder2: %d\r\n", counter2);
 }
 
+
+class EventFiringClass
+{
+  LOCAL_EVENT(EventFiringClass);
+public:
+
+  Event testEvent1;
+
+  void fireTestEvent1() { testEvent1(this); }
+};
+
+int eventResponder3_counter = 0;
+
+void eventResponder3(EventFiringClass* source)
+{
+  eventResponder3_counter++;
+}
+
+
 SCENARIO( "Event/Handle manager tests", "[events]" )
 {
   GIVEN("A small event-property class")
@@ -60,6 +79,19 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       REQUIRE(str == eventValue);
       REQUIRE(counter2 == 1);
       REQUIRE(str == eventValue2);
+    }
+    WHEN("Using EventFiringClass")
+    {
+      EventFiringClass efc;
+
+      efc.testEvent1 += eventResponder3;
+      efc.fireTestEvent1();
+
+      REQUIRE(eventResponder3_counter == 1);
+
+      efc.fireTestEvent1();
+
+      REQUIRE(eventResponder3_counter == 2);
     }
   }
 }
