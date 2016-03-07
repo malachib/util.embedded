@@ -49,6 +49,21 @@ SCENARIO("Handle subsystem", "[handles]")
 
     REQUIRE(handleManager.available() == HANDLEMANAGER_CAPACITY - 2);
 
+    handleManager.clear(handle1); // this should wipe out handle2 also
+
+    REQUIRE(handleManager.available() == HANDLEMANAGER_CAPACITY);
+
+    {
+      handle1 = handleManager.init(val1);
+
+      REQUIRE(handle1 == 1);
+    }
+    //WHEN("Operating on handle2")
+    {
+      handle2 = handleManager.add(handle1, val2);
+
+      REQUIRE(handle2 == 2);
+    }
     //handleManager.remove(handle1);
 
     //REQUIRE(handleManager.available() == HANDLEMANAGER_CAPACITY - 1);
