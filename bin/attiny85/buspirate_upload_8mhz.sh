@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # fuse of E2 sets 8mhz clock, otherwise it's 8 / 1
 PIO=~/.platformio/packages/tool-avrdude
 AVRDUDE=$PIO/avrdude
