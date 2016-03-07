@@ -80,12 +80,31 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       REQUIRE(counter2 == 1);
       REQUIRE(str == eventValue2);
     }
-    WHEN("Using EventFiringClass")
+    WHEN("Using EventFiringClass Linear")
     {
       EventFiringClass efc;
 
       efc.testEvent1 += eventResponder3;
       efc.fireTestEvent1();
+
+      REQUIRE(eventResponder3_counter == 1);
+
+      efc.fireTestEvent1();
+
+      REQUIRE(eventResponder3_counter == 2);
+    }
+    WHEN("Using EventFiringClass Add/Clear/Add")
+    {
+      eventResponder3_counter = 0;
+      EventFiringClass efc;
+
+      efc.testEvent1 += eventResponder3;
+      efc.testEvent1.clear();
+      efc.testEvent1 += eventResponder3;
+      WHEN("Invoking test event 1")
+      {
+        efc.fireTestEvent1();
+      }
 
       REQUIRE(eventResponder3_counter == 1);
 

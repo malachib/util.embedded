@@ -127,6 +127,11 @@ protected:
   HandleManager::handle handle = HandleManager::nullHandle;
 
   void add(HandleManager* manager, void* data);
+  void clear(HandleManager* manager)
+  {
+    manager->clear(handle);
+    handle = HandleManager::nullHandle;
+  }
 };
 
 
@@ -157,10 +162,7 @@ public:
     return *this;
   }
 
-  void clear()
-  {
-    eventManager.clear(handle);
-  }
+  void clear() { HandleBase::clear(&eventManager); }
 };
 
 
