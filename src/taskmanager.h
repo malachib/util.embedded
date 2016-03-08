@@ -17,6 +17,7 @@ namespace FactUtilEmbedded
     void schedule(ScheduleManager* sm, uint32_t targetTime);
 
   public:
+    // TODO: perhaps we can phase out isWakeupTime in favor of compareWakeupTime?
     virtual bool isWakeupTime(TimingGroup& tg) = 0;
     virtual void execute() = 0;
     virtual void schedule(ScheduleManager* sm) = 0;
@@ -59,6 +60,9 @@ namespace FactUtilEmbedded
     T wakeupInterval;
 
   public:
+    IScheduledWithInterval() {}
+    IScheduledWithInterval(T interval) : wakeupInterval(interval) {}
+    
     T getInterval() { return wakeupInterval; }
 
     virtual void schedule(ScheduleManager* sm) override
@@ -114,11 +118,14 @@ namespace FactUtilEmbedded
     void append(IScheduled& scheduled);
 
     void add(IScheduled& scheduled);
+    
+    // WARNING: untested
+    void remove(IScheduled& scheduled);
 
     void execute();
 
 #ifdef DEBUG
-    //virtual void printDebug();
+    virtual void printDebug();
 #endif
 
     TimingGroup& getTimingGroup() { return timingGroup; }

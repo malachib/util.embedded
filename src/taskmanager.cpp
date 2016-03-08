@@ -193,6 +193,11 @@ namespace FactUtilEmbedded
   {
     listScheduled.add(&scheduled);
   }
+  
+  void ScheduleManager::remove(IScheduled& scheduled)
+  {
+    listScheduled.remove(&scheduled);
+  }
 
   // FIX: findNodeOnOrJustAfter seems to be working right, so schedule
   // itself is off.  I'm thinking sm->append should be something else
