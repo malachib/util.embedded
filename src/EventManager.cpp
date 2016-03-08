@@ -94,7 +94,7 @@ void HandleManager::clear(handle h)
     Handle* hToRemove = getHandle(h);
     h = hToRemove->getNext();
     hToRemove->data = NULL;
-    hToRemove->next = NULL;
+    hToRemove->next = nullHandle;
   }
 }
 
