@@ -46,7 +46,7 @@ public:
     {
     }
 
-#if DEBUG
+#ifdef DEBUG
     // For debug scenarios where we wish to have time not be realtime
     TimingGroup(getCurrentTimeFunc getCurrentTime) : GetCurrentTime(getCurrentTime)
     {

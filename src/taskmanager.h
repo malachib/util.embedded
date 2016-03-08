@@ -30,7 +30,7 @@ namespace FactUtilEmbedded
     // situations where only approx time is known during scheduling
     virtual char compareWakeupTime(uint32_t targetTime) = 0;
 
-#if DEBUG
+#ifdef DEBUG
     virtual void printDebug() {}
 #endif
   };
@@ -45,7 +45,7 @@ namespace FactUtilEmbedded
     virtual char compareWakeupTime(uint32_t targetTime) override;
     virtual void begin(TimingGroup& tg) override;
 
-#if DEBUG
+#ifdef DEBUG
     virtual void printDebug() override;
 #endif
   };
@@ -98,7 +98,7 @@ namespace FactUtilEmbedded
     SinglyLinkedList listScheduled;
 
   public:
-#if DEBUG
+#ifdef DEBUG
     ScheduleManager(TimingGroup::getCurrentTimeFunc getCurrentTime) : timingGroup(getCurrentTime)
     {
 
@@ -117,8 +117,8 @@ namespace FactUtilEmbedded
 
     void execute();
 
-#if DEBUG
-    virtual void printDebug();
+#ifdef DEBUG
+    //virtual void printDebug();
 #endif
 
     TimingGroup& getTimingGroup() { return timingGroup; }

@@ -29,7 +29,7 @@ namespace FactUtilEmbedded
 
   void ScheduleManager::insertAfter(IScheduled& justBefore, IScheduled& scheduled)
   {
-#if DEBUG
+#ifdef DEBUG
       void* _justBefore = &justBefore;
       uint16_t beforeCount = listScheduled.count();
 
@@ -49,7 +49,7 @@ namespace FactUtilEmbedded
 
     listScheduled.insertBetween(&justBefore, justBefore.getNext(), &scheduled);
 
-#if DEBUG
+#ifdef DEBUG
     Serial << F("Now have: ") << listScheduled.count() << F(" scheduled, before had: ") << beforeCount;
     Serial.println();
 #endif
@@ -228,7 +228,7 @@ namespace FactUtilEmbedded
     else return 0;
   }
 
-#if DEBUG
+#ifdef DEBUG
   void IScheduledAbsolute::printDebug()
   {
     Serial << F("IScheduledAbsolute: wakeup time = ") << absoluteWakeupTime;
