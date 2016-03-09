@@ -15,6 +15,13 @@
 #endif
 
 #if defined(CONSOLE_FEATURE_FULL) && !defined(CONSOLE_FEATURE_FULL_SUPPRESS)
+// autcomplete will autcomplete any of the immediate level of menu commands
+#define CONSOLE_FEATURE_AUTOCOMPLETE
+// autocomplete command autocompletes digging into nesting menus/commands also
+#define CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND
+#endif
+
+#if defined(CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND) && !defined(CONSOLE_FEATURE_AUTOCOMPLETE)
 #define CONSOLE_FEATURE_AUTOCOMPLETE
 #endif
 
