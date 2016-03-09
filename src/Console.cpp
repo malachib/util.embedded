@@ -161,24 +161,24 @@ bool ConsoleMenuHandler::processInput(Console* console, char received)
 #endif
 
 
-void MenuEnumerator::add(Menu& menu)
+void MenuEnumerator::add(MenuCommand& menu)
 {
   menus.add(&menu);
 }
 
-void MenuEnumerator::add(Menu& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
+void MenuEnumerator::add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
 {
   menu.setDesc(name, description);
   menus.add(&menu);
 }
 
-Menu* MenuEnumerator::canHandle(IMenu::Parameters p)
+MenuCommand* MenuEnumerator::canHandle(IMenu::Parameters p)
 {
 #ifdef DEBUG2
   cout.println("MenuEnumerator::canHandle");
 #endif
 
-  Menu* menu = (Menu*) menus.getHead();
+  MenuCommand* menu = (MenuCommand*) menus.getHead();
 
   while(menu != NULL)
   {
@@ -189,7 +189,7 @@ Menu* MenuEnumerator::canHandle(IMenu::Parameters p)
     if(menu->canHandle(p))
       return menu;
 
-    menu = (Menu*) menu->getNext();
+    menu = (MenuCommand*) menu->getNext();
   }
 
 #ifdef DEBUG2

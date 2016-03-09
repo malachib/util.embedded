@@ -107,7 +107,7 @@ namespace FactUtilEmbedded
 
 
 
-  class Menu :
+  class MenuCommand :
     public MenuBase,
     public IMenu,
     public IHandler2<IMenu::Parameters, IMenu*>,
@@ -116,16 +116,31 @@ namespace FactUtilEmbedded
   protected:
     virtual void showPrompt() override;
 
-    Menu() {}
+    MenuCommand() {}
 
   public:
-    Menu(const __FlashStringHelper* name, const __FlashStringHelper* description) :
+    MenuCommand(const __FlashStringHelper* name, const __FlashStringHelper* description) :
       MenuBase(name, description) {}
 
-    Menu(const char* name, const char* description) :
+    MenuCommand(const char* name, const char* description) :
       MenuBase(name, description) {}
 
     virtual IMenu* canHandle(IMenu::Parameters input) override;
+  };
+  
+  // TODO: Temporary - eventually "MenuHandler" will be named menu,
+  // this is a placeholder as we transition over old items that should
+  // derive direct from MenuCommand
+  class Menu : public MenuCommand 
+  {
+  protected:
+    Menu() {}
+  public:
+    Menu(const __FlashStringHelper* name, const __FlashStringHelper* description) :
+      MenuCommand(name, description) {}
+
+    Menu(const char* name, const char* description) :
+      MenuCommand(name, description) {}
   };
 
   typedef void (*menuHandler)(IMenu::Parameters);

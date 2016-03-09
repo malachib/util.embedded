@@ -22,7 +22,7 @@ using namespace FactUtilEmbedded;
 #endif
 
 
-Menu* MenuHandler::canHandle(Parameters p)
+MenuCommand* MenuHandler::canHandle(Parameters p)
 {
 #ifdef DEBUG2
   cout.println("MenuHandler::canHandle entry");
@@ -37,7 +37,7 @@ void MenuHandler::handleCommand(Parameters p)
   cout.println("MenuHandler::handle command");
 #endif
 
-  Menu* menu = canHandle(p);
+  MenuCommand* menu = canHandle(p);
 
 #ifdef DEBUG2
   cout.println("MenuHandler::handle command 2");
@@ -120,7 +120,7 @@ bool MenuHandler::processInput(Console* console, char received)
 #endif
 
 
-void Menu::showPrompt()
+void MenuCommand::showPrompt()
 {
 #ifdef DEBUG3
   cout.println(F("Menu::showPrompt"));
@@ -134,7 +134,7 @@ void Menu::showPrompt()
 }
 
 
-IMenu* Menu::canHandle(IMenu::Parameters p)
+IMenu* MenuCommand::canHandle(IMenu::Parameters p)
 {
 #ifdef DEBUG2
   cout.println(F("Menu::canHandle"));

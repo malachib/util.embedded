@@ -65,15 +65,15 @@ class MenuEnumerator
   SinglyLinkedList menus;
 
 protected:
-  void add(Menu& menu);
-  void add(Menu& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
+  void add(MenuCommand& menu);
+  void add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
   void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description, menuHandler handler)
   {
     add(menu, name, description);
     menu.setHandler(handler);
   }
 
-  Menu* canHandle(IMenu::Parameters p);
+  MenuCommand* canHandle(IMenu::Parameters p);
   SinglyLinkedNode* getHeadMenu() { return menus.getHead(); }
 };
 
@@ -83,7 +83,7 @@ class MenuHandler : public Menu, public MenuEnumerator
 {
 protected:
     virtual void handleCommand(Parameters p) override;
-    virtual Menu* canHandle(Parameters p) override;
+    virtual MenuCommand* canHandle(Parameters p) override;
 
     void showHelp(Parameters p);
 
