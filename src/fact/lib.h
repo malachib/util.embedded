@@ -1,6 +1,8 @@
 #ifndef _mal_lib_h
 #define _mal_lib_h
 
+#include "debug.h"
+
 // Mainly for WIN32
 #ifdef _DEBUG
 #define DEBUG 1

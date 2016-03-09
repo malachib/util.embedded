@@ -1,4 +1,8 @@
-#pragma ONCE
+#pragma once
+
+#ifdef DEBUG2
+#define DEBUG
+#endif
 
 #if !defined(DEBUG_STREAM) && defined(DEBUG)
 

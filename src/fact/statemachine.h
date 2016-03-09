@@ -45,7 +45,7 @@ namespace FactUtilEmbedded
 
     static TimingGroup globalTimingGroup;
 protected:
-#if DEBUG
+#ifdef DEBUG
     static int idSeed;
     int ID = idSeed++;
 #endif
@@ -73,7 +73,7 @@ public:
       this->timingGroup = timingGroup;
     }
 
-#if DEBUG
+#ifdef DEBUG
     virtual
     void printDebugState()
     = 0
@@ -135,7 +135,7 @@ public:
     }
   }
 
-#if DEBUG
+#ifdef DEBUG
   TState getCurrentState() { return currentState; }
 
   void printDebugState() //override
@@ -324,7 +324,7 @@ public:
 class StateMachineObserverMessenger : public ObserverMessenger<byte>
 {
 protected:
-#if DEBUG
+#ifdef DEBUG
   byte getMessage(IObservable* observable) override;
 #endif
 

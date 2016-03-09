@@ -65,7 +65,16 @@ void Console::handler()
         }
       }
 
+
+#ifdef DEBUG
+      cout.println("handle command 0");
+#endif
+
       handleCommand(Parameters(parameters, paramCounter + 1, this));
+
+#ifdef DEBUG
+      cout.println("handle command 1");
+#endif
 
       cout.println();
 
@@ -95,6 +104,13 @@ void Console::handler()
 
 void ConsoleMenuHandler::handleCommand(Parameters p)
 {
+#ifdef DEBUG
+  cout << F("handle command deep: ") << breadCrumbPos;
+  cout.println();
+  cout << F("  menu ptr = ") << (uint32_t)getActiveMenu();
+  cout.println();
+#endif
+
   getActiveMenu()->handleCommand(p);
 }
 
@@ -131,6 +147,10 @@ void MenuEnumerator::add(Menu& menu, const __FlashStringHelper* name, const __Fl
 
 Menu* MenuEnumerator::canHandle(IMenu::Parameters p)
 {
+#ifdef DEBUG2
+  cout.println("MenuEnumerator::canHandle");
+#endif
+
   Menu* menu = (Menu*) menus.getHead();
 
   while(menu != NULL)

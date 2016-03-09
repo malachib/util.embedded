@@ -5,7 +5,7 @@
 
 namespace FactUtilEmbedded
 {
-#if DEBUG
+#ifdef DEBUG
   int StateMachineBase::idSeed = 0;
   const PROGMEM char dbgPostProcess[] = "StateMachine::Execute ID = %d, new state = %d";
 #endif
@@ -20,7 +20,7 @@ namespace FactUtilEmbedded
   void StateMachineBase::BaseProcess()
   {
     //timingGroup->currentTime = GetCurrentMilliseconds();
-#ifdef DEBUG2
+#ifdef DEBUG3
     return;
 // careful cuz this throws timing WAY off.
     if(debug_thin_current++ < debug_thinning)
@@ -48,7 +48,7 @@ namespace FactUtilEmbedded
 #endif
     if(observer != NULL)
       observer->observe(this);
-#if DEBUG2
+#if DEBUG3
     char temp[80];
     strcpy_P(temp, dbgPostProcess);
     //sprintf(temp, "StateMachine::Execute ID = %d, new state = %d", ID, newCurrentState);
@@ -81,7 +81,7 @@ namespace FactUtilEmbedded
         return On;
 
       default:
-#if DEBUG
+#ifdef DEBUG
         Serial << F("ToggleStateMachine::Process unknown state = ");
         Serial << currentState;
         Serial.println();
@@ -142,7 +142,7 @@ namespace FactUtilEmbedded
         return Action;
 
       default:
-#if DEBUG
+#ifdef DEBUG
         Serial << F("IntervalStateMachine::Process unknown state = ");
         Serial << currentState;
         Serial.println();
@@ -185,7 +185,7 @@ namespace FactUtilEmbedded
         return Action;
 
         default:
-  #if DEBUG
+  #ifdef DEBUG
           Serial << F("IntervalStateMachine2::Process unknown state = ");
           Serial << currentState;
           Serial.println();
@@ -225,7 +225,7 @@ namespace FactUtilEmbedded
   }
 #endif
 
-#if DEBUG
+#ifdef DEBUG
   byte StateMachineObserverMessenger::getMessage(IObservable* subject)
   {
     StateMachineTemplate<byte>* sm = (StateMachineTemplate<byte>*) subject;

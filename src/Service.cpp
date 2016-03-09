@@ -98,7 +98,7 @@ bool LightweightService::start(initFullStatus initFunc, LightweightService* depe
 
 bool LightweightService::awaitDependency(LightweightService* dependsOn)
 {
-#if DEBUG
+#ifdef DEBUG
   Serial.println(F("awaitDependency"));
 #endif
 

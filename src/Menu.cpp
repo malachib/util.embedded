@@ -23,12 +23,25 @@ using namespace FactUtilEmbedded;
 
 Menu* MenuHandler::canHandle(Parameters p)
 {
+#ifdef DEBUG
+  cout.println("MenuHandler::canHandle entry");
+#endif
+
   return MenuEnumerator::canHandle(p);
 }
 
 void MenuHandler::handleCommand(Parameters p)
 {
+#ifdef DEBUG
+  cout.println("MenuHandler::handle command");
+#endif
+
   Menu* menu = canHandle(p);
+
+#ifdef DEBUG
+  cout.println("MenuHandler::handle command 2");
+#endif
+
   if(menu != NULL)
     menu->handleCommand(p.inc());
   else if(strcmp_P(*p.parameters, PSTR("help")) == 0)
@@ -127,6 +140,10 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
 
 void MenuGeneric::handleCommand(IMenu::Parameters p)
 {
+#ifdef DEBUG
+  cout.println("generic handle command");
+#endif
+
   handler(p);
 }
 

@@ -71,7 +71,7 @@ namespace FactUtilEmbedded
   {
     IScheduled* scheduled = (IScheduled*) listScheduled.getHead();
 
-#if DEBUG
+#ifdef DEBUG
     uint16_t loopCounter = 0;
 #endif
     #if X_DEBUG
@@ -88,7 +88,7 @@ namespace FactUtilEmbedded
       // assigns next to NULL
       IScheduledAbsolute* scheduledNext = (IScheduledAbsolute*) scheduled->getNext();
 
-#if DEBUG
+#ifdef DEBUG
       Serial << F("Woke up: ") << timingGroup.GetCurrentTime();
       Serial << F(" / loop counter = ") << ++loopCounter;
       Serial.println();
@@ -112,7 +112,7 @@ namespace FactUtilEmbedded
     }
   }
 
-#if DEBUG
+#ifdef DEBUG
   void ScheduleManager::printDebug()
   {
       IScheduled* scheduled = (IScheduled*)listScheduled.getHead();
