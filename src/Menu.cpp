@@ -128,29 +128,11 @@ bool MenuHandler::processInput(Console* console, char received)
 
 void Menu::showPrompt()
 {
+#ifdef DEBUG2
+  cout.println("Menu::showPrompt");
+#endif
   cout << name;
 }
-
-int strncmp_P_dbg(const char* str1, PGM_P str2P, size_t size) {
-    int result = 0;
-
-    while (size > 0)
-    {
-        char ch1 = *str1++;
-        char ch2 = pgm_read_byte(str2P++);
-        result = ch1 - ch2;
-        if (result != 0 || ch2 == '\0')
-        {
-            break;
-        }
-
-        size--;
-    }
-
-    return result;
-}
-
-#define strcmp_P_dbg(s1, s2) strncmp_P_dbg(s1, s2, SIZE_IRRELEVANT)
 
 
 IMenu* Menu::canHandle(IMenu::Parameters p)
@@ -160,7 +142,7 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
   cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
   cout.println();
 #endif
-#if defined(DEBUG2) && defined(ESP8266)
+#if defined(DEBUG3) && defined(ESP8266)
   static int __result;
   PGM_P p2 = reinterpret_cast<PGM_P>(name);
   cout << F("ptrs. orig=") << (uint32_t) name << F(" converted: ") << (uint32_t) p2;
