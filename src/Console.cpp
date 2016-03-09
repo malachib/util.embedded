@@ -153,7 +153,7 @@ void ConsoleMenuHandler::showPrompt()
   cout << F("> ");
 }
 
-#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+#if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
 bool ConsoleMenuHandler::processInput(Console* console, char received)
 {
   return getActiveMenu()->processInput(console, received);

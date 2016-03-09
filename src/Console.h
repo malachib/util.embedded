@@ -88,7 +88,7 @@ protected:
     void showHelp(Parameters p);
 
 public:
-#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+#if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
   virtual bool processInput(Console* console, char received) override;
 #endif
 };
@@ -115,7 +115,7 @@ class ConsoleMenuHandler : public Console
   IMenu* breadCrumb[4];
   uint8_t breadCrumbPos = 0;
 
-#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+#if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
   virtual bool processInput(Console* console, char received) override;
 #endif
 

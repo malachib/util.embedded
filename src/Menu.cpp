@@ -92,7 +92,7 @@ void MenuHandler::showHelp(Parameters p)
 
 
 
-#if defined(CONSOLE_FEATURE_AUTOCOMPLETE) && defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
+#if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
 bool MenuHandler::processInput(Console* console, char received)
 {
   // look for tab character
