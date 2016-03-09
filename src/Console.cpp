@@ -104,8 +104,8 @@ void Console::handler()
 
 void ConsoleMenuHandler::handleCommand(Parameters p)
 {
-#ifdef DEBUG
-  cout << F("handle command deep: ") << breadCrumbPos;
+#ifdef DEBUG2
+  cout << F("ConsoleMenuHandler::handleCommand: ") << breadCrumbPos;
   cout.println();
   cout << F("  menu ptr = ") << (uint32_t)getActiveMenu();
   cout.println();
@@ -120,6 +120,10 @@ void ConsoleMenuHandler::showPrompt()
 {
   for(int i = 0; i < breadCrumbPos; i++)
   {
+#ifdef DEBUG2
+    cout << F("ConsoleMenuHandler::showPrompt: ") << i;
+    cout.println();
+#endif
     breadCrumb[i]->showPrompt();
     if(i != (breadCrumbPos - 1)) cout << ' ';
   }

@@ -24,7 +24,7 @@ using namespace FactUtilEmbedded;
 
 Menu* MenuHandler::canHandle(Parameters p)
 {
-#ifdef DEBUG
+#ifdef DEBUG2
   cout.println("MenuHandler::canHandle entry");
 #endif
 
@@ -33,13 +33,13 @@ Menu* MenuHandler::canHandle(Parameters p)
 
 void MenuHandler::handleCommand(Parameters p)
 {
-#ifdef DEBUG
+#ifdef DEBUG2
   cout.println("MenuHandler::handle command");
 #endif
 
   Menu* menu = canHandle(p);
 
-#ifdef DEBUG
+#ifdef DEBUG2
   cout.println("MenuHandler::handle command 2");
 #endif
 
@@ -128,17 +128,22 @@ bool MenuHandler::processInput(Console* console, char received)
 
 void Menu::showPrompt()
 {
-#ifdef DEBUG2
-  cout.println("Menu::showPrompt");
+#ifdef DEBUG3
+  cout.println(F("Menu::showPrompt"));
 #endif
-  cout << name;
+
+  if(name != NULL) cout << name;
+
+#ifdef DEBUG3
+  cout.println(F("Menu::showPrompt exit"));
+#endif
 }
 
 
 IMenu* Menu::canHandle(IMenu::Parameters p)
 {
 #ifdef DEBUG2
-  cout.println("Menu::canHandle");
+  cout.println(F("Menu::canHandle"));
   cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
   cout.println();
 #endif
@@ -165,17 +170,15 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
   
   if(strcmp_P(p.parameters[0], (PGM_P) name) == 0)
   {
-#ifdef DEBUG2
+#ifdef DEBUG3
     cout << F("Exit this");
-    delay(500);
 #endif
     return this;
   }
   else
   {
-#ifdef DEBUG2
+#ifdef DEBUG3
     cout << F("Exit NULL");
-    delay(500);
 #endif
     return NULL;
   }
