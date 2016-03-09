@@ -24,7 +24,7 @@ using namespace FactUtilEmbedded;
 
 Menu* MenuHandler::canHandle(Parameters p)
 {
-#ifdef DEBUG
+#ifdef DEBUG2
   cout.println("MenuHandler::canHandle entry");
 #endif
 
@@ -33,13 +33,13 @@ Menu* MenuHandler::canHandle(Parameters p)
 
 void MenuHandler::handleCommand(Parameters p)
 {
-#ifdef DEBUG
+#ifdef DEBUG2
   cout.println("MenuHandler::handle command");
 #endif
 
   Menu* menu = canHandle(p);
 
-#ifdef DEBUG
+#ifdef DEBUG2
   cout.println("MenuHandler::handle command 2");
 #endif
 
@@ -128,39 +128,26 @@ bool MenuHandler::processInput(Console* console, char received)
 
 void Menu::showPrompt()
 {
-  cout << name;
+#ifdef DEBUG3
+  cout.println(F("Menu::showPrompt"));
+#endif
+
+  if(name != NULL) cout << name;
+
+#ifdef DEBUG3
+  cout.println(F("Menu::showPrompt exit"));
+#endif
 }
-
-int strncmp_P_dbg(const char* str1, PGM_P str2P, size_t size) {
-    int result = 0;
-
-    while (size > 0)
-    {
-        char ch1 = *str1++;
-        char ch2 = pgm_read_byte(str2P++);
-        result = ch1 - ch2;
-        if (result != 0 || ch2 == '\0')
-        {
-            break;
-        }
-
-        size--;
-    }
-
-    return result;
-}
-
-#define strcmp_P_dbg(s1, s2) strncmp_P_dbg(s1, s2, SIZE_IRRELEVANT)
 
 
 IMenu* Menu::canHandle(IMenu::Parameters p)
 {
 #ifdef DEBUG2
-  cout.println("Menu::canHandle");
+  cout.println(F("Menu::canHandle"));
   cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
   cout.println();
 #endif
-#if defined(DEBUG2) && defined(ESP8266)
+#if defined(DEBUG3) && defined(ESP8266)
   static int __result;
   PGM_P p2 = reinterpret_cast<PGM_P>(name);
   cout << F("ptrs. orig=") << (uint32_t) name << F(" converted: ") << (uint32_t) p2;
@@ -183,17 +170,15 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
   
   if(strcmp_P(p.parameters[0], (PGM_P) name) == 0)
   {
-#ifdef DEBUG2
+#ifdef DEBUG3
     cout << F("Exit this");
-    delay(500);
 #endif
     return this;
   }
   else
   {
-#ifdef DEBUG2
+#ifdef DEBUG3
     cout << F("Exit NULL");
-    delay(500);
 #endif
     return NULL;
   }
