@@ -130,6 +130,28 @@ void Menu::showPrompt()
   cout << name;
 }
 
+int strncmp_P_dbg(const char* str1, PGM_P str2P, size_t size) {
+    int result = 0;
+
+    while (size > 0)
+    {
+        char ch1 = *str1++;
+        char ch2 = pgm_read_byte(str2P++);
+        result = ch1 - ch2;
+        if (result != 0 || ch2 == '\0')
+        {
+            break;
+        }
+
+        size--;
+    }
+
+    return result;
+}
+
+#define strcmp_P_dbg(s1, s2) strncmp_P_dbg(s1, s2, SIZE_IRRELEVANT)
+
+
 IMenu* Menu::canHandle(IMenu::Parameters p)
 {
 #ifdef DEBUG2
@@ -148,7 +170,13 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
   cout << F("phase 1:");
   auto _result = strcmp_P(_test2, (PGM_P)_test1);
   cout << _result << F(",phase 2:");
-  _result = strcmp_P(_test2, (PGM_P)name);
+  _result = strncmp_P_dbg(_test2, (PGM_P)name, 3);
+  cout << _result << F(",phase 3:");
+  _result = strcmp_P_dbg(_test2, (PGM_P)name);
+  cout << _result << F(",phase 4:");
+  _result = strcmp_P_dbg(p.parameters[0], (PGM_P) name);
+  cout << _result << F(",phase 5:");
+  cout.println(F("Done testing"));
 #endif
 
   
