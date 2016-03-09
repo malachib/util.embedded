@@ -14,12 +14,13 @@ using namespace FactUtilEmbedded;
 #endif
 
 
+/*
 #ifndef AVR
 // samd is supposed to have a strncmp_P mapping to regular strncmp,
 // but doesn't for some reason (probably platformio outdated) so do it here
 #define strncmp_P(s1, s2, n) strncmp((s1), (s2), (n))
 #endif
-
+*/
 
 Menu* MenuHandler::canHandle(Parameters p)
 {
