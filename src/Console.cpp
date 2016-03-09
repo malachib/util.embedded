@@ -41,7 +41,9 @@ void Console::handler()
         return;
       }
 
-      //Serial << F("Submitting command: ") << inputLine << F("\n");
+#ifdef DEBUG
+      cout << F("Submitting command: ") << inputLine << F("\n");
+#endif
 
       parameters[0] = inputLine;
 
@@ -50,7 +52,9 @@ void Console::handler()
         if(inputLine[i] == ' ')
         {
           inputLine[i] = 0;
-          //Serial << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
+#ifdef DEBUG
+          cout << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
+#endif
           paramCounter++;
           // FIX: preload code is kludgey, replace with something better (wastes one slot)
           // if we can sneak ahead one character safely, preload next paramCounter
