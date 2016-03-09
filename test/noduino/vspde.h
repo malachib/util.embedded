@@ -124,6 +124,7 @@ extern void yield();
 #define strcpy_P(dest, src) strcpy((dest), (src))
 #define strcat_P(dest, src) strcat((dest), (src))
 #define strcmp_P(a, b) strcmp((a), (b))
+#define strncmp_P(s1, s2, n) strncmp((s1), (s2), (n))
 #define strlen_P(a) strlen(a)
 
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))

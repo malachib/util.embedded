@@ -161,7 +161,7 @@ IMenu* MenuCommand::canHandle(IMenu::Parameters p)
   cout.println(F("Done testing"));
 #endif
 
-  
+
   if(strcmp_P(p.parameters[0], (PGM_P) name) == 0)
   {
 #ifdef DEBUG3

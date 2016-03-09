@@ -4,11 +4,11 @@
 
 
 #include <Console.h>
-#include <fact/menu.h>
+#include <fact/Menu.h>
 
 using namespace util;
 
-void dummyHandler(Menu::Parameters p) {}
+void dummyHandler(IMenu::Parameters p) {}
 
 MenuGeneric m(dummyHandler);
 
@@ -34,13 +34,13 @@ class Test
 {
 public:
   const __FlashStringHelper* name;
-  
+
   void doCompare();
   virtual void doCompare2(IMenu::Parameters p);
 };
 
 
-class Test2 : 
+class Test2 :
   public Test,
   public IHandler2<IMenu::Parameters, Test*>
 {
