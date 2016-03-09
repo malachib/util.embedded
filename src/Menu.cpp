@@ -132,6 +132,22 @@ void Menu::showPrompt()
 
 IMenu* Menu::canHandle(IMenu::Parameters p)
 {
+#ifdef DEBUG2
+  cout.println("Menu::canHandle");
+  cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
+  cout.println();
+#endif
+#ifdef DEBUG3
+  PGM_P p2 = reinterpret_cast<PGM_P>(name);
+  cout << F("ptrs. orig=") << (uint32_t) name << F(" converted: ") << (uint32_t) p2;
+  cout.println();
+  cout << F("Converted to: ") << p2 << "...";
+  cout.println();
+  auto result = strcmp_P(p.parameters[0], p2);
+  cout << F("Result = ") << result;
+#endif
+
+  
   if(strcmp_P(p.parameters[0], (const char*) name) == 0)
     return this;
   else
@@ -140,8 +156,8 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
 
 void MenuGeneric::handleCommand(IMenu::Parameters p)
 {
-#ifdef DEBUG
-  cout.println("generic handle command");
+#ifdef DEBUG2
+  cout.println("MenuGeneric::handleCommand");
 #endif
 
   handler(p);

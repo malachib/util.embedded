@@ -155,11 +155,19 @@ Menu* MenuEnumerator::canHandle(IMenu::Parameters p)
 
   while(menu != NULL)
   {
+    #ifdef DEBUG2
+      cout.println("MenuEnumerator::canHandle 1");
+    #endif
+
     if(menu->canHandle(p))
       return menu;
 
     menu = (Menu*) menu->getNext();
   }
+
+#ifdef DEBUG2
+  cout.println("MenuEnumerator::canHandle exit");
+#endif
 
   return NULL;
 }
