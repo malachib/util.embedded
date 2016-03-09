@@ -128,6 +128,19 @@ void Print::print(unsigned long value)
 }
 
 
+void Print::print(long value)
+{
+		std::string _buffer = std::to_string(value);
+		const char* buffer = _buffer.c_str();
+
+    print(buffer);
+}
+
+void Print::print(int value) 
+{
+	print((long)value);
+}
+
 void Print::print(char value)
 {
 	printf("%c", value);

@@ -79,6 +79,8 @@ public:
 	void print(unsigned short);
 	void print(unsigned int);
 	void print(unsigned long);
+	void print(int);
+	void print(long);
 
 	void println();
 	void println(char*);
