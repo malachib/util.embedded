@@ -41,7 +41,7 @@ void Console::handler()
         return;
       }
 
-#ifdef DEBUG
+#ifdef DEBUG2
       cout << F("Submitting command: ") << inputLine << F("\n");
 #endif
 
@@ -52,7 +52,7 @@ void Console::handler()
         if(inputLine[i] == ' ')
         {
           inputLine[i] = 0;
-#ifdef DEBUG
+#ifdef DEBUG2
           cout << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
 #endif
           paramCounter++;
@@ -66,13 +66,13 @@ void Console::handler()
       }
 
 
-#ifdef DEBUG
+#ifdef DEBUG2
       cout.println("handle command 0");
 #endif
 
       handleCommand(Parameters(parameters, paramCounter + 1, this));
 
-#ifdef DEBUG
+#ifdef DEBUG2
       cout.println("handle command 1");
 #endif
 
