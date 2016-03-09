@@ -108,14 +108,8 @@ bool MenuHandler::processInput(Console* console, char received)
       const char* commandName = (const char*) menu->getName();
       if(strncmp_P(inputLine, commandName, inputPos) == 0)
       {
-        // TODO: make an appendToInputLine_P
-        char temp[32];
-
-        strcpy_P(temp, commandName + inputPos);
-
-        cout << temp;
-
-        console->appendToInputLine(temp);
+        cout << (const __FlashStringHelper*)(commandName + inputPos);
+        console->appendToInputLine_P(commandName + inputPos);
       }
     }
     return true;

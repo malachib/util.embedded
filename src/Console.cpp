@@ -1,5 +1,13 @@
 #include "Console.h"
 
+/*
+#ifdef __AVR__
+#include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+*/
+
 using namespace FactUtilEmbedded;
 
 // technically this is a stack opt
@@ -102,6 +110,20 @@ void Console::handler()
 }
 
 
+// remember we don't bother will null termination for inputLine since
+// we're already maintaining inputPos
+void Console::appendToInputLine_P(PGM_P src)
+{
+  char ch;
+  
+  // apparently strlcpy_P isn't available for some platforms
+  //inputPos += strlcpy_P(&inputLine[inputPos], src, CONSOLE_INPUTLINE_MAX - inputPos);
+  while((ch = pgm_read_byte(src++)) != 0) inputLine[inputPos++] = ch;
+  
+}
+
+
+
 void ConsoleMenuHandler::handleCommand(Parameters p)
 {
 #ifdef DEBUG2
@@ -137,6 +159,7 @@ bool ConsoleMenuHandler::processInput(Console* console, char received)
   return getActiveMenu()->processInput(console, received);
 }
 #endif
+
 
 void MenuEnumerator::add(Menu& menu)
 {

@@ -46,6 +46,8 @@ public:
   {
     while(*src != 0) inputLine[inputPos++] = *src++;
   }
+  
+  void appendToInputLine_P(PGM_P src);
 
   uint8_t getInputPos() { return inputPos; }
 
