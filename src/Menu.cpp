@@ -137,21 +137,37 @@ IMenu* Menu::canHandle(IMenu::Parameters p)
   cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
   cout.println();
 #endif
-#ifdef DEBUG3
+#if defined(DEBUG2) && defined(ESP8266)
+  static int __result;
   PGM_P p2 = reinterpret_cast<PGM_P>(name);
   cout << F("ptrs. orig=") << (uint32_t) name << F(" converted: ") << (uint32_t) p2;
+  cout << F(" ptrs. param=") << (uint32_t) p.parameters[0];
   cout.println();
-  cout << F("Converted to: ") << p2 << "...";
-  cout.println();
-  auto result = strcmp_P(p.parameters[0], p2);
-  cout << F("Result = ") << result;
+  const __FlashStringHelper* _test1 = F("status2");
+  char* _test2 = "abc";
+  cout << F("phase 1:");
+  auto _result = strcmp_P(_test2, (PGM_P)_test1);
+  cout << _result << F(",phase 2:");
+  _result = strcmp_P(_test2, (PGM_P)name);
 #endif
 
   
-  if(strcmp_P(p.parameters[0], (const char*) name) == 0)
+  if(strcmp_P(p.parameters[0], (PGM_P) name) == 0)
+  {
+#ifdef DEBUG2
+    cout << F("Exit this");
+    delay(500);
+#endif
     return this;
+  }
   else
+  {
+#ifdef DEBUG2
+    cout << F("Exit NULL");
+    delay(500);
+#endif
     return NULL;
+  }
 }
 
 void MenuGeneric::handleCommand(IMenu::Parameters p)
