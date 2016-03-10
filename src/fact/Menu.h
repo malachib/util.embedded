@@ -149,7 +149,7 @@ namespace FactUtilEmbedded
 
   // We allow MenuGeneric some deferred initialization because Global initialization
   // doesn't work well for PSTR and anonymous function pointers
-  class MenuGeneric : public Menu
+  class MenuGeneric : public MenuCommand
   {
     menuHandler handler;
 
@@ -160,7 +160,7 @@ namespace FactUtilEmbedded
     MenuGeneric() {}
 
     MenuGeneric(menuHandler handler) :
-      Menu(name, description) { this->handler = handler; }
+      MenuCommand(name, description) { this->handler = handler; }
 
     void setHandler(menuHandler handler) { this->handler = handler; }
   };

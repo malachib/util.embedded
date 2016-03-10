@@ -79,7 +79,7 @@ protected:
 
 
 // Special menu item which in turn can handle enumeration of menu items
-class MenuHandler : public Menu, public MenuEnumerator
+class MenuHandler : public MenuCommand, public MenuEnumerator
 {
 protected:
     virtual void handleCommand(Parameters p) override;
