@@ -46,7 +46,7 @@ public:
   {
     while(*src != 0) inputLine[inputPos++] = *src++;
   }
-  
+
   void appendToInputLine_P(PGM_P src);
 
   uint8_t getInputPos() { return inputPos; }
@@ -113,9 +113,12 @@ public:
 class ConsoleMenuHandler : public Console
 {
   IMenu* breadCrumb[4];
-  uint8_t breadCrumbPos = 0;
+  uint8_t breadCrumbPos;
+#ifdef CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND
+  uint8_t commandPos = 0;
+#endif
 
-#if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
+#if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
   virtual bool processInput(Console* console, char received) override;
 #endif
 
