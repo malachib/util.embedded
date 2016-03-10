@@ -2,6 +2,7 @@
 
 #include "features.h"
 #include "../Handler.h"
+#include "lib.h"
 
 namespace FactUtilEmbedded
 {
@@ -127,11 +128,11 @@ namespace FactUtilEmbedded
 
     virtual IMenu* canHandle(IMenu::Parameters input) override;
   };
-  
+
   // TODO: Temporary - eventually "MenuHandler" will be named menu,
   // this is a placeholder as we transition over old items that should
   // derive direct from MenuCommand
-  class Menu : public MenuCommand 
+  class Menu : public MenuCommand
   {
   protected:
     Menu() {}
