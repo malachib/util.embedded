@@ -1,31 +1,18 @@
 #pragma once
 
 #include "Menu.h"
+#include "string_convert.h"
 
 namespace FactUtilEmbedded
 {
-  template <class TIn>
-  class StringConverter
-  {
-
-  };
-
-  template<> class StringConverter<int>
-  {
-  public:
-    int fromString(const char* input)
-    {
-      return atoi(input);
-    }
-  };
-
   template <class TIn, class TOut>
   class MenuFunction : public MenuCommand
   {
+  protected:
     typedef TOut (*_handler)(TIn);
 
-    _handler handler;
-  protected:
+    const _handler handler;
+
     virtual void handleCommand(Parameters p) override;
 
   public:
@@ -35,7 +22,8 @@ namespace FactUtilEmbedded
   template <class TIn, class TOut>
   void MenuFunction<TIn, TOut>::handleCommand(IMenu::Parameters p)
   {
-    TOut result = handler(0);
+    TIn in1 = fromString<TIn>(p.parameters[0]);
+    TOut result = handler(in1);
   }
 
   /*
