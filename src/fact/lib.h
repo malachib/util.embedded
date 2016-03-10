@@ -267,15 +267,20 @@ template <class T>
 class CircularBuffer : public CircularBufferBase<T>
 {
   T* buffer;
-  uint16_t position;
-  uint16_t position_get;
+  // position of where next put will occur
+  uint16_t position = 0;
+  // position of where next get will occur
+  //uint16_t position_get = 0;
   uint16_t size;
 
+  uint16_t currentCapacity = 0;
+
+  /*
   void incrementPositionGet()
   {
     if(++position_get >= size)
       position_get = 0;
-  }
+  }*/
 
 public:
   CircularBuffer<T>(T* bufferToUse, uint16_t size) : size(size)
@@ -298,6 +303,13 @@ public:
   // instead of copying large messages around with a regular 'put'
   void incrementPosition()
   {
+    //if(available() == size)
+      //incrementPositionGet();
+
+    // TODO: do a strict-mode branch where we don't check
+    if(currentCapacity < size)
+      currentCapacity++;
+
     if(++position >= size)
       position = 0;
   }
@@ -311,11 +323,19 @@ public:
   T get()
   {
     const T& value = peek();
-    incrementPositionGet();
+    //incrementPositionGet();
+    currentCapacity--;
     return value;
   }
 
-  const T& peek() { return buffer[position_get]; }
+  const T& peek()
+  {
+    auto position_get = position >= currentCapacity ?
+      (position - currentCapacity) :
+      ((size - 1) - (currentCapacity - position));
+
+    return buffer[position_get];
+  }
 
   // Returns empty, freshly available buffer slot for a put
   // mainly useful for fast-writing to circular buffer manually vs
@@ -325,22 +345,35 @@ public:
   // acquire how many elements are available to be read
   uint16_t available()
   {
+    return currentCapacity;
+    /*
     if(position_get <= position)
     {
       return position - position_get;
     }
     else
     {
-      return ((size - 1) - position_get) + position;
-    }
+      return ((size) - position_get) + position;
+    }*/
   }
 
-  void put(T value);
+  void put(T value)
+  {
+    buffer[position] = value;
+    incrementPosition();
+  }
+
+  void put(T* value)
+  {
+    memcpy(&buffer[position], value, sizeof(T));
+    incrementPosition();
+  }
 
   void reset()
   {
     position = 0;
-    position_get = 0;
+    currentCapacity = 0;
+    //position_get = 0;
   }
 
   void debugPrint()
@@ -353,14 +386,6 @@ public:
 #endif
   }
 };
-
-
-template <class T>
-void CircularBuffer<T>::put(T value)
-{
-  buffer[position] = value;
-  incrementPosition();
-}
 
 
 const uint16_t profileCount = 50;
