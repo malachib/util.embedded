@@ -1,4 +1,4 @@
-
+#pragma once
 //static void mqtt_connect(Adafruit_MQTT& mqtt);
 
 /*
@@ -50,6 +50,7 @@ extern WiFiClient wifiClient;
 #include <Adafruit_MQTT_Client.h>
 #include "../Service.h"
 #include "../fact/lib.h"
+#include "../MenuService.h" // just to ensure MenuService is defined properly
 
 extern const char PROGMEM SVC_MQTT_NAME[];
 
@@ -92,7 +93,7 @@ public:
 
 
 extern MQTT_CLIENT mqtt;
-extern MQTTService mqtt_service;
+//extern MQTTService mqtt_service;
 
 #define SVC_SETSTATUS(msg) service.setStatusMessage(F(msg))
 

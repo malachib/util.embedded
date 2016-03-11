@@ -34,4 +34,4 @@ const char PROGMEM SVC_MQTT_NAME[] = "MQTT";
 const char MQTT_FEED_#name[] PROGMEM = AIO_USERNAME "/feeds/" ##name; \
 Adafruit_MQTT_Publish name = Adafruit_MQTT_Publish(&mqtt, MQTT_FEED_#name)
 
-MQTTService mqtt_service;
+//MQTTService mqtt_service;
