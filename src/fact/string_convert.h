@@ -9,3 +9,8 @@ template<> float fromString(const char* input)
 {
   return atof(input);
 }
+
+template<> const char* fromString(const char* input)
+{
+  return input;
+}

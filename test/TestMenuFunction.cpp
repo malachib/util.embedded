@@ -13,6 +13,16 @@ int testFunc1(int value)
   return -1;
 }
 
+
+int testFunc2(int value, float value2)
+{
+  REQUIRE(value == 123);
+  REQUIRE(value2 == 7.7f);
+  //INFO("Got here with value: ")
+  //INFO(value);
+  return -1;
+}
+
 class DummyMenuFunction : public MenuFunction<int, int>
 {
 public:
@@ -36,10 +46,21 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
 
   GIVEN("A string to integer conversion")
   {
-    StringConverter<int> converter;
     auto value = fromString<int>("123");
 
     REQUIRE(value == 123);
+  }
+  GIVEN("Low level invoker test")
+  {
+    const char* _p[] = { "123" };
+    IMenu::Parameters p((char**)_p, 1, NULL);
+    invoke(testFunc1, p);
+  }
+  GIVEN("Low level invoker test 2")
+  {
+    const char* _p[] = { "123", "7.7" };
+    IMenu::Parameters p((char**)_p, 2, NULL);
+    invoke(testFunc2, p);
   }
   GIVEN("The simplest case MenuFunction int, int")
   {
