@@ -23,6 +23,7 @@ int testFunc2(int value, float value2)
   return -1;
 }
 
+/*
 class DummyMenuFunction : public MenuFunction<int, int>
 {
 public:
@@ -36,7 +37,7 @@ public:
     handleCommand(p);
   }
 };
-
+*/
 const char NAME[] = "testFunc2";
 const char DESC[] = "a test func 2";
 
@@ -48,7 +49,7 @@ CREATE_MENUFUNCTION(mf3, testFunc1, "a test func");
 SCENARIO( "MenuFunction tests", "[menu-function]" )
 {
   //MenuFunction<int, int> menuFunction1(testFunc1);
-  DummyMenuFunction menuFunction1(testFunc1);
+  //DummyMenuFunction menuFunction1(testFunc1);
 
   GIVEN("A string to integer conversion")
   {
@@ -70,7 +71,7 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
   }
   GIVEN("The simplest case MenuFunction int, int")
   {
-    menuFunction1.test1();
+    //menuFunction1.test1();
   }
   GIVEN("Enhanced MenuFunction2 class")
   {
