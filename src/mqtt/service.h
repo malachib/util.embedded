@@ -48,6 +48,10 @@ extern WiFiClient wifiClient;
 #ifdef MQTT_CLIENT
 
 #include <Adafruit_MQTT_Client.h>
+#include "../Service.h"
+#include "../fact/lib.h"
+
+extern const char PROGMEM SVC_MQTT_NAME[];
 
 class MQTTService
 {
@@ -55,7 +59,42 @@ public:
   static void connect();
 };
 
+class MQTT_Service : public util::Service
+{
+public:
+  MQTT_Service() : Service(SVC_MQTT_NAME
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+    , MQTT_Service::setup
+#endif
+  )
+  {}
+
+  static bool setup(Service&);
+  void stop();
+};
+
+
+/*
+class WiFi_Service : public util::Service
+{
+public:
+  MQTT_Service() : Service(SVC_MQTT_NAME
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+    , MQTT_Service::setup
+#endif
+  )
+  {}
+
+  static bool setup(Service&);
+  void stop();
+};
+*/
+
+
 extern MQTT_CLIENT mqtt;
 extern MQTTService mqtt_service;
+
+#define SVC_SETSTATUS(msg) service.setStatusMessage(F(msg))
+
 
 #endif

@@ -24,6 +24,7 @@ class Named
   const __FlashStringHelper* name;
 
 protected:
+  
   Named() {}
   Named(const __FlashStringHelper* name) : name(name) {}
 

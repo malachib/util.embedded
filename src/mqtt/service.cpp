@@ -34,4 +34,28 @@ void MQTTService::connect()
   Serial.println(F("Adafruit IO Connected!"));
 }
 
+bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
+{
+  //Serial.println();
+  //Serial << F("DBG PHASE 3");
+
+  int8_t ret = mqtt.connect();
+
+  if(ret != 0)
+  {
+    //Serial.println(mqtt.connectErrorString(ret));
+    SVC_SETSTATUS("Couldn't connect");
+    return false;
+  }
+  else
+  {
+    //Serial.print(F("Connected to MQTT: Client ID = "));
+    //Serial.println(MQTT_CLIENTID);
+    //Serial << F("Connected to MQTT: Client ID = ") << MQTT_CLIENTID;
+    //Serial.println();
+    //mqttInitialized = true;
+  }
+
+  return true;
+}
 #endif

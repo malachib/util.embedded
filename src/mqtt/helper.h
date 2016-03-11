@@ -1,7 +1,5 @@
 #include <Arduino.h>
 
-#include "../Service.h"
-
 #include "service.h"
 
 #include <Adafruit_MQTT.h>
@@ -28,6 +26,8 @@ const char MQTT_PASSWORD[] PROGMEM  = AIO_KEY;
 // Setup the MQTT client class by passing in the WiFi client and MQTT server and login details.
 MQTT_CLIENT mqtt(&INET_CLIENT, MQTT_SERVER, AIO_SERVERPORT, MQTT_CLIENTID, MQTT_USERNAME, MQTT_PASSWORD);
 //#endif
+
+const char PROGMEM SVC_MQTT_NAME[] = "MQTT";
 
 
 #define MQTT_FEED(name) \
