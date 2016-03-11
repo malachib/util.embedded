@@ -30,8 +30,12 @@ MQTT_CLIENT mqtt(&INET_CLIENT, MQTT_SERVER, AIO_SERVERPORT, MQTT_CLIENTID, MQTT_
 const char PROGMEM SVC_MQTT_NAME[] = "MQTT";
 
 
-#define MQTT_FEED(name) \
-const char MQTT_FEED_#name[] PROGMEM = AIO_USERNAME "/feeds/" ##name; \
-Adafruit_MQTT_Publish name = Adafruit_MQTT_Publish(&mqtt, MQTT_FEED_#name)
+#define MQTT_PUBLISH_FEED(name) \
+const char MQTT_FEED_##name[] PROGMEM = AIO_USERNAME "/feeds/" #name; \
+Adafruit_MQTT_Publish name(&mqtt, MQTT_FEED_##name)
+
+#define MQTT_SUBSCRIBE_FEED(name) \
+const char MQTT_FEED_##name[] PROGMEM = AIO_USERNAME "/feeds/" #name; \
+Adafruit_MQTT_Subscribe name(&mqtt, MQTT_FEED_##name)
 
 //MQTTService mqtt_service;
