@@ -81,7 +81,8 @@ void MenuHandler::showHelp(Parameters p)
 
     for(; node != NULL; node = node->getNext())
     {
-      MenuBase* menu = (MenuBase*) node;
+      // NOTE: beware, casting this to MenuBase gives us the wrong getName/getDescription
+      Menu* menu = (Menu*) node;
 
       cout << F("  ");
       showKeyValuePair(menu->getName(), menu->getDescription(), 16);

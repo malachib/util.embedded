@@ -45,7 +45,8 @@ namespace FactUtilEmbedded
   void MenuFunction<TIn, TOut>::handleCommand(IMenu::Parameters p)
   {
     TIn in1 = fromString<TIn>(p.parameters[0]);
-    TOut result = handler(in1);
+    //TOut result =
+    handler(in1);
   }
 
   template <class _handler>
@@ -57,7 +58,8 @@ namespace FactUtilEmbedded
     virtual void handleCommand(Parameters p) override;
 
   public:
-    MenuFunction2(_handler handler) : handler(handler) {}
+    MenuFunction2(_handler handler, PGM_P name, PGM_P desc) :
+      MenuCommand(name, desc), handler(handler) {}
 
   #ifdef UNIT_TEST
     void _handleCommand(Parameters p)
@@ -89,16 +91,21 @@ namespace FactUtilEmbedded
   }
 
   template <class THandler>
-  MenuFunction2<THandler> createMenuFunction2(THandler handler)
+  inline MenuFunction2<THandler> createMenuFunction(THandler handler, PGM_P name = NULL, PGM_P desc = NULL)
   {
-    MenuFunction2<THandler> mf(handler);
+    MenuFunction2<THandler> mf(handler, name, desc);
     return mf;
   }
+
+  #define CREATE_MENUFUNCTION(name, func, desc) \
+    const char menuFuncName_##func[] PROGMEM = #func; \
+    const char menuFuncDesc_##func[] PROGMEM = desc; \
+    auto name = createMenuFunction(func, menuFuncName_##func, menuFuncDesc_##func)
 
   class MFWrapper2
   {
   public:
-    
+
   };
 
   /*
