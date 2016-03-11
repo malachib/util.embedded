@@ -48,18 +48,57 @@ namespace FactUtilEmbedded
     TOut result = handler(in1);
   }
 
-  template <class TIn>
-  class MenuFunctionNoOut : public MenuCommand
+  template <class _handler>
+  class MenuFunction2 : public MenuCommand
   {
   protected:
-    typedef void (*_handler)(TIn);
-
     const _handler handler;
 
     virtual void handleCommand(Parameters p) override;
 
   public:
-    MenuFunctionNoOut(_handler handler) : handler(handler) {}
+    MenuFunction2(_handler handler) : handler(handler) {}
+
+  #ifdef UNIT_TEST
+    void _handleCommand(Parameters p)
+    {
+      handleCommand(p);
+    }
+  #endif
+  };
+
+  template <class TIn>
+  class ActionFunc
+  {
+    typedef void (*action1)(TIn);
+  };
+
+/*
+  template <class TIn>
+  class MFWrapper : MenuFunction2<ActionFunc<TIn>::action1>
+  {
+  public:
+    MFWrapper(_handler handler) :
+      MenuFunction2<ActionFunc<TIn>::action1>(handler) {}
+  }; */
+
+  template <class _handler>
+  void MenuFunction2<_handler>::handleCommand(IMenu::Parameters p)
+  {
+    invoke(handler, p);
+  }
+
+  template <class THandler>
+  MenuFunction2<THandler> createMenuFunction2(THandler handler)
+  {
+    MenuFunction2<THandler> mf(handler);
+    return mf;
+  }
+
+  class MFWrapper2
+  {
+  public:
+    
   };
 
   /*

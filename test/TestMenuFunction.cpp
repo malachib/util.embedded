@@ -37,6 +37,8 @@ public:
   }
 };
 
+auto mf2 = createMenuFunction2(testFunc2);
+
 //Console console;
 
 SCENARIO( "MenuFunction tests", "[menu-function]" )
@@ -65,5 +67,17 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
   GIVEN("The simplest case MenuFunction int, int")
   {
     menuFunction1.test1();
+  }
+  GIVEN("Enhanced MenuFunction2 class")
+  {
+    auto mf = createMenuFunction2(testFunc2);
+    //MenuFunction2 mf2(testFunc2);
+    //MFWrapper<int> mfw(testFunc2);
+
+    const char* _p[] = { "123", "7.7" };
+    IMenu::Parameters p((char**)_p, 2, NULL);
+    mf._handleCommand(p);
+    mf2._handleCommand(p);
+    //_handleCommand;
   }
 }
