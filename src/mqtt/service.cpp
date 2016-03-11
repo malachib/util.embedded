@@ -1,3 +1,5 @@
+#if defined(MQTT_TYPE_WIFI) || defined(MQTT_TYPE_FONA)
+
 #include "service.h"
 
 // beware, this reaches out to Adafruit libs but project isn't really set up
@@ -31,3 +33,5 @@ void MQTTService::connect()
 
   Serial.println(F("Adafruit IO Connected!"));
 }
+
+#endif

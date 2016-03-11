@@ -5,7 +5,6 @@
 #include "service.h"
 
 #include <Adafruit_MQTT.h>
-#include <Adafruit_MQTT_Client.h>
 
 #ifdef MQTT_TYPE_WIFI
 #ifdef ESP8266

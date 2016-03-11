@@ -1,4 +1,3 @@
-#include "Adafruit_MQTT_Client.h"
 
 //static void mqtt_connect(Adafruit_MQTT& mqtt);
 
@@ -33,14 +32,22 @@ extern MQTTService<Adafruit_MQTT_Client> mqtt_service;
 #include <ESP8266WiFi.h>
 extern WiFiClient wifiClient;
 #endif
+#ifndef INET_CLIENT
 #define INET_CLIENT wifiClient
+#endif
 #define MQTT_CLIENT Adafruit_MQTT_Client
 #elif defined(MQTT_TYPE_FONA)
+#ifndef INET_CLIENT
 #define INET_CLIENT fona
+#endif
 #define MQTT_CLIENT Adafruit_MQTT_FONA
 #else
 #error Please specify MQTT_TYPE_WIFI or MQTT_TYPE_FONA
 #endif
+
+#ifdef MQTT_CLIENT
+
+#include <Adafruit_MQTT_Client.h>
 
 class MQTTService
 {
@@ -50,3 +57,5 @@ public:
 
 extern MQTT_CLIENT mqtt;
 extern MQTTService mqtt_service;
+
+#endif
