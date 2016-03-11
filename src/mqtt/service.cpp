@@ -3,6 +3,7 @@
 // beware, this reaches out to Adafruit libs but project isn't really set up
 // to fetch them (relying on you the programmer to have them onhand and compiler-discoverable)
 void MQTTService::connect()
+//void mqtt_connect(Adafruit_MQTT& mqtt)
 {
   Serial.print(F("Connecting to Adafruit IO... "));
 
