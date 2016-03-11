@@ -37,7 +37,11 @@ public:
   }
 };
 
-auto mf2 = createMenuFunction2(testFunc2);
+const char NAME[] = "testFunc2";
+const char DESC[] = "a test func 2";
+
+auto mf2 = createMenuFunction(testFunc2, NAME, DESC);
+CREATE_MENUFUNCTION(mf3, testFunc1, "a test func");
 
 //Console console;
 
@@ -70,7 +74,7 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
   }
   GIVEN("Enhanced MenuFunction2 class")
   {
-    auto mf = createMenuFunction2(testFunc2);
+    auto mf = createMenuFunction(testFunc2, NAME, DESC);
     //MenuFunction2 mf2(testFunc2);
     //MFWrapper<int> mfw(testFunc2);
 
