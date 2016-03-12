@@ -74,6 +74,7 @@ public:
   }
 
   static bool setup(Service&);
+  void keepAlive();
   void stop();
 };
 

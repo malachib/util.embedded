@@ -36,26 +36,42 @@ void MQTTService::connect()
 
 bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
 {
-  //Serial.println();
-  //Serial << F("DBG PHASE 3");
+  service.setStatusMessage(F("Connecting..."));
 
-  int8_t ret = mqtt.connect();
+  uint8_t retries = 5;
 
-  if(ret != 0)
+  do
   {
-    //Serial.println(mqtt.connectErrorString(ret));
-    SVC_SETSTATUS("Couldn't connect");
-    return false;
-  }
-  else
-  {
-    //Serial.print(F("Connected to MQTT: Client ID = "));
-    //Serial.println(MQTT_CLIENTID);
-    //Serial << F("Connected to MQTT: Client ID = ") << MQTT_CLIENTID;
-    //Serial.println();
-    //mqttInitialized = true;
-  }
+    int8_t ret = mqtt.connect();
 
-  return true;
+    if(ret != 0)
+    {
+      switch (ret)
+      {
+        case 1: service.setStatusMessage(F("Wrong protocol")); break;
+        case 2: service.setStatusMessage(F("ID rejected")); break;
+        case 3: service.setStatusMessage(F("Server unavail")); break;
+        case 4: service.setStatusMessage(F("Bad user/pass")); break;
+        case 5: service.setStatusMessage(F("Not authed")); break;
+        case 6: service.setStatusMessage(F("Failed to subscribe")); break;
+        default: service.setStatusMessage(F("Connection failed")); break;
+      }
+    }
+    else
+      return true;
+
+  } while(retries--);
+
+  return false;
+}
+
+void MQTT_Service::keepAlive()
+{
+  if(!mqtt.ping())
+  {
+    setStatusMessage(F("Reconnecting"));
+    mqtt.disconnect();
+    setup(*this);
+  }
 }
 #endif
