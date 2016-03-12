@@ -56,9 +56,14 @@ bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
         case 6: service.setStatusMessage(F("Failed to subscribe")); break;
         default: service.setStatusMessage(F("Connection failed")); break;
       }
+
+      delay(2000);
     }
     else
+    {
+      service.setStatusMessage(F("Connected"));
       return true;
+    }
 
   } while(retries--);
 
