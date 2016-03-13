@@ -38,7 +38,7 @@ bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
 {
   service.setStatusMessage(F("Connecting..."));
 
-  uint8_t retries = 5;
+  uint8_t retries = 4;
 
   do
   {
