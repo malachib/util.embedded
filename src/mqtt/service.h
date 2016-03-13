@@ -84,5 +84,12 @@ extern MQTT_CLIENT mqtt;
 
 #define SVC_SETSTATUS(msg) service.setStatusMessage(F(msg))
 
+#ifndef AIO_PREFIX
+#define AIO_PREFIX AIO_USERNAME
+#endif
+
+#ifndef AIO_CLIENTID
+#define AIO_CLIENTID AIO_KEY __DATE__ __TIME__
+#endif
 
 #endif

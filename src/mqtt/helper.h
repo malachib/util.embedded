@@ -18,7 +18,7 @@ const char MQTT_SERVER[] PROGMEM    = AIO_SERVER;
 // Set a unique MQTT client ID using the AIO key + the date and time the sketch
 // was compiled (so this should be unique across multiple devices for a user,
 // alternatively you can manually set this to a GUID or other random value).
-const char MQTT_CLIENTID[] PROGMEM  = AIO_KEY __DATE__ __TIME__;
+const char MQTT_CLIENTID[] PROGMEM  = AIO_CLIENTID;
 const char MQTT_USERNAME[] PROGMEM  = AIO_USERNAME;
 const char MQTT_PASSWORD[] PROGMEM  = AIO_KEY;
 
@@ -31,11 +31,11 @@ const char PROGMEM SVC_MQTT_NAME[] = "MQTT";
 
 
 #define MQTT_PUBLISH_FEED(varName, feed) \
-const char MQTT_FEED_##varName[] PROGMEM = AIO_USERNAME "/feeds/" feed; \
+const char MQTT_FEED_##varName[] PROGMEM = AIO_PREFIX "/feeds/" feed; \
 Adafruit_MQTT_Publish varName(&mqtt, MQTT_FEED_##varName)
 
 #define MQTT_SUBSCRIBE_FEED(varName, feed) \
-const char MQTT_FEED_##varName[] PROGMEM = AIO_USERNAME "/feeds/" feed; \
+const char MQTT_FEED_##varName[] PROGMEM = AIO_PREFIX "/feeds/" feed; \
 Adafruit_MQTT_Subscribe varName(&mqtt, MQTT_FEED_##varName)
 
 //MQTTService mqtt_service;
