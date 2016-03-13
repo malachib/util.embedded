@@ -5,6 +5,12 @@
 
 namespace FactUtilEmbedded
 {
+  /* FIX: gets a multiple declaration error
+  void invoke(void (*invokee)(void), IMenu::Parameters p)
+  {
+    invokee();
+  }*/
+
   template <class TIn>
   int invoke(int (*invokee)(TIn), IMenu::Parameters p)
   {

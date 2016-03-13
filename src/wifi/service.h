@@ -38,4 +38,7 @@ public:
     setSSID(ssid, pass);
     util::Service::start();
   }
+
+  const char* getSSID() { return _WLAN_SSID; }
+  const char* getPASS() { return _WLAN_PASS; }
 };
