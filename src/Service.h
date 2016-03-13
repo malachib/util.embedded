@@ -189,4 +189,16 @@ inline Print& operator <<(Print& p, LightweightService& arg)
   }
   return p;
 }
+
+namespace layer5
+{
+  class Service : IService, Named
+  {
+  public:
+    void doStart();
+    void doStop();
+    void doRestart();
+  };
+}
+
 }
