@@ -24,7 +24,7 @@ class Named
   const __FlashStringHelper* name;
 
 protected:
-  
+
   Named() {}
   Named(const __FlashStringHelper* name) : name(name) {}
 
@@ -78,7 +78,10 @@ public:
   }
 
   const __FlashStringHelper* getStatus();
-  const __FlashStringHelper* getStatusMessage() { return statusMessage; }
+  const __FlashStringHelper* getStatusMessage()
+  {
+    return statusMessage != NULL ? statusMessage : getStatus(); 
+  }
 
   static const char genericError[] PROGMEM;
   static const char emptyString[] PROGMEM;

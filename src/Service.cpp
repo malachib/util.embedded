@@ -140,14 +140,18 @@ const __FlashStringHelper* LightweightService::getStatus()
 
 void Service::restart(startService1 startFunc)
 {
+  LightweightService::setStatusMessage(NULL);
   setState(Starting);
   if(startFunc(*this))
   {
     // reset status message to NULL without firing event, since setState will
+    // getStatusMessage() will auto-call getStatus() when statusMessage == NULL
     LightweightService::setStatusMessage(NULL);
     setState(Started);
   }
   else
+    // when in error, leave status message alone because likely it contains
+    // last thing attempted and failed at
     setState(Error);
 }
 
@@ -164,6 +168,7 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc, Li
 {
   if(!awaitDependency(dependsOn))
   {
+    LightweightService::setStatusMessage(NULL);
     setState(Error);
     return;
   }
@@ -179,6 +184,7 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc, Li
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
 bool Service::start()
 {
+  LightweightService::setStatusMessage(NULL);
   setState(Starting);
   if(!startFunc(*this))
   {
@@ -187,6 +193,7 @@ bool Service::start()
   }
   else
   {
+    LightweightService::setStatusMessage(NULL);
     setState(Started);
     return true;
   }
@@ -195,9 +202,12 @@ bool Service::start()
 
 void Service::restart()
 {
-  setState(Starting);
   if(invoker)
+  {
+    LightweightService::setStatusMessage(NULL);
+    setState(Starting);
     invoker(startFunc, this);
+  }
   else
     restart(startFunc);
 }
