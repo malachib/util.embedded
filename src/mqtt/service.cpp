@@ -46,6 +46,7 @@ bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
 
     if(ret != 0)
     {
+      // Some seem to be adafruit-specific error codes
       switch (ret)
       {
         case 1: service.setStatusMessage(F("Wrong protocol")); break;
