@@ -8,6 +8,11 @@ namespace FactUtilEmbedded
 
 #define SERVICE_ERROR ((const __FlashStringHelper*) LightweightService::genericError)
 
+#define SERVICE_STATUS_STARTING   "Starting"
+#define SERVICE_STATUS_STARTED    "Started"
+#define SERVICE_STATUS_UNSTARTED  "Unstarted"
+#define SERVICE_STATUS_ERROR      "Error"
+
 typedef void (*initBasic)(void);
 typedef const __FlashStringHelper* (*initErrorStatus)(void);
 typedef const bool (*initErrorStatus2)(const __FlashStringHelper** status);
@@ -80,7 +85,7 @@ public:
   const __FlashStringHelper* getStatus();
   const __FlashStringHelper* getStatusMessage()
   {
-    return statusMessage != NULL ? statusMessage : getStatus(); 
+    return statusMessage != NULL ? statusMessage : getStatus();
   }
 
   static const char genericError[] PROGMEM;

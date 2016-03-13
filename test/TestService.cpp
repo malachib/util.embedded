@@ -29,7 +29,7 @@ void statusUpdated(Service* svc)
   switch(_counter)
   {
     case 1:
-    statusMsg = "Starting";
+    statusMsg = SERVICE_STATUS_STARTING;
     REQUIRE(statusMsg == (const char*) svc->getStatusMessage());
       break;
 
@@ -39,7 +39,7 @@ void statusUpdated(Service* svc)
       break;
 
     case 3:
-      statusMsg = "Started";
+      statusMsg = SERVICE_STATUS_STARTED;
       REQUIRE(statusMsg == (const char*) svc->getStatusMessage());
       break;
   }

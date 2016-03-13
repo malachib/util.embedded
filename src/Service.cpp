@@ -129,9 +129,9 @@ const __FlashStringHelper* LightweightService::getStatus()
 #else
     case Unstarted: return F("Waiting to start");
 #endif
-    case Starting: return F("Starting");
-    case Started: return F("Started");
-    case Error: return F("Error");
+    case Starting: return F(SERVICE_STATUS_STARTING);
+    case Started: return F(SERVICE_STATUS_STARTED);
+    case Error: return F(SERVICE_STATUS_ERROR);
 #ifdef FACT_LIB_STRICT
     default: return F("Unknown");
 #endif
