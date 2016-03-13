@@ -8,6 +8,7 @@
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 // Create an ESP8266 WiFiClient class to connect to the MQTT server.
+// TODO: move this into wifi area where it belongs
 WiFiClient wifiClient;
 #endif
 #endif
