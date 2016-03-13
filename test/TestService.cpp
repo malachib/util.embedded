@@ -25,6 +25,24 @@ void statusUpdated(Service* svc)
 #endif
   INFO((char*)svc->getStatusMessage());
   _counter++;
+  std::string statusMsg;
+  switch(_counter)
+  {
+    case 1:
+    statusMsg = "Starting";
+    REQUIRE(statusMsg == (const char*) svc->getStatusMessage());
+      break;
+
+    case 2:
+      statusMsg = STATUS_MSG;
+      REQUIRE(statusMsg == (const char*) svc->getStatusMessage());
+      break;
+
+    case 3:
+      statusMsg = "Started";
+      REQUIRE(statusMsg == (const char*) svc->getStatusMessage());
+      break;
+  }
 }
 
 SCENARIO( "Service class tests", "[services]" )
@@ -35,7 +53,7 @@ SCENARIO( "Service class tests", "[services]" )
 
     service.statusUpdated += statusUpdated;
 
-    std::string statusMsg = STATUS_MSG;
+    std::string statusMsg = "Started";
 
     WHEN("Starting the service")
     {
@@ -43,6 +61,7 @@ SCENARIO( "Service class tests", "[services]" )
 
       REQUIRE(_counter == 3);
       REQUIRE(statusMsg == (const char*) service.getStatusMessage());
+      //REQUIRE(statusMsg == )
     }
     WHEN("Stopping the service")
     {
