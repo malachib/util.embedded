@@ -14,7 +14,7 @@ void generic(IMenu::Parameters p)
 MenuGeneric menuGeneric1(generic);
 MenuGeneric menuGeneric2(generic);
 
-class DummyMenu : public MenuHandler
+class DummyMenu : public Menu
 {
 public:
   DummyMenu()

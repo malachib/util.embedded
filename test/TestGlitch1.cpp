@@ -12,14 +12,14 @@ void dummyHandler(IMenu::Parameters p) {}
 
 MenuGeneric m(dummyHandler);
 
-class TestMenuHandler : public MenuHandler
+class TestMenuHandler : public Menu
 {
 public:
   void begin();
 };
 
 TestMenuHandler mh;
-ConsoleMenuHandler console(&mh);
+ConsoleMenu console(&mh);
 
 void TestMenuHandler::begin()
 {
