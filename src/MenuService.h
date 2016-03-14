@@ -8,7 +8,7 @@
 namespace FactUtilEmbedded
 {
 
-class MenuService : public Menu
+class MenuService : public MenuCommand
 {
   Service& service;
 

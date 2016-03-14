@@ -516,6 +516,25 @@ void ObserverMessenger<T>::observe(IObservable* observable)
   messages.put(message);
 }
 
+// TODO: integrate this with PSTR_Property
+#define PROPERTY_CLASS(className, type, name) \
+class className                               \
+{                                             \
+  type value;                                 \
+\
+protected:                                    \
+\
+  className() {}                              \
+  className(type value) : value(value) {}  \
+\
+  void set##name(type value) { this->value = value; } \
+public:                                       \
+  type get##name() { return value; } \
+};
+
+PROPERTY_CLASS(Named, const __FlashStringHelper*, Name)
+PROPERTY_CLASS(Described, const __FlashStringHelper*, Description)
+
 }
 
 namespace Mal_Lib = FactUtilEmbedded;

@@ -14,7 +14,7 @@ class SinglyLinkedNode
   friend DoublyLinkedList;
 
 protected:
-  SinglyLinkedNode* next;
+  SinglyLinkedNode* next = NULL;
 
 public:
   SinglyLinkedNode* getNext() { return next; }

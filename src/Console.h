@@ -79,7 +79,7 @@ protected:
 
 
 // Special menu item which in turn can handle enumeration of menu items
-class MenuHandler : public MenuCommand, public MenuEnumerator
+class Menu : public MenuCommand, public MenuEnumerator
 {
 protected:
     virtual void handleCommand(Parameters p) override;
@@ -93,7 +93,7 @@ public:
 #endif
 };
 
-class NestedMenuHandler : MenuHandler
+class NestedMenuHandler : public Menu
 {
   // represents menu which has been 'cd'd into , or NULL if none has been
   IMenu* selected;
@@ -107,10 +107,9 @@ public:
 };
 
 
-// More C++-ish version of ConsoleMenuDef.
 // this class specifically exists to handle breadcrumb behavior.  Menu behavior itself
-// is managed at the MenuHandler level
-class ConsoleMenuHandler : public Console
+// is managed at the Menu/IMenu level
+class ConsoleMenu : public Console
 {
   IMenu* breadCrumb[4];
   uint8_t breadCrumbPos;
@@ -127,7 +126,7 @@ protected:
   virtual void showPrompt() override;
 
 public:
-  ConsoleMenuHandler(IMenu* rootMenu)
+  ConsoleMenu(IMenu* rootMenu)
   {
     breadCrumb[0] = rootMenu;
     breadCrumbPos = 1;

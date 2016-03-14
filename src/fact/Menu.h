@@ -7,8 +7,8 @@
 namespace FactUtilEmbedded
 {
   class Console;
-  class MenuHandler;
-  class ConsoleMenuHandler;
+  class Menu;
+  class ConsoleMenu;
   class NestedMenuHandler;
 
   class IMenuBase
@@ -45,8 +45,8 @@ namespace FactUtilEmbedded
 
   class IMenu : public IMenuBase
   {
-    friend ConsoleMenuHandler;
-    friend MenuHandler;
+    friend ConsoleMenu;
+    friend Menu;
     friend NestedMenuHandler;
 
   protected:
@@ -65,54 +65,34 @@ namespace FactUtilEmbedded
 
   class MenuEnumerator;
 
-  class MenuBase
+  class MenuBase :
+    public SinglyLinkedNode,
+    public Named,
+    public Described
   {
     friend MenuEnumerator;
 
   protected:
-    // name & description are always PROGMEM residents
-    const __FlashStringHelper* name;
-    const __FlashStringHelper* description;
-
     MenuBase() {}
-
-    void setDesc(const __FlashStringHelper* name, const __FlashStringHelper* description)
-    {
-      this->name = name;
-      this->description = description;
-    }
 
   public:
     MenuBase(const __FlashStringHelper* name, const __FlashStringHelper* description) :
-      name(name), description(description)
-    {
-      //this->name = (const char*) name;
-      //this->description = (const char*) description;
-    }
+      Named(name), Described(description) {}
 
-    MenuBase(const char* name, const char* description) :
-      name((const __FlashStringHelper*) name),
-      description((const __FlashStringHelper*) description)
-    {
-
-    }
-
-    const __FlashStringHelper* getName() { return name; }
-    const __FlashStringHelper* getDescription() { return description; }
-    /*
-    bool canHandle(Console::Parameters p)
-    {
-      return strcmp_P(p.parameters[0], (const char*) name) == 0;
-    }*/
+    MenuBase(PGM_P name, PGM_P description) :
+      Named((const __FlashStringHelper*)name), Described((const __FlashStringHelper*)description) {}
   };
-
-
 
   class MenuCommand :
     public MenuBase,
+    // see below comment, moving SinglyLinkedNode up here doesn't help
+    //public SinglyLinkedNode,
     public IMenu,
-    public IHandler2<IMenu::Parameters, IMenu*>,
-    public SinglyLinkedNode
+    public IHandler2<IMenu::Parameters, IMenu*>
+    // it appears if we use SinglyLinkedNode here, we cannot cast MenuCommand to MenuBase
+    // therefore we use a shim _MenuBase .  It seems like it's VTABLE related somehow
+    //,
+    //public SinglyLinkedNode
   {
   protected:
     virtual void showPrompt() override;
@@ -123,25 +103,10 @@ namespace FactUtilEmbedded
     MenuCommand(const __FlashStringHelper* name, const __FlashStringHelper* description) :
       MenuBase(name, description) {}
 
-    MenuCommand(const char* name, const char* description) :
+    MenuCommand(PGM_P name, PGM_P description) :
       MenuBase(name, description) {}
 
     virtual IMenu* canHandle(IMenu::Parameters input) override;
-  };
-
-  // TODO: Temporary - eventually "MenuHandler" will be named menu,
-  // this is a placeholder as we transition over old items that should
-  // derive direct from MenuCommand
-  class Menu : public MenuCommand
-  {
-  protected:
-    Menu() {}
-  public:
-    Menu(const __FlashStringHelper* name, const __FlashStringHelper* description) :
-      MenuCommand(name, description) {}
-
-    Menu(const char* name, const char* description) :
-      MenuCommand(name, description) {}
   };
 
   typedef void (*menuHandler)(IMenu::Parameters);
@@ -159,8 +124,10 @@ namespace FactUtilEmbedded
   public:
     MenuGeneric() {}
 
-    MenuGeneric(menuHandler handler) :
-      MenuCommand(name, description) { this->handler = handler; }
+    MenuGeneric(menuHandler handler)
+      //:
+      //MenuCommand(name, description)
+      { this->handler = handler; }
 
     void setHandler(menuHandler handler) { this->handler = handler; }
   };

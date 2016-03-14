@@ -115,19 +115,19 @@ void Console::handler()
 void Console::appendToInputLine_P(PGM_P src)
 {
   char ch;
-  
+
   // apparently strlcpy_P isn't available for some platforms
   //inputPos += strlcpy_P(&inputLine[inputPos], src, CONSOLE_INPUTLINE_MAX - inputPos);
   while((ch = pgm_read_byte(src++)) != 0) inputLine[inputPos++] = ch;
-  
+
 }
 
 
 
-void ConsoleMenuHandler::handleCommand(Parameters p)
+void ConsoleMenu::handleCommand(Parameters p)
 {
 #ifdef DEBUG2
-  cout << F("ConsoleMenuHandler::handleCommand: ") << breadCrumbPos;
+  cout << F("ConsoleMenu::handleCommand: ") << breadCrumbPos;
   cout.println();
   cout << F("  menu ptr = ") << (uint32_t)getActiveMenu();
   cout.println();
@@ -138,12 +138,12 @@ void ConsoleMenuHandler::handleCommand(Parameters p)
 
 
 
-void ConsoleMenuHandler::showPrompt()
+void ConsoleMenu::showPrompt()
 {
   for(int i = 0; i < breadCrumbPos; i++)
   {
 #ifdef DEBUG2
-    cout << F("ConsoleMenuHandler::showPrompt: ") << i;
+    cout << F("ConsoleMenu::showPrompt: ") << i;
     cout.println();
 #endif
     breadCrumb[i]->showPrompt();
@@ -154,7 +154,7 @@ void ConsoleMenuHandler::showPrompt()
 }
 
 #if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
-bool ConsoleMenuHandler::processInput(Console* console, char received)
+bool ConsoleMenu::processInput(Console* console, char received)
 {
   return getActiveMenu()->processInput(console, received);
 }
@@ -168,7 +168,9 @@ void MenuEnumerator::add(MenuCommand& menu)
 
 void MenuEnumerator::add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
 {
-  menu.setDesc(name, description);
+  menu.setName(name);
+  menu.setDescription(description);
+  //menu.setDesc(name, description);
   menus.add(&menu);
 }
 

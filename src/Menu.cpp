@@ -22,25 +22,25 @@ using namespace FactUtilEmbedded;
 #endif
 
 
-MenuCommand* MenuHandler::canHandle(Parameters p)
+MenuCommand* Menu::canHandle(Parameters p)
 {
 #ifdef DEBUG2
-  cout.println("MenuHandler::canHandle entry");
+  cout.println("Menu::canHandle entry");
 #endif
 
   return MenuEnumerator::canHandle(p);
 }
 
-void MenuHandler::handleCommand(Parameters p)
+void Menu::handleCommand(Parameters p)
 {
 #ifdef DEBUG2
-  cout.println("MenuHandler::handle command");
+  cout.println("Menu::handle command");
 #endif
 
   MenuCommand* menu = canHandle(p);
 
 #ifdef DEBUG2
-  cout.println("MenuHandler::handle command 2");
+  cout.println("Menu::handle command 2");
 #endif
 
   if(menu != NULL)
@@ -58,7 +58,7 @@ void MenuHandler::handleCommand(Parameters p)
 }
 
 
-void MenuHandler::showHelp(Parameters p)
+void Menu::showHelp(Parameters p)
 {
   if(p.count == 0)
   {
@@ -81,11 +81,18 @@ void MenuHandler::showHelp(Parameters p)
 
     for(; node != NULL; node = node->getNext())
     {
-      // NOTE: beware, casting this to MenuBase gives us the wrong getName/getDescription
-      Menu* menu = (Menu*) node;
+      auto menu = (MenuBase*) node;
 
       cout << F("  ");
-      showKeyValuePair(menu->getName(), menu->getDescription(), 16);
+
+      const __FlashStringHelper* name = menu->getName();
+      const __FlashStringHelper* description = menu->getDescription();
+
+#ifdef DEBUG
+      if(name == NULL) { cout.println(F("Name=NULL")); continue; }
+      if(description == NULL) { cout.println(F("Desc=NULL")); continue; }
+#endif
+      showKeyValuePair(name, description, 16);
       cout.println();
     }
   }
@@ -94,7 +101,7 @@ void MenuHandler::showHelp(Parameters p)
 
 
 #if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
-bool MenuHandler::processInput(Console* console, char received)
+bool Menu::processInput(Console* console, char received)
 {
   // look for tab character
   if(received == 9)
@@ -105,8 +112,8 @@ bool MenuHandler::processInput(Console* console, char received)
     SinglyLinkedNode* node = getHeadMenu();
     for(; node != NULL; node = node->getNext())
     {
-      Menu* menu = (Menu*) node;
-      const char* commandName = (const char*) menu->getName();
+      auto menu = (MenuBase*) node;
+      auto commandName = (PGM_P) menu->getName();
       if(strncmp_P(inputLine, commandName, inputPos) == 0)
       {
         cout << (const __FlashStringHelper*)(commandName + inputPos);
@@ -127,7 +134,7 @@ void MenuCommand::showPrompt()
   cout.println(F("Menu::showPrompt"));
 #endif
 
-  if(name != NULL) cout << name;
+  if(getName() != NULL) cout << getName();
 
 #ifdef DEBUG3
   cout.println(F("Menu::showPrompt exit"));
@@ -137,6 +144,8 @@ void MenuCommand::showPrompt()
 
 IMenu* MenuCommand::canHandle(IMenu::Parameters p)
 {
+  const __FlashStringHelper* name = getName();
+
 #ifdef DEBUG2
   cout.println(F("Menu::canHandle"));
   cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
@@ -188,6 +197,7 @@ void MenuGeneric::handleCommand(IMenu::Parameters p)
   handler(p);
 }
 
+// TODO: Switch this to PGM_P
 void IMenu::showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding)
 {
   // FIX: some Print classes don't seem to return proper bytes-written

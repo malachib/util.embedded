@@ -76,7 +76,7 @@ void Test::doCompare()
   cout << result;
 }
 
-void Test::doCompare2(Menu::Parameters p)
+void Test::doCompare2(IMenu::Parameters p)
 {
   int result = strcmp_P(p.parameters[0], (PGM_P) name);
   cout << result;
@@ -92,7 +92,7 @@ SCENARIO( "Virtual/strcmp_P glitch check", "[glitch1]" )
   char* parameters[1];
   parameters[0] = "abc";
 
-  Menu::Parameters p(parameters,1,NULL);
+  IMenu::Parameters p(parameters,1,NULL);
 
   GIVEN("Synthetic test")
   {

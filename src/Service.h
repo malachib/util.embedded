@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "EventManager.h"
+#include "fact/lib.h"
 
 namespace FactUtilEmbedded
 {
@@ -24,19 +25,6 @@ typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
 typedef void (*startServiceInvoker)(startService1 startFunc, Service* service);
 
-class Named
-{
-  const __FlashStringHelper* name;
-
-protected:
-
-  Named() {}
-  Named(const __FlashStringHelper* name) : name(name) {}
-
-  void setName(const __FlashStringHelper* name) { this->name = name; }
-public:
-  const __FlashStringHelper* getName() { return name; }
-};
 
 // aka lightweight service
 // TODO: consider begin/end paradigm instead of start/stop , since Arduino world prefers that
