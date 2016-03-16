@@ -249,7 +249,10 @@ int IOStream::read()
 
 size_t IOStream::write(const uint8_t* buffer, size_t len)
 {
-	cout << (char*)buffer;
+	//const char* _b = (const char*) buffer; // causes SIGILL under CLANG
+	const char* _b = reinterpret_cast<const char*>(buffer);
+	cout << _b;
+	return len;
 }
 
 //#endif
