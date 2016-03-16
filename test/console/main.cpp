@@ -5,7 +5,7 @@ using namespace util;
 
 void test(IMenu::Parameters p)
 {
-  
+
 }
 
 
@@ -17,7 +17,7 @@ public:
   MainMenu()
   {
     add(menuGeneric, F("test"), F("test entry"));
-  }  
+  }
 };
 
 MainMenu mainMenu;
@@ -27,10 +27,12 @@ int main()
 {
   for(;;)
   {
+    /*
     if(Serial.available())
     {
-      Serial << "character available: " << (char)Serial.read();
-    }
+      Serial << "character available: ";
+      Serial << (char)Serial.read();
+    }*/
     console.handler();
   }
 }

@@ -15,6 +15,9 @@
 #include <string>
 #endif
 
+#include <stdio.h>
+#include <stdarg.h>
+
 extern void setup();
 extern void loop();
 
@@ -84,6 +87,17 @@ void Print::begin(long)
 	buflen = 0;
 }
 
+
+void Print::printf(const char* format ...)
+{
+  char buffer[256];
+  va_list args;
+  va_start (args, format);
+  size_t len = vsprintf(buffer, format, args);
+	write(buffer, len);
+	va_end (args);
+}
+
 void Print::print(const char *pString)
 {
     if (debugWrite != NULL)
@@ -134,7 +148,7 @@ void Print::print(long value)
     print(buffer);
 }
 
-void Print::print(int value) 
+void Print::print(int value)
 {
 	print((long)value);
 }

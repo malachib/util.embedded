@@ -68,6 +68,8 @@ typedef void __FlashStringHelper;
 
 class Print
 {
+	void printf(const char* format ...);
+
 public:
 	void begin(long);
 
@@ -93,7 +95,10 @@ public:
 	void println(unsigned long, int);
 	int available();
 	char read();
-
+	virtual size_t write(const uint8_t *buffer, size_t size) = 0;
+	size_t write(const char *buffer, size_t size) {
+			return write((const uint8_t *) buffer, size);
+	}
 	// VSPDE
 	void _append(char c);
 private:
@@ -111,8 +116,11 @@ public:
 class IOStream : public Stream
 {
 public:
-	virtual int available();
-	virtual int read();
+	IOStream();
+
+	virtual int available() override;
+	virtual int read() override;
+	virtual size_t write(const uint8_t* bytes, size_t len) override;
 };
 
 extern IOStream Serial;

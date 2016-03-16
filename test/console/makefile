@@ -5,7 +5,7 @@ CC = $(CXX)
 ODIR = obj
 SDIR = .
 OUT = test
-DEFINE = -DNODUINO=1 -DDEBUG=1 
+DEFINE = -DNODUINO=1 -DDEBUG=1
 #-DCONSOLE_STREAM_IN=cin -DCONSOLE_STREAM_OUT=cout
 INCLUDE = ../../ext/Catch/include
 INCLUDE2 = ../../src
@@ -23,7 +23,7 @@ _OBJS = Console.o EventManager.o statemachine.o Handler.o taskmanager.o lib_c.o 
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 $(OUT): $(OBJS)
-	$(CC) -o $(OUT) $^
+	$(CC) -lncurses -o $(OUT) $^
 
 # test app
 $(ODIR)/%.o: $(SDIR)/%.cpp
