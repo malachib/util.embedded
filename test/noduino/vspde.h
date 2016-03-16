@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 // Add CPU hardware definitions
 
@@ -113,6 +114,15 @@ public:
 	virtual int read() = 0;
 };
 
+
+class IOStream : public Stream
+{
+public:
+	virtual int available() override;
+	virtual int read() override;
+	virtual size_t write(const uint8_t* bytes, size_t len) override;
+};
+
 class NCursesStream : public Stream
 {
 public:
@@ -123,7 +133,11 @@ public:
 	virtual size_t write(const uint8_t* bytes, size_t len) override;
 };
 
+#ifdef NCURSES
 extern NCursesStream Serial;
+#else
+extern IOStream Serial;
+#endif
 extern unsigned long millis();
 extern unsigned long micros();
 extern void delay(unsigned long);

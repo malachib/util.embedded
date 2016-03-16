@@ -15,7 +15,6 @@
 #include <string>
 #endif
 
-#include <stdio.h>
 #include <stdarg.h>
 
 extern void setup();
@@ -227,6 +226,30 @@ void Print::_append(char c)
 	{
 		buflen--;
 	}
+}
+
+
+#include <iostream>
+
+using namespace std;
+
+#ifndef NCURSES
+IOStream Serial;
+#endif
+
+int IOStream::available()
+{
+	return 0;
+}
+
+int IOStream::read()
+{
+	return cin.get();
+}
+
+size_t IOStream::write(const uint8_t* buffer, size_t len)
+{
+	cout << (char*)buffer;
 }
 
 //#endif

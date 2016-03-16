@@ -12,7 +12,7 @@ INCLUDE2 = ../../src
 INCLUDE_NODUINO = ../noduino
 INC = -I$(INCLUDE) -I$(INCLUDE2) -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
-CFLAGS = --std=gnu++11 -g -DUNIT_TEST
+CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DNCURSES
 CC_DEBUG = -c
 #CC_DEBUG = -g -c
 
