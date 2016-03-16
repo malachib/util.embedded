@@ -81,6 +81,8 @@ public:
 	void print(unsigned long);
 	void print(int);
 	void print(long);
+	void print(const __FlashStringHelper* s)
+	{ print((const char*) s); }
 
 	void println();
 	void println(char*);
@@ -101,10 +103,19 @@ private:
 
 class Stream : public Print
 {
-
+public:
+	virtual int available() = 0;
+	virtual int read() = 0;
 };
 
-extern Print Serial;
+class IOStream : public Stream
+{
+public:
+	virtual int available();
+	virtual int read();
+};
+
+extern IOStream Serial;
 extern unsigned long millis();
 extern unsigned long micros();
 extern void delay(unsigned long);
