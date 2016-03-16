@@ -14,5 +14,8 @@ int IOStream::read()
 
 int IOStream::available()
 {
-  return cin.tellg();
+  //return cin.tellg();
+  //return cin.rdbuf()->in_avail();
+  //return (cin.peek() & ios_base::io_state::eofbit) ? 1 : 0;
+  return cin.peek() == EOF ? 0 : 1;
 }
