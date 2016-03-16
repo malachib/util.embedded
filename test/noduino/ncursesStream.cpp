@@ -6,23 +6,18 @@
 
 //using namespace std;
 
-IOStream Serial;
+NCursesStream Serial;
 
-IOStream::IOStream()
+NCursesStream::NCursesStream()
 {
   initscr();
   noecho();
-  //nocbreak();
   cbreak();
-
-  printw("Initializing...1");
-  printw("\nInitializing...2\n\r");
-  //printw("\rInitializing...3");
 }
 
 int lastChar = -1;
 
-int IOStream::read()
+int NCursesStream::read()
 {
   if(lastChar != -1)
   {
@@ -36,7 +31,7 @@ int IOStream::read()
   return getch();
 }
 
-int IOStream::available()
+int NCursesStream::available()
 {
   int c;
 
@@ -59,7 +54,7 @@ int IOStream::available()
 }
 
 
-size_t IOStream::write(const uint8_t* bytes, size_t len)
+size_t NCursesStream::write(const uint8_t* bytes, size_t len)
 {
   while(len--)
   {

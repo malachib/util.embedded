@@ -113,17 +113,17 @@ public:
 	virtual int read() = 0;
 };
 
-class IOStream : public Stream
+class NCursesStream : public Stream
 {
 public:
-	IOStream();
+	NCursesStream();
 
 	virtual int available() override;
 	virtual int read() override;
 	virtual size_t write(const uint8_t* bytes, size_t len) override;
 };
 
-extern IOStream Serial;
+extern NCursesStream Serial;
 extern unsigned long millis();
 extern unsigned long micros();
 extern void delay(unsigned long);
