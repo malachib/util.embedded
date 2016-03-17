@@ -4,6 +4,7 @@
 #include "fact/Menu.h"
 #include "LinkedList.h"
 #include "Console.Stream.h"
+#include "MenuEnumerator.h"
 
 #if MEMORY_OPT_DATA
 #define CONSOLE_INPUTLINE_MAX 40
@@ -59,24 +60,6 @@ public:
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 };
 
-
-
-class MenuEnumerator
-{
-  SinglyLinkedList menus;
-
-protected:
-  void add(MenuCommand& menu);
-  void add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
-  void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description, menuHandler handler)
-  {
-    add(menu, name, description);
-    menu.setHandler(handler);
-  }
-
-  MenuCommand* canHandle(IMenu::Parameters p);
-  SinglyLinkedNode* getHeadMenu() { return menus.getHead(); }
-};
 
 
 // Special menu item which in turn can handle enumeration of menu items
