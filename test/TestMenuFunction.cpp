@@ -44,6 +44,30 @@ const char DESC[] = "a test func 2";
 auto mf2 = createMenuFunction(testFunc2, NAME, DESC);
 CREATE_MENUFUNCTION(mf3, testFunc1, "a test func");
 
+class MenuFunctionMenu : public Menu
+{
+public:
+  MenuFunctionMenu()
+  {
+    add(mf2);
+    add(mf3);
+  }
+  
+  void test1()
+  {
+    auto head = getHeadMenu();
+    
+    REQUIRE(head == &mf2);
+    REQUIRE(head->getNext() == &mf3);
+    REQUIRE(head->getNext()->getNext() == NULL);
+    
+    auto _head = (MenuBase*) head;
+
+    REQUIRE(_head == &mf2);
+    REQUIRE(((MenuBase*)_head->getNext()) == &mf3);
+  }
+};
+
 //Console console;
 
 SCENARIO( "MenuFunction tests", "[menu-function]" )
@@ -84,5 +108,11 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
     mf._handleCommand(p);
     mf2._handleCommand(p);
     //_handleCommand;
+  }
+  GIVEN("Holding MenuFunctions in a Menu")
+  {
+    MenuFunctionMenu menu;
+    
+    menu.test1();
   }
 }
