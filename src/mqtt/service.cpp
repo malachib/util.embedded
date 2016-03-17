@@ -36,12 +36,12 @@ void MQTTService::connect()
 
 bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
 {
-  service.setStatusMessage(F("Connecting..."));
-
-  uint8_t retries = 4;
+  uint8_t retries = 3;
 
   do
   {
+    service.setStatusMessage(F("Connecting..."));
+
     int8_t ret = mqtt.connect();
 
     if(ret != 0)
@@ -58,7 +58,7 @@ bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
         default: service.setStatusMessage(F("Connection failed")); break;
       }
 
-      delay(2000);
+      delay(1000);
     }
     else
     {
@@ -66,7 +66,7 @@ bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
       return true;
     }
 
-  } while(retries--);
+  } while(--retries);
 
   return false;
 }
