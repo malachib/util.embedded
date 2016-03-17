@@ -1,7 +1,13 @@
+#include <Arduino.h>
+
+#include "fact/Menu.h"
+
+#include "MenuEnumerator.h"
 #include "Console.h"
 
 
-using namespace FactUtilEmbedded;
+namespace FactUtilEmbedded
+{
 
 
 void MenuEnumerator::add(MenuCommand& menu)
@@ -42,4 +48,5 @@ MenuCommand* MenuEnumerator::canHandle(IMenu::Parameters p)
 #endif
 
   return NULL;
+}
 }

@@ -1,7 +1,12 @@
 #pragma once
 
+#include "fact/Menu.h"
+
 namespace FactUtilEmbedded
 {
+  class MenuCommand;
+  class MenuGeneric;
+  
   class MenuEnumerator
   {
     SinglyLinkedList menus;
