@@ -2,6 +2,7 @@
 
 #include "features.h"
 #include "../Handler.h"
+#include "../Console.Stream.h"
 #include "lib.h"
 
 namespace FactUtilEmbedded
@@ -60,7 +61,14 @@ namespace FactUtilEmbedded
 #endif
     bool processInput(Console* console, char c) { return false; }
 
-    static void showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding);
+    static void _showKeyValuePair(const __FlashStringHelper* key, uint8_t keyPadding);
+
+    template <class T>
+    static void showKeyValuePair(const __FlashStringHelper* key, T value, uint8_t keyPadding)
+    {
+      _showKeyValuePair(key, keyPadding);
+      cout.print(value);
+    }
   };
 
   class MenuEnumerator;

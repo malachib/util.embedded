@@ -198,7 +198,7 @@ void MenuGeneric::handleCommand(IMenu::Parameters p)
 }
 
 // TODO: Switch this to PGM_P
-void IMenu::showKeyValuePair(const __FlashStringHelper* key, const __FlashStringHelper* value, uint8_t keyPadding)
+void IMenu::_showKeyValuePair(const __FlashStringHelper* key, uint8_t keyPadding)
 {
   // FIX: some Print classes don't seem to return proper bytes-written
   size_t nameLength = strlen_P((const char*) key);
@@ -208,7 +208,6 @@ void IMenu::showKeyValuePair(const __FlashStringHelper* key, const __FlashString
     keyPadding -= nameLength;
 
   while(keyPadding-- > 0) cout.print(' ');
-  cout.print(value);
 }
 
 void NestedMenuHandler::handleCommand(Parameters p)
