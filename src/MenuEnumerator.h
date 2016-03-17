@@ -1,6 +1,10 @@
 #pragma once
 
-#include "fact/Menu.h"
+#include "fact/IMenu.h"
+#include "fact/lib.h"
+// TODO: see if we can phase out requiring MenuCommand.h here in favor
+// of the explicit placeholder classes below
+#include "fact/MenuCommand.h"
 
 namespace FactUtilEmbedded
 {

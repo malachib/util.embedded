@@ -1,6 +1,5 @@
 #pragma once
 
-#include "features.h"
 #include "MenuCommand.h"
 #include "../MenuEnumerator.h"
 
@@ -19,5 +18,18 @@ namespace FactUtilEmbedded
   #if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
     virtual bool processInput(Console* console, char received) override;
   #endif
+  };
+  
+  class NestedMenuHandler : public Menu
+  {
+    // represents menu which has been 'cd'd into , or NULL if none has been
+    IMenu* selected;
+
+  protected:
+      IMenu* getSelected() { return selected; }
+
+      virtual void handleCommand(Parameters p) override;
+      virtual void showPrompt() override;
+  public:
   };
 }

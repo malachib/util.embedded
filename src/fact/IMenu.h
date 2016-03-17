@@ -1,5 +1,10 @@
 #pragma once
 
+#include "features.h"
+#include "compatibility.h"
+// because of cout references in this .h file
+#include "../Console.Stream.h"
+
 namespace FactUtilEmbedded
 {
   class Menu;

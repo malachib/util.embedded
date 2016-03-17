@@ -62,20 +62,6 @@ public:
 
 
 
-class NestedMenuHandler : public Menu
-{
-  // represents menu which has been 'cd'd into , or NULL if none has been
-  IMenu* selected;
-
-protected:
-    IMenu* getSelected() { return selected; }
-
-    virtual void handleCommand(Parameters p) override;
-    virtual void showPrompt() override;
-public:
-};
-
-
 // this class specifically exists to handle breadcrumb behavior.  Menu behavior itself
 // is managed at the Menu/IMenu level
 class ConsoleMenu : public Console

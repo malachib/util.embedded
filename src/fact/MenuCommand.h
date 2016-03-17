@@ -1,9 +1,9 @@
 #pragma once
 
 #include "features.h"
+#include "lib.h"
 #include "../Handler.h"
 #include "../Console.Stream.h"
-#include "lib.h"
 #include "IMenu.h"
 
 namespace FactUtilEmbedded
