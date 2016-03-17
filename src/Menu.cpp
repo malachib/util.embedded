@@ -71,6 +71,10 @@ void Menu::showHelp(Parameters p)
     cout.println();
     cout.println();
 
+#ifdef DEBUG
+    uint8_t counter = 0;
+#endif
+
     for(; node != NULL; node = node->getNext())
     {
       auto menu = (MenuBase*) node;
@@ -86,7 +90,17 @@ void Menu::showHelp(Parameters p)
 #endif
       showKeyValuePair(name, description, 16);
       cout.println();
+      
+#ifdef DEBUG
+      counter++;
+#endif
     }
+
+#ifdef DEBUG
+    cout.println();
+    cout << counter << F(" item(s) shown");
+    cout.println();
+#endif    
   }
 }
 

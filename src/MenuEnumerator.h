@@ -16,7 +16,7 @@ namespace FactUtilEmbedded
     SinglyLinkedList menus;
 
   protected:
-    void add(MenuCommand& menu);
+    void add(MenuCommand& menu) { menus.add(&menu); }
     void add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
     void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description, menuHandler handler)
     {

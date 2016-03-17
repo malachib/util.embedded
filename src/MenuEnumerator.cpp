@@ -5,18 +5,11 @@
 namespace FactUtilEmbedded
 {
 
-
-void MenuEnumerator::add(MenuCommand& menu)
-{
-  menus.add(&menu);
-}
-
 void MenuEnumerator::add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description)
 {
   menu.setName(name);
   menu.setDescription(description);
-  //menu.setDesc(name, description);
-  menus.add(&menu);
+  add(menu);
 }
 
 MenuCommand* MenuEnumerator::canHandle(IMenu::Parameters p)
