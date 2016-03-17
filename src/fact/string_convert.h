@@ -26,3 +26,8 @@ template<> inline const char* fromString(const char* input)
 {
   return input;
 }
+
+template<> inline char fromString(const char* input)
+{
+  return input[0];
+}

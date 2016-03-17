@@ -23,6 +23,8 @@ namespace FactUtilEmbedded
       add(menu, name, description);
       menu.setHandler(handler);
     }
+    
+    uint16_t count() { return menus.count(); }
 
     MenuCommand* canHandle(IMenu::Parameters p);
     SinglyLinkedNode* getHeadMenu() { return menus.getHead(); }
