@@ -7,21 +7,21 @@ SDIR = .
 OUT = test
 DEFINE = -DNODUINO=1 -DDEBUG=1
 INCLUDE = ../ext/Catch/include
-INCLUDE2 = ../src
+INCLUDE_LIB = ../src
 INCLUDE_NODUINO = noduino
-INC = -I$(INCLUDE) -I$(INCLUDE2) -I$(INCLUDE_NODUINO)
+INC = -I$(INCLUDE) -I$(INCLUDE_LIB) -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
 CFLAGS = --std=gnu++11 -g -DUNIT_TEST
 CC_DEBUG = -c
 #CC_DEBUG = -g -c
 
-_OBJS = Console.o EventManager.o statemachine.o Handler.o taskmanager.o lib_c.o \
-	lib.o LinkedList.o Math.o Menu.o MenuService.o Service.o Arduino.o Main.o \
-	Tokenizer.o ConsoleMenu.o Menu.misc.o MenuEnumerator.o MenuCommand.o \
-	TestTokenizer.o TestGNSS.o TestDriverCore.o TestEvents.o TestService.o TestHandles.o \
-	TestDriver.o TestGlitch1.o TestConsole.o TestMenu.o TestCircularBuffer.o \
-	TestMenuFunction.o TestLinkedList.o TestIOStream.o
-OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
+_SRC_INCLUDE = $(wildcard $(INCLUDE_LIB)/*.cpp)
+SRC_INCLUDE = $(patsubst $(INCLUDE_LIB)/%.cpp,%,$(_SRC_INCLUDE))
+TEST_CPP_FILES = $(wildcard $(SDIR)/*.cpp)
+TEST_OBJ_TARGETS = $(patsubst $(SDIR)/%.cpp,%,$(TEST_CPP_FILES))
+
+_OBJS = $(SRC_INCLUDE) $(TEST_OBJ_TARGETS) Arduino
+OBJS = $(patsubst %,$(ODIR)/%.o,$(_OBJS))
 
 $(OUT): $(OBJS)
 	$(CC) -o $(OUT) $^
@@ -35,7 +35,7 @@ $(ODIR)/%.o: $(INCLUDE)/%.cpp
 	$(CC) $(INC) $(DEFINE) $(CC_DEBUG) $< $(CFLAGS) -o $@
 
 # util.embedded lib
-$(ODIR)/%.o: $(INCLUDE2)/%.cpp
+$(ODIR)/%.o: $(INCLUDE_LIB)/%.cpp
 	$(CC) $(DEFINE) -I$(INCLUDE_NODUINO) $(CC_DEBUG) $< $(CFLAGS) -o $@
 
 # noduino pseudo-lib
