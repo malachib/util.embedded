@@ -75,6 +75,25 @@ void Menu::showHelp(Parameters p)
     uint8_t counter = 0;
 #endif
 
+#ifndef MEMORY_OPT_CODE
+    uint8_t width = 0;
+    
+    // auto-detect width of key
+    for(; node != NULL; node = node->getNext())
+    {
+      auto menu = (MenuBase*) node;
+      uint8_t len = strlen_P((PGM_P)menu->getName());
+      
+      if(len > width)  width = len;
+    }
+    
+    width++;
+    
+    node = getHeadMenu();
+#else
+    static const uint8_t width = 16;
+#endif
+
     for(; node != NULL; node = node->getNext())
     {
       auto menu = (MenuBase*) node;
@@ -88,7 +107,7 @@ void Menu::showHelp(Parameters p)
       if(name == NULL) { cout.println(F("Name=NULL")); continue; }
       if(description == NULL) { cout.println(F("Desc=NULL")); continue; }
 #endif
-      showKeyValuePair(name, description, 16);
+      showKeyValuePair(name, description, width);
       cout.println();
       
 #ifdef DEBUG

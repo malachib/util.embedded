@@ -5,17 +5,18 @@
 
 namespace FactUtilEmbedded
 {
-  /* FIX: gets a multiple declaration error
+  /* FIX: gets a multiple declaration error in certain situations */
+  // NOTE: works fine on atmega328p
   void invoke(void (*invokee)(void), IMenu::Parameters p)
   {
     invokee();
-  }*/
+  }
 
-  template <class TIn>
-  int invoke(int (*invokee)(TIn), IMenu::Parameters p)
+  template <class TIn, class TOut>
+  TOut invoke(TOut (*invokee)(TIn), IMenu::Parameters p)
   {
     TIn in1 = fromString<TIn>(p.parameters[0]);
-    int result = invokee(in1);
+    TOut result = invokee(in1);
     return result;
   }
 
