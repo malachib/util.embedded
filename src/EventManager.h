@@ -23,12 +23,16 @@ typedef void (*eventCallback)(void* parameter);
 #endif
 #endif
 
+class HandleBase;
+
 // handle manager is like a set of linked lists coexisting in one pool
 // a handle is a member of a particular list of handles.  Each handle has
 // a singly-linked node pointing to the next handle until nullHandle is
 // reached
 class HandleManager
 {
+  friend HandleBase;
+  
 public:
   static const uint8_t nullHandle = 0;
   typedef uint8_t handle;
@@ -112,7 +116,8 @@ public:
 //template <uint8_t NMEMB>
 class EventManager : public HandleManager
 {
-  // NOTE: be sure to not change the memory size from Handle
+  // NOTE: be sure to not change the memory size from Handle, 
+  // so that handles map properly onto HandleManager::Handle
   class Event : Handle
   {
   public:
@@ -120,17 +125,10 @@ class EventManager : public HandleManager
     handle getNext() { return next; }
   };
 
-  //Event allEvents[20];
-
   Event* getEvent(handle event) { return (Event*) getHandle(event); }
 
 public:
   void invoke(handle event, void* parameter);
-  handle addEvent(handle event, eventCallback callback)
-  {
-    return HandleManager::add(event, (void*) callback);
-  }
-  void removeEvent(handle handle);
 };
 
 extern EventManager eventManager;
@@ -147,6 +145,7 @@ protected:
     manager->clear(handle);
     handle = HandleManager::nullHandle;
   }
+  void remove(HandleManager* manager, void* data);
 };
 
 
@@ -168,14 +167,7 @@ public:
   
   Event& operator-=(void (*callback)(T parameter))
   {
-    bool removed = eventManager.remove(handle, (void*)callback);
-    if(!removed)
-    {
-      // we get here when first handle is to be removed
-      auto h = eventManager.getHandle(handle);
-      handle = h->getNext();
-    }
-    
+    HandleBase::remove(&eventManager, (void*)callback);
     return *this;
   }
 

@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include "Console.Stream.h"
 
 EventManager eventManager;
 
@@ -93,6 +94,8 @@ bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
   {
     if(currentNode->getData() == data)
     {
+      // very first currentNode is the match, which means we 
+      // don't have a prevNode yet - so caller must handle it
       if(prevNode == NULL) return false;
       
       // redirect previoous node's next to startNode's next
@@ -100,12 +103,28 @@ bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
       return true;
     }
     prevNode = currentNode;
+    
+    // TODO: optimize this part
     if(currentNode->getNext() == nullHandle)
       currentNode = NULL;
     else
       currentNode = getHandle(handles, currentNode->getNext());
       
   } while(currentNode);
+  
+  // undefined state
+#ifdef DEBUG
+  cout.println(F("HandleManager::remove "
+#ifdef MEMORY_OPT_CODE
+  "invalid op"));
+#else
+  "warning: data to remove not found"));
+#endif
+#endif
+  return true; 
+  // false would indicate that first node needs attention, but actually it's a soft error
+  // so we return true which instructs the client to take no further action (because it
+  // thinks the operation succeeded)
 }
 
 
@@ -136,4 +155,13 @@ void HandleBase::add(HandleManager* manager, void* data)
     handle = manager->init(data);
   else
     manager->add(handle, data);
+}
+
+void HandleBase::remove(HandleManager* manager, void* data)
+{
+  HandleManager::Handle* h = manager->getHandle(handle);
+  bool removed = HandleManager::remove(manager->handles, h, data);
+  if(!removed)
+    // we get here when first handle is to be removed
+    handle = h->getNext();
 }
