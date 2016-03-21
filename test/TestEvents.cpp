@@ -37,6 +37,12 @@ public:
 };
 
 int eventResponder3_counter = 0;
+int eventResponder4_counter = 0;
+
+void eventResponder4(EventFiringClass* source)
+{
+  eventResponder4_counter++;
+}
 
 void eventResponder3(EventFiringClass* source)
 {
@@ -112,7 +118,7 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
 
       REQUIRE(eventResponder3_counter == 2);
     }
-    WHEN("Removing events one by one")
+    WHEN("Removing one from a 1-long event list")
     {
       eventResponder3_counter = 0;
       EventFiringClass efc;
@@ -121,11 +127,31 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       efc.fireTestEvent1();
       REQUIRE(eventResponder3_counter == 1);
       
-      // this isn't removing the pointer
+      // this isn't removing the pointer, but should be
       efc.testEvent1 -= eventResponder3;
       
       efc.fireTestEvent1();
-      //REQUIRE(eventResponder3_counter == 1);
+      REQUIRE(eventResponder3_counter == 1);
+    }
+    WHEN("Removing middle one from a 3-long event list")
+    {
+      eventResponder3_counter = 0;
+      eventResponder4_counter = 0;
+      EventFiringClass efc;
+
+      efc.testEvent1 += eventResponder4;
+      efc.testEvent1 += eventResponder3;
+      efc.testEvent1 += eventResponder4;
+      efc.fireTestEvent1();
+      REQUIRE(eventResponder4_counter == 2);
+      REQUIRE(eventResponder3_counter == 1);
+      
+      // this isn't removing the pointer, but should be
+      efc.testEvent1 -= eventResponder3;
+      
+      efc.fireTestEvent1();
+      REQUIRE(eventResponder4_counter == 4);
+      REQUIRE(eventResponder3_counter == 1);
     }
   }
 }

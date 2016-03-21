@@ -171,8 +171,12 @@ public:
     bool removed = eventManager.remove(handle, (void*)callback);
     if(!removed)
     {
-      
+      // we get here when first handle is to be removed
+      auto h = eventManager.getHandle(handle);
+      handle = h->getNext();
     }
+    
+    return *this;
   }
 
   void invoke(T parameter)
