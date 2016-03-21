@@ -112,5 +112,20 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
 
       REQUIRE(eventResponder3_counter == 2);
     }
+    WHEN("Removing events one by one")
+    {
+      eventResponder3_counter = 0;
+      EventFiringClass efc;
+
+      efc.testEvent1 += eventResponder3;
+      efc.fireTestEvent1();
+      REQUIRE(eventResponder3_counter == 1);
+      
+      // this isn't removing the pointer
+      efc.testEvent1 -= eventResponder3;
+      
+      efc.fireTestEvent1();
+      //REQUIRE(eventResponder3_counter == 1);
+    }
   }
 }

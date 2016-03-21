@@ -165,6 +165,15 @@ public:
     add(callback);
     return *this;
   }
+  
+  Event& operator-=(void (*callback)(T parameter))
+  {
+    bool removed = eventManager.remove(handle, (void*)callback);
+    if(!removed)
+    {
+      
+    }
+  }
 
   void invoke(T parameter)
   {
@@ -213,6 +222,12 @@ public:
   EventWrapper& operator+=(void (*callback)(T parameter))
   {
     events += callback;
+    return *this;
+  }
+  
+  EventWrapper& operator-=(void (*callback)(T parameter))
+  {
+    events -= callback;
     return *this;
   }
 
