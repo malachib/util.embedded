@@ -103,6 +103,10 @@ public:
   // this handle in the list are cleared
   void clear(handle handle);
   Handle* getHandle(handle handle) { return getHandle(handles, handle); }
+  bool remove(handle startNode, void* data)
+  {
+    return remove(handles, getHandle(startNode), data);
+  }
 };
 
 //template <uint8_t NMEMB>

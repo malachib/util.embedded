@@ -97,6 +97,7 @@ bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
       
       // redirect previoous node's next to startNode's next
       prevNode->next = currentNode->getNext();
+      return true;
     }
     prevNode = currentNode;
     if(currentNode->getNext() == nullHandle)

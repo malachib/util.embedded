@@ -12,6 +12,12 @@ public:
   {
 
   };
+  
+  bool isNextHandleNull(handle h)
+  {
+    auto _h = getHandle(h);
+    return _h->getNext() == nullHandle;
+  }
 };
 
 SCENARIO("Handle subsystem", "[handles]")
@@ -63,6 +69,21 @@ SCENARIO("Handle subsystem", "[handles]")
       handle2 = handleManager.add(handle1, val2);
 
       REQUIRE(handle2 == 2);
+    }
+    
+    WHEN("Removing one handle by data value")
+    {
+      bool result = handleManager.remove(handle1, val1);
+      
+      // can't remove first one because it doesn't know where to find
+      // prev item, so should be false
+      REQUIRE(result == false);
+
+      result = handleManager.remove(handle1, val2);
+      
+      // this one should be removable
+      REQUIRE(result == true);
+      REQUIRE(handleManager.isNextHandleNull(handle1));
     }
     //handleManager.remove(handle1);
 
