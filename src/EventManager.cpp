@@ -85,6 +85,27 @@ void HandleManager::remove(handle h)
 
 }
 */
+bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
+{
+  Handle* prevNode = NULL;
+  
+  do
+  {
+    if(currentNode->getData() == data)
+    {
+      if(prevNode == NULL) return false;
+      
+      // redirect previoous node's next to startNode's next
+      prevNode->next = currentNode->getNext();
+    }
+    prevNode = currentNode;
+    if(currentNode->getNext() == nullHandle)
+      currentNode = NULL;
+    else
+      currentNode = getHandle(handles, currentNode->getNext());
+      
+  } while(currentNode);
+}
 
 
 void HandleManager::clear(handle h)

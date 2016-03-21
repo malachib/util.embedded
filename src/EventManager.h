@@ -77,6 +77,17 @@ protected:
     return alloc(handles, HANDLEMANAGER_CAPACITY, data);
   }
 
+  // remove handle with "data" as its data from within a handle chain
+  // (not the entire handle pool).  Returns false if startNode itself
+  // needs to be removed (external remove must happen), otherwise 
+  // true
+  static bool remove(Handle* handles, Handle* startNode, void* data);
+
+  static Handle* getHandle(Handle* handles, handle h)
+  {
+    return &handles[h - 1];
+  }
+  
 public:
   // clears and initializes handle list overall
   void init();
@@ -91,7 +102,7 @@ public:
   // list.  note does not gauruntee any handles preceding
   // this handle in the list are cleared
   void clear(handle handle);
-  Handle* getHandle(handle handle) { return &handles[handle - 1]; }
+  Handle* getHandle(handle handle) { getHandle(handles, handle); }
 };
 
 //template <uint8_t NMEMB>
