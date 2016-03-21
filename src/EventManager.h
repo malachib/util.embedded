@@ -102,7 +102,7 @@ public:
   // list.  note does not gauruntee any handles preceding
   // this handle in the list are cleared
   void clear(handle handle);
-  Handle* getHandle(handle handle) { getHandle(handles, handle); }
+  Handle* getHandle(handle handle) { return getHandle(handles, handle); }
 };
 
 //template <uint8_t NMEMB>
