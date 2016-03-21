@@ -146,7 +146,6 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       REQUIRE(eventResponder4_counter == 2);
       REQUIRE(eventResponder3_counter == 1);
       
-      // this isn't removing the pointer, but should be
       efc.testEvent1 -= eventResponder3;
       
       efc.fireTestEvent1();
