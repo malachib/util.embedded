@@ -59,11 +59,15 @@ void Menu::showHelp(Parameters p)
     cout.println();
 
 #ifndef MEMORY_OPT_CODE
+    cout << F("Fact util v") << F(FACT_UTIL_EMBEDDED_VERSION);
+    cout.println();
+
     if(node == NULL)
     {
       cout << F("No commands registered");
       return;
     }
+
 #endif
 
     cout << F(INFO_AVAILABLE_COMMAND);
@@ -77,18 +81,18 @@ void Menu::showHelp(Parameters p)
 
 #ifndef MEMORY_OPT_CODE
     uint8_t width = 0;
-    
+
     // auto-detect width of key
     for(; node != NULL; node = node->getNext())
     {
       auto menu = (MenuBase*) node;
       uint8_t len = strlen_P((PGM_P)menu->getName());
-      
+
       if(len > width)  width = len;
     }
-    
+
     width++;
-    
+
     node = getHeadMenu();
 #else
     static const uint8_t width = 16;
@@ -109,7 +113,7 @@ void Menu::showHelp(Parameters p)
 #endif
       showKeyValuePair(name, description, width);
       cout.println();
-      
+
 #ifdef DEBUG
       counter++;
 #endif
@@ -119,7 +123,7 @@ void Menu::showHelp(Parameters p)
     cout.println();
     cout << counter << F(" item(s) shown");
     cout.println();
-#endif    
+#endif
   }
 }
 
@@ -131,9 +135,13 @@ bool Menu::processInput(Console* console, char received)
   // look for tab character
   if(received == 9)
   {
+    // see what current input line looks like
     char* inputLine = console->getInputLine();
+
+    // see what position we're at
     uint8_t inputPos = console->getInputPos();
 
+    // now iterate thru all the menus
     SinglyLinkedNode* node = getHeadMenu();
     for(; node != NULL; node = node->getNext())
     {

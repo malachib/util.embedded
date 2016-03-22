@@ -1,5 +1,7 @@
 #pragma once
 
+#define FACT_UTIL_EMBEDDED_VERSION "0.8"
+
 // If not specified, optimize for both code and data
 #ifdef MEMORY_OPT
 #define MEMORY_OPT_CODE   // Optimize down code SIZE
