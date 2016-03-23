@@ -38,13 +38,13 @@ template<class T> PGM_P validateString(const char* input);
 
 template<> PGM_P validateString<const char*>(const char* input)
 {
-  if(input == NULL) return F("Null string");
+  if(input == NULL) return PSTR("Null string");
   return NULL;
 }
 
 template<> PGM_P validateString<char>(const char* input)
 {
-  if(strlen(input) > 1) return F("String too long");
+  if(strlen(input) > 1) return PSTR("String too long");
   // TODO: ensure input can be converted to char
   return NULL;
 }
@@ -98,10 +98,10 @@ template<class T> PGM_P getTypeName();
 
 template<> PGM_P getTypeName<const char*>()
 {
-  return F("String");
+  return PSTR("String");
 }
 
 template<> PGM_P getTypeName<int>()
 {
-  return F("Integer");
+  return PSTR("Integer");
 }
