@@ -158,7 +158,7 @@ bool Menu::processInput(Console* console, char received)
       //auto menu = (MenuBase*) node;
       //auto commandName = (PGM_P) menu->getName();
       auto commandName = (PGM_P) i.getCurrent()->getName();
-
+      
       // if the first characters of input match the command-
       if(strncmp_P(inputLine, commandName, inputPos) == 0)
       {
@@ -170,7 +170,8 @@ bool Menu::processInput(Console* console, char received)
     if(candidate_count == 1)
     {
       auto commandName = (PGM_P) candidate->getName();
-      cout << (const __FlashStringHelper*)(commandName + inputPos);
+
+      cout << FPSTR((commandName + inputPos));
       console->appendToInputLine_P(commandName + inputPos);
     }
     else if(candidate_count > 1)
@@ -185,7 +186,7 @@ bool Menu::processInput(Console* console, char received)
 
         // if the first characters of input match the command-
         if(strncmp_P(inputLine, commandName, inputPos) == 0)
-          cout << commandName << ' ';
+          cout << FPSTR(commandName) << ' ';
       }
 
       cout.println();

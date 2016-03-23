@@ -16,7 +16,6 @@ void dummyHandler(IMenu::Parameters p);
 
 Service svc1;
 
-MenuGeneric menuGeneric2(dummyHandler);
 MenuService menuService(svc1);
 
 DummyMenu menu;

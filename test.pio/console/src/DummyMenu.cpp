@@ -5,12 +5,13 @@ using namespace util;
 #include "DummyMenu.h"
 
 MenuGeneric menuGeneric1(dummyHandler);
+MenuGeneric menuGeneric2(dummyHandler);
 
 
 DummyMenu::DummyMenu()
 {
   add(menuGeneric1, F("generic1"), F("desc for generic1"));
-  //add(menuGeneric2, F("generic2"), F("desc for generic2"));
+  add(menuGeneric2, F("generic2"), F("desc for generic2"));
   //add(menuService, F("svc1"), F("desc for svc1"));
 }
 
