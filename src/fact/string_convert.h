@@ -51,8 +51,16 @@ template<class T> PGM_P getTypeName();
 #define DO_VALIDATE_FORNULL
 #endif
 
+// template function prototype so that <unsigned char> inline variant works
+template<> PGM_P validateString<int>(const char* input);
+
 template<> inline PGM_P validateString<const char*>(const char* input)
 {
   DO_VALIDATE_FORNULL;
   return nullptr;
+}
+
+template<> inline PGM_P validateString<unsigned char>(const char* input)
+{
+  return validateString<int>(input);
 }

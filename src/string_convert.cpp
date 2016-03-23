@@ -9,7 +9,7 @@ const char VALIDATE_FORMAT_ERROR[] PROGMEM = "Invalid format";
 const char TYPENAME_INT[] PROGMEM = "Integer";
 const char TYPENAME_CHARPTR[] PROGMEM = "String";
 
-// FIX: Unknown if these can safely live here.  
+// FIX: Unknown if these can safely live here.
 //  conditions occur while compiling for ESP8266
 //  If I don't put them here and leave them in includes, I get linker dup errors
 //  If I do put them in here, then I get linker ref not found errors
@@ -34,7 +34,7 @@ template<> PGM_P validateString<int>(const char* input)
   {
     if(!isdigit(*input)) return VALIDATE_FORMAT_ERROR;
   } while(*++input);
-  
+
   return nullptr;
 }
 
@@ -44,7 +44,7 @@ template<> PGM_P validateString<float>(const char* input)
   DO_VALIDATE_FORNULL;
   char* str_end;
   strtof(input, &str_end);
-  
+
   return input == str_end ? VALIDATE_FORMAT_ERROR : nullptr;
 }
 

@@ -36,7 +36,7 @@ namespace FactUtilEmbedded
 
   // TODO: Fix naming
   void renderParameterError(uint8_t expectedParameterCount, uint8_t count);
-  
+
   template <class _handler>
   class MenuFunction2 : public MenuCommand
   {
@@ -83,7 +83,7 @@ namespace FactUtilEmbedded
       return;
     }
 
-    //validateInvokeNative(handler, p);
+    validateInvokeNative(handler, p); // this *only* validates
     invoke(handler, p);
   }
 
