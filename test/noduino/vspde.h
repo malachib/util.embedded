@@ -88,6 +88,7 @@ public:
 	{ print((const char*) s); }
 
 	void println();
+	void println(char);
 	void println(char*);
 	void println(const char*); // to satisfy C++ 11 dislike of string literal to char*
 	//void println(bool);

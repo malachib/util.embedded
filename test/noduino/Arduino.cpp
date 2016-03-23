@@ -175,6 +175,14 @@ void Print::println()
     print("\r\n");
 }
 
+
+void Print::println(char c)
+{
+	print(c);
+	println();
+}
+
+
 void Print::println(char *pString)
 {
     print(pString);

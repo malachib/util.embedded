@@ -104,4 +104,76 @@ public:
   Special* getHead() { return (Special*) DoublyLinkedList::getHead(); }
   Special* getTail() { return (Special*) DoublyLinkedList::getTail(); }
 };
+
+
+namespace layer1
+{
+template <class TNode>
+class LinkedListIterator
+{
+  TNode* current;
+public:
+  LinkedListIterator(SinglyLinkedList& ll)
+  {
+    current = (TNode*) ll.getHead();
+  }
+
+  LinkedListIterator(const LinkedListIterator<TNode>& source)
+  {
+    current = source.getCurrent();
+  }
+
+
+  //LinkedListIterator(int test) {}
+
+  SinglyLinkedNode* getNext() { return current = (TNode*) current->getNext(); }
+
+  LinkedListIterator& operator++()
+  {
+    getNext();
+    return *this;
+  }
+
+  // postfix version
+  LinkedListIterator operator++(int)
+  {
+    LinkedListIterator<TNode> temp(*this);
+    operator++();
+    return temp;
+  }
+
+  operator TNode* ()
+  {
+    return current;
+  }
+
+  operator bool ()
+  {
+    return current != NULL;
+  }
+
+  TNode* getCurrent() const { return current; }
+};
+}
+
+namespace layer2
+{
+  template <class TNode>
+  class LinkedListIterator : public layer1::LinkedListIterator<TNode>
+  {
+    SinglyLinkedList& ll;
+
+  public:
+    LinkedListIterator(SinglyLinkedList& ll) :
+      layer1::LinkedListIterator<TNode>(ll), ll(ll)
+    {
+    }
+
+    LinkedListIterator(const LinkedListIterator<TNode>& source) :
+      layer1::LinkedListIterator<TNode>(source)
+    {
+      ll = source.ll;
+    }
+  };
+}
 }

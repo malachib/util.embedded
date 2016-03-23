@@ -10,7 +10,7 @@ namespace FactUtilEmbedded
 {
   class MenuCommand;
   class MenuGeneric;
-  
+
   class MenuEnumerator
   {
     SinglyLinkedList menus;
@@ -23,10 +23,11 @@ namespace FactUtilEmbedded
       add(menu, name, description);
       menu.setHandler(handler);
     }
-    
+
     uint16_t count() { return menus.count(); }
 
     MenuCommand* canHandle(IMenu::Parameters p);
     SinglyLinkedNode* getHeadMenu() { return menus.getHead(); }
+    layer1::LinkedListIterator<MenuBase> getIterator() { return layer1::LinkedListIterator<MenuBase>(menus); }
   };
 }

@@ -142,16 +142,55 @@ bool Menu::processInput(Console* console, char received)
     uint8_t inputPos = console->getInputPos();
 
     // now iterate thru all the menus
-    SinglyLinkedNode* node = getHeadMenu();
-    for(; node != NULL; node = node->getNext())
+    //SinglyLinkedNode* node = getHeadMenu();
+
+    MenuBase* candidate = NULL;
+    unsigned candidate_count = 0;
+
+    layer1::LinkedListIterator<MenuBase> i = getIterator();
+
+    // trying to get 1 and only 1 to autocomplete.  If many
+    // candidates show up ( > 1) abort and go into linux-
+    // style multi candidate select mode
+    for(; i && candidate_count < 2; i++)
+    //for(; node != NULL; node = node->getNext())
     {
-      auto menu = (MenuBase*) node;
-      auto commandName = (PGM_P) menu->getName();
+      //auto menu = (MenuBase*) node;
+      //auto commandName = (PGM_P) menu->getName();
+      auto commandName = (PGM_P) i.getCurrent()->getName();
+
+      // if the first characters of input match the command-
       if(strncmp_P(inputLine, commandName, inputPos) == 0)
       {
-        cout << (const __FlashStringHelper*)(commandName + inputPos);
-        console->appendToInputLine_P(commandName + inputPos);
+        candidate_count++;
+        candidate = i;
       }
+    }
+
+    if(candidate_count == 1)
+    {
+      auto commandName = (PGM_P) candidate->getName();
+      cout << (const __FlashStringHelper*)(commandName + inputPos);
+      console->appendToInputLine_P(commandName + inputPos);
+    }
+    else if(candidate_count > 1)
+    {
+      layer1::LinkedListIterator<MenuBase> i = getIterator();
+
+      cout.println();
+
+      for(; i; i++)
+      {
+        auto commandName = (PGM_P) i.getCurrent()->getName();
+
+        // if the first characters of input match the command-
+        if(strncmp_P(inputLine, commandName, inputPos) == 0)
+          cout << commandName << ' ';
+      }
+
+      cout.println();
+      console->showPrompt();
+      cout << console->getInputLine();
     }
     return true;
   }
