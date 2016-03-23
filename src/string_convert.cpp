@@ -1,41 +1,51 @@
 #include <Arduino.h>
 #include "fact/string_convert.h"
+#include <ctype.h>
 
 const char VALIDATE_NULLSTR_ERROR[] PROGMEM = "Null String";
 const char VALIDATE_STRTOOLONG_ERROR[] PROGMEM = "String too long";
+const char VALIDATE_FORMAT_ERROR[] PROGMEM = "Invalid format";
 
 const char TYPENAME_INT[] PROGMEM = "Integer";
 const char TYPENAME_CHARPTR[] PROGMEM = "String";
 
 // FIX: Unknown if these can safely live here.  
+//  conditions occur while compiling for ESP8266
 //  If I don't put them here and leave them in includes, I get linker dup errors
 //  If I do put them in here, then I get linker ref not found errors
 // For the time being disabling the feature (disabling validateInvokeNative)
 
-template<> PGM_P validateString<const char*>(const char* input)
-{
-  if(input == NULL) return VALIDATE_NULLSTR_ERROR;
-  return NULL;
-}
+// TODO: combine validate/convert functions since they happen lock step, this way
+//   we can avoid double-conversion at times
 
 template<> PGM_P validateString<char>(const char* input)
 {
+  DO_VALIDATE_FORNULL;
   if(strlen(input) > 1) return VALIDATE_STRTOOLONG_ERROR;
-  // TODO: ensure input can be converted to char
-  return NULL;
+
+  return nullptr;
 }
 
 
 template<> PGM_P validateString<int>(const char* input)
 {
-  // TODO: ensure input can be converted to int
-  return NULL;
+  DO_VALIDATE_FORNULL;
+  do
+  {
+    if(!isdigit(*input)) return VALIDATE_FORMAT_ERROR;
+  } while(*++input);
+  
+  return nullptr;
 }
+
 
 template<> PGM_P validateString<float>(const char* input)
 {
-  // TODO: ensure input can be converted to float
-  return NULL;
+  DO_VALIDATE_FORNULL;
+  char* str_end;
+  strtof(input, &str_end);
+  
+  return input == str_end ? VALIDATE_FORMAT_ERROR : nullptr;
 }
 
 

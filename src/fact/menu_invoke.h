@@ -8,14 +8,14 @@ namespace FactUtilEmbedded
   /* FIX: gets a multiple declaration error in certain situations */
   // NOTE: works fine on atmega328p
 #ifndef ESP8266
-  void invoke(void (*invokee)(void), IMenu::Parameters p)
+  inline void invoke(void (*invokee)(void), IMenu::Parameters p)
   {
     invokee();
   }
 #endif
 
   template <class TIn, class TOut>
-  TOut invoke(TOut (*invokee)(TIn), IMenu::Parameters p)
+  inline TOut invoke(TOut (*invokee)(TIn), IMenu::Parameters p)
   {
     TIn in1 = fromString<TIn>(p.parameters[0]);
     TOut result = invokee(in1);
@@ -23,14 +23,14 @@ namespace FactUtilEmbedded
   }
 
   template <class TIn>
-  void invoke(void (*invokee)(TIn), IMenu::Parameters p)
+  inline void invoke(void (*invokee)(TIn), IMenu::Parameters p)
   {
     TIn in1 = fromString<TIn>(p.parameters[0]);
     invokee(in1);
   }
 
   template <class TIn1, class TIn2>
-  int invoke(int (*invokee)(TIn1, TIn2), IMenu::Parameters p)
+  inline int invoke(int (*invokee)(TIn1, TIn2), IMenu::Parameters p)
   {
     auto in1 = fromString<TIn1>(p.parameters[0]);
     auto in2 = fromString<TIn2>(p.parameters[1]);
@@ -39,7 +39,7 @@ namespace FactUtilEmbedded
   }
 
   template <class TIn1, class TIn2>
-  void invoke(void (*invokee)(TIn1, TIn2), IMenu::Parameters p)
+  inline void invoke(void (*invokee)(TIn1, TIn2), IMenu::Parameters p)
   {
     auto in1 = fromString<TIn1>(p.parameters[0]);
     auto in2 = fromString<TIn2>(p.parameters[1]);
@@ -47,39 +47,39 @@ namespace FactUtilEmbedded
   }
 
   template <class TIn, class TOut>
-  void validateInvokeNative(TOut (*invokee)(TIn), IMenu::Parameters p)
+  inline void validateInvokeNative(TOut (*invokee)(TIn), IMenu::Parameters p)
   {
     validateString<TIn>(p.parameters[0]);
   }
 
 
   template <class TIn1, class TIn2, class TOut>
-  void validateInvokeNative(TOut (*invokee)(TIn1, TIn2), IMenu::Parameters p)
+  inline void validateInvokeNative(TOut (*invokee)(TIn1, TIn2), IMenu::Parameters p)
   {
     validateString<TIn1>(p.parameters[0]);
     validateString<TIn2>(p.parameters[1]);
   }
 
   template <class TOut>
-  uint8_t invokeParamCount(TOut (*invokee)())
+  inline uint8_t invokeParamCount(TOut (*invokee)())
   {
     return 0;
   }
 
   template <class TIn1, class TOut>
-  uint8_t invokeParamCount(TOut (*invokee)(TIn1))
+  inline uint8_t invokeParamCount(TOut (*invokee)(TIn1))
   {
     return 1;
   }
 
   template <class TIn1, class TIn2, class TOut>
-  uint8_t invokeParamCount(TOut (*invokee)(TIn1, TIn2))
+  inline uint8_t invokeParamCount(TOut (*invokee)(TIn1, TIn2))
   {
     return 2;
   }
 
   template <class TIn1, class TIn2, class TOut>
-  PGM_P invokeParamType(TOut (*invokee)(TIn1, TIn2), uint8_t which)
+  inline PGM_P invokeParamType(TOut (*invokee)(TIn1, TIn2), uint8_t which)
   {
     switch(which)
     {
