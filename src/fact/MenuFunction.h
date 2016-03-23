@@ -34,9 +34,6 @@ namespace FactUtilEmbedded
   }
   */
 
-  // TODO: Fix naming
-  void renderParameterError(uint8_t expectedParameterCount, uint8_t count);
-
   template <class _handler>
   class MenuFunction2 : public MenuCommand
   {

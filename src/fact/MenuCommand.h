@@ -76,4 +76,8 @@ namespace FactUtilEmbedded
 
     void setHandler(menuHandler handler) { this->handler = handler; }
   };
+
+
+  // TODO: Fix naming
+  void renderParameterError(uint8_t expectedParameterCount, uint8_t count);
 }
