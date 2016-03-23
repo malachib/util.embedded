@@ -89,7 +89,7 @@ Test2 test2;
 
 SCENARIO( "Virtual/strcmp_P glitch check", "[glitch1]" )
 {
-  char* parameters[1];
+  const char* parameters[1];
   parameters[0] = "abc";
 
   IMenu::Parameters p(parameters,1,NULL);

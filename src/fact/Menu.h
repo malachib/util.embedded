@@ -19,14 +19,14 @@ namespace FactUtilEmbedded
     virtual bool processInput(Console* console, char received) override;
   #endif
   };
-  
+
   class NestedMenuHandler : public Menu
   {
     // represents menu which has been 'cd'd into , or NULL if none has been
     IMenu* selected;
 
   protected:
-      IMenu* getSelected() { return selected; }
+      IMenu* getSelected() const { return selected; }
 
       virtual void handleCommand(Parameters p) override;
       virtual void showPrompt() override;

@@ -17,7 +17,7 @@ protected:
   SinglyLinkedNode* next = NULL;
 
 public:
-  SinglyLinkedNode* getNext() { return next; }
+  SinglyLinkedNode* getNext() const { return next; }
   void insertBetween(SinglyLinkedNode* referenceNodePrev, SinglyLinkedNode* referenceNode);
   void removeAfter(SinglyLinkedNode* referenceNode);
   void removeNext();
@@ -31,8 +31,8 @@ class DoublyLinkedNode : public SinglyLinkedNode
 
   DoublyLinkedNode* prev;
 public:
-  DoublyLinkedNode* getNext() { return (DoublyLinkedNode*) this->next; }
-  DoublyLinkedNode* getPrev() { return prev; }
+  DoublyLinkedNode* getNext() const { return (DoublyLinkedNode*) this->next; }
+  DoublyLinkedNode* getPrev() const { return prev; }
 
   void insert(DoublyLinkedNode* referenceNode);
   void remove();
@@ -42,8 +42,8 @@ template <class T>
 class LinkedNode : public DoublyLinkedNode
 {
 public:
-  T* getNext() { return next; }
-  T* getPrev() { return prev; }
+  T* getNext() const { return next; }
+  T* getPrev() const { return prev; }
 };
 
 
@@ -53,7 +53,7 @@ protected:
   SinglyLinkedNode* head = NULL;
 
 public:
-  SinglyLinkedNode* getHead() { return head; }
+  SinglyLinkedNode* getHead() const { return head; }
 
   void insertAtBeginning(SinglyLinkedNode* node);
   void insertBetween(SinglyLinkedNode* referenceNodePrev, SinglyLinkedNode* referenceNode, SinglyLinkedNode* nodeToInsert);
@@ -61,7 +61,7 @@ public:
   void add(SinglyLinkedNode* node);
   void remove(SinglyLinkedNode* node);
 
-  uint16_t count()
+  uint16_t count() const
   {
     uint16_t counter = 0;
 
@@ -87,8 +87,8 @@ public:
   void insert(DoublyLinkedNode* referenceNode, DoublyLinkedNode* nodeToInsert);
   void remove(DoublyLinkedNode* node);
 
-  DoublyLinkedNode* getHead() { return (DoublyLinkedNode*) head; }
-  DoublyLinkedNode* getTail() { return (DoublyLinkedNode*) tail; }
+  DoublyLinkedNode* getHead() const { return (DoublyLinkedNode*) head; }
+  DoublyLinkedNode* getTail() const { return (DoublyLinkedNode*) tail; }
 };
 
 template <class T>
@@ -113,7 +113,7 @@ class LinkedListIterator
 {
   TNode* current;
 public:
-  LinkedListIterator(SinglyLinkedList& ll)
+  LinkedListIterator(const SinglyLinkedList& ll)
   {
     current = (TNode*) ll.getHead();
   }
@@ -123,10 +123,7 @@ public:
     current = source.getCurrent();
   }
 
-
-  //LinkedListIterator(int test) {}
-
-  SinglyLinkedNode* getNext() { return current = (TNode*) current->getNext(); }
+  TNode* getNext() { return current = (TNode*) current->getNext(); }
 
   LinkedListIterator& operator++()
   {
@@ -142,12 +139,12 @@ public:
     return temp;
   }
 
-  operator TNode* ()
+  operator TNode* const ()
   {
     return current;
   }
 
-  operator bool ()
+  operator bool const ()
   {
     return current != NULL;
   }

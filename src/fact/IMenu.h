@@ -17,14 +17,14 @@ namespace FactUtilEmbedded
   public:
     struct Parameters
     {
-      char** parameters;
+      const char** parameters;
       uint8_t count;
 
   #ifdef CONSOLE_BEHAVIOR_PROPAGATE
       Console* console;
   #endif
 
-      Parameters(char** parameters, int count, Console* console) :
+      Parameters(const char** parameters, int count, Console* console) :
         parameters(parameters), count(count)
   #ifdef CONSOLE_BEHAVIOR_PROPAGATE
         ,console(console)

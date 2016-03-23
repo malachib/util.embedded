@@ -38,7 +38,7 @@ void Console::handler()
       cout.println();
 
       int paramCounter = 0;
-      char* parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
+      const char* parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
 
       inputLine[inputPos] = 0;
 

@@ -328,7 +328,7 @@ public:
     return value;
   }
 
-  const T& peek()
+  const T& peek() const
   {
     auto position_get = position >= currentCapacity ?
       (position - currentCapacity) :
@@ -340,10 +340,10 @@ public:
   // Returns empty, freshly available buffer slot for a put
   // mainly useful for fast-writing to circular buffer manually vs
   // a full put operation
-  T& peekLast() { return buffer[position]; }
+  T& peekLast() const { return buffer[position]; }
 
   // acquire how many elements are available to be read
-  uint16_t available()
+  uint16_t available() const
   {
     return currentCapacity;
     /*
@@ -376,7 +376,7 @@ public:
     //position_get = 0;
   }
 
-  void debugPrint()
+  void debugPrint() const
   {
 #if defined(ARDUINO) && defined(DEBUG)
     for(int i = 0; i < size; i++)
@@ -529,7 +529,7 @@ protected:                                    \
 \
   void set##name(type value) { this->value = value; } \
 public:                                       \
-  type get##name() { return value; } \
+  type get##name() const { return value; } \
 };
 
 PROPERTY_CLASS(Named, const __FlashStringHelper*, Name)

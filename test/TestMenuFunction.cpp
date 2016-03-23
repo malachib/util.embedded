@@ -52,15 +52,15 @@ public:
     add(mf2);
     add(mf3);
   }
-  
+
   void test1()
   {
     auto head = getHeadMenu();
-    
+
     REQUIRE(head == &mf2);
     REQUIRE(head->getNext() == &mf3);
     REQUIRE(head->getNext()->getNext() == NULL);
-    
+
     auto _head = (MenuBase*) head;
 
     REQUIRE(_head == &mf2);
@@ -84,13 +84,13 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
   GIVEN("Low level invoker test")
   {
     const char* _p[] = { "123" };
-    IMenu::Parameters p((char**)_p, 1, NULL);
+    IMenu::Parameters p(_p, 1, NULL);
     invoke(testFunc1, p);
   }
   GIVEN("Low level invoker test 2")
   {
     const char* _p[] = { "123", "7.7" };
-    IMenu::Parameters p((char**)_p, 2, NULL);
+    IMenu::Parameters p(_p, 2, NULL);
     invoke(testFunc2, p);
   }
   GIVEN("The simplest case MenuFunction int, int")
@@ -104,7 +104,7 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
     //MFWrapper<int> mfw(testFunc2);
 
     const char* _p[] = { "123", "7.7" };
-    IMenu::Parameters p((char**)_p, 2, NULL);
+    IMenu::Parameters p(_p, 2, NULL);
     mf._handleCommand(p);
     mf2._handleCommand(p);
     //_handleCommand;
@@ -112,7 +112,7 @@ SCENARIO( "MenuFunction tests", "[menu-function]" )
   GIVEN("Holding MenuFunctions in a Menu")
   {
     MenuFunctionMenu menu;
-    
+
     menu.test1();
   }
 }

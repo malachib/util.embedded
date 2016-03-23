@@ -41,7 +41,7 @@ protected:
   };
 
   void setState(State state) { this->state = state; }
-  State getState() { return state; }
+  State getState() const { return state; }
 
   // true = all dependencies satisfied, false = dependency did't initiailze
   bool awaitDependency(LightweightService* dependsOn);
@@ -79,7 +79,7 @@ public:
   static const char genericError[] PROGMEM;
   static const char emptyString[] PROGMEM;
 
-  bool isInitialized() { return getState() == Started; }
+  bool isInitialized() const { return getState() == Started; }
 };
 
 class MenuService;
