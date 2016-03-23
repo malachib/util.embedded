@@ -36,9 +36,29 @@ template<> inline char fromString(const char* input)
 
 template<class T> PGM_P validateString(const char* input);
 
-template<> inline PGM_P validateString<const char*>(const char* input)
+template<> PGM_P validateString<const char*>(const char* input)
 {
   if(input == NULL) return F("Null string");
+  return NULL;
+}
+
+template<> PGM_P validateString<char>(const char* input)
+{
+  if(strlen(input) > 1) return F("String too long");
+  // TODO: ensure input can be converted to char
+  return NULL;
+}
+
+
+template<> PGM_P validateString<int>(const char* input)
+{
+  // TODO: ensure input can be converted to int
+  return NULL;
+}
+
+template<> PGM_P validateString<float>(const char* input)
+{
+  // TODO: ensure input can be converted to float
   return NULL;
 }
 
