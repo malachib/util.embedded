@@ -66,6 +66,7 @@
 
 typedef void __FlashStringHelper;
 #define PGM_P  const char *
+#define FPSTR(pstr_pointer) (reinterpret_cast<const __FlashStringHelper *>(pstr_pointer))
 
 class Print
 {
