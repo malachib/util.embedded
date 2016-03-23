@@ -34,6 +34,14 @@ template<> inline char fromString(const char* input)
   return input[0];
 }
 
+template<class T> PGM_P validateString(const char* input);
+
+template<> inline PGM_P validateString<const char*>(const char* input)
+{
+  if(input == NULL) return F("Null string");
+  return NULL;
+}
+
 template<class T> char* toString(char* output, T input);
 
 template<> char* toString(char* output, char input)
@@ -63,4 +71,17 @@ template<> char* toString(char* output, int input)
   sprintf(output, "%d", input);
   return output;
 }
+
 #endif
+
+template<class T> PGM_P getTypeName();
+
+template<> PGM_P getTypeName<const char*>()
+{
+  return F("String");
+}
+
+template<> PGM_P getTypeName<int>()
+{
+  return F("Integer");
+}

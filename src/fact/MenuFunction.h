@@ -72,6 +72,17 @@ namespace FactUtilEmbedded
   template <class _handler>
   void MenuFunction2<_handler>::handleCommand(IMenu::Parameters p)
   {
+    uint8_t expectedParameterCount = invokeParamCount(handler);
+
+    if(expectedParameterCount != p.count)
+    {
+      cout.println();
+      cout << F("Expected ") << expectedParameterCount;
+      cout << F(" parameters but instead got ") << p.count;
+      return;
+    }
+
+    validateInvokeNative(handler, p);
     invoke(handler, p);
   }
 
