@@ -34,6 +34,9 @@ namespace FactUtilEmbedded
   }
   */
 
+  // TODO: Fix naming
+  void renderParameterError(uint8_t expectedParameterCount, uint8_t count);
+  
   template <class _handler>
   class MenuFunction2 : public MenuCommand
   {
@@ -76,13 +79,11 @@ namespace FactUtilEmbedded
 
     if(expectedParameterCount != p.count)
     {
-      cout.println();
-      cout << F("Expected ") << expectedParameterCount;
-      cout << F(" parameters but instead got ") << p.count;
+      renderParameterError(expectedParameterCount, p.count);
       return;
     }
 
-    validateInvokeNative(handler, p);
+    //validateInvokeNative(handler, p);
     invoke(handler, p);
   }
 
