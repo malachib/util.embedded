@@ -39,11 +39,23 @@ template<> PGM_P validateString<int>(const char* input)
 }
 
 
+#ifndef __AVR__
 template<> PGM_P validateString<float>(const char* input)
 {
   DO_VALIDATE_FORNULL;
   char* str_end;
   strtof(input, &str_end);
+
+  return input == str_end ? VALIDATE_FORMAT_ERROR : nullptr;
+}
+#endif
+
+
+template<> PGM_P validateString<double>(const char* input)
+{
+  DO_VALIDATE_FORNULL;
+  char* str_end;
+  strtod(input, &str_end);
 
   return input == str_end ? VALIDATE_FORMAT_ERROR : nullptr;
 }
