@@ -5,6 +5,8 @@ namespace FactUtilEmbedded
   class PowerControl
   {
   public:
-    //static void 
+    //static void
   };
+
+  extern PowerControl Power;
 }
