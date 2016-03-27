@@ -1,8 +1,12 @@
 #pragma once
 
+// lots of code adapted/lifted from www.rocketscream.com / https://github.com/rocketscream/Low-Power
+// good ref one sleep modes here: http://www.engblaze.com/hush-little-microprocessor-avr-and-arduino-sleep-mode-basics/
+
 #include <Arduino.h>
 #include "power_base.h"
 #include <avr/power.h>
+#include <avr/sleep.h>
 
 #if defined(__AVR_ATmega32U4__)
 // https://harizanov.com/2013/02/power-saving-techniques-on-the-atmega32u4/
@@ -13,6 +17,7 @@
 
 #if defined(__AVR_ATmega328P__)
 #define AVR_PICOPOWER
+#define AVR_BOD_POWERDOWN
 #endif
 
 // define SWITCH_FN_HELPER_MAX first
@@ -56,6 +61,7 @@ namespace FactUtilEmbedded
     {
       static inline void off()
       {
+        ADCSRA &= ~(1 << ADEN);
         power_adc_disable();
       }
 
@@ -63,6 +69,7 @@ namespace FactUtilEmbedded
       static inline void on()
       {
         power_adc_enable();
+        ADCSRA |= (1 << ADEN);
       }
     } adc;
 
@@ -227,6 +234,25 @@ namespace FactUtilEmbedded
       }
 
     } spi;
+
+    // be sure to choose the specific mode for the MPU at hand, as they
+    // all vary slightly.  For example 32u4 & 328P have SLEEP_MODE_STANDBY, but
+    // attiny85 does not
+    static void sleep(uint8_t mode = SLEEP_MODE_PWR_SAVE
+      ,bool bod_disable = false)
+    {
+      set_sleep_mode(mode);
+      cli();
+      sleep_enable();
+#ifdef AVR_PICOPOWER
+      if(bod_disable) { sleep_bod_disable(); }
+#endif
+      sei();
+      sleep_cpu();
+      // will wake up here
+      sleep_disable();
+      sei(); // TODO: figure out if we need that 2nd sei here.  RocketStream's lib does, but others dont
+    }
   };
 
   extern PowerControl Power;
