@@ -46,6 +46,13 @@ namespace FactUtilEmbedded
     invokee(in1, in2);
   }
 
+
+  template <class TOut>
+  inline void validateInvokeNative(TOut (*invokee)(), IMenu::Parameters p)
+  {
+  }
+
+
   template <class TIn, class TOut>
   inline void validateInvokeNative(TOut (*invokee)(TIn), IMenu::Parameters p)
   {
