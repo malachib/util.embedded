@@ -37,6 +37,10 @@ void setup()
   cout << F("Starting up");
   cout.println();
 
+  Power.timer[0].off();
+  //Power.usart[0].off();
+  //power_timer0_disable();
+
   menu.add(menu_powerdown_adc);
   menu.add(menu_powerdown_usb);
   //menu.getHeadMenu();
