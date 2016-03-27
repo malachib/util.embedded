@@ -23,8 +23,13 @@ void powerdown_adc()
   Power.adc.off();
 }
 
-CREATE_MENUFUNCTION(menu_powerdown_adc, powerdown_adc, "Power down ADC");
+void powerdown_usb()
+{
+  Power.usb.off();
+}
 
+CREATE_MENUFUNCTION(menu_powerdown_adc, powerdown_adc, "Power down ADC");
+CREATE_MENUFUNCTION(menu_powerdown_usb, powerdown_usb, "Power down USB");
 
 void setup()
 {
@@ -32,7 +37,8 @@ void setup()
   cout << F("Starting up");
   cout.println();
 
-  //menu.add(menu_powerdown_adc);
+  menu.add(menu_powerdown_adc);
+  menu.add(menu_powerdown_usb);
   //menu.getHeadMenu();
 }
 

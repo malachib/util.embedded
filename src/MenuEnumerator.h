@@ -15,7 +15,7 @@ namespace FactUtilEmbedded
   {
     SinglyLinkedList menus;
 
-  protected:
+  public:
     void add(MenuCommand& menu) { menus.add(&menu); }
     void add(MenuCommand& menu, const __FlashStringHelper* name, const __FlashStringHelper* description);
     void add(MenuGeneric& menu, const __FlashStringHelper* name, const __FlashStringHelper* description, menuHandler handler)
@@ -24,6 +24,7 @@ namespace FactUtilEmbedded
       menu.setHandler(handler);
     }
 
+  protected:
     uint16_t count() { return menus.count(); }
 
     MenuCommand* canHandle(IMenu::Parameters p);
