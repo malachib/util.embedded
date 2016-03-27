@@ -3,6 +3,10 @@
 #include <Arduino.h>
 #include "driver/gnss.h"
 
+#define FACT_VE defined(DRIVER_FEATURE_VTABLE)
+#include <fact/virtual_def.h>
+
+
 using namespace driver;
 
 class DummyDriver : public IGNSS
