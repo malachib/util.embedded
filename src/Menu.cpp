@@ -1,8 +1,11 @@
 #include "Console.h"
 #include "fact/Menu.h"
+#include "WString.h"
 
 using namespace FactUtilEmbedded;
 
+// This is when we do string arithmatic/reference already-existing F() strings
+#define FLASHSTRING(str) (reinterpret_cast<const __FlashStringHelper *>(str))
 
 #ifdef MEMORY_OPT_CODE
 #define ERROR_UNRECOGNIZED_COMMAND "Unrecognized: "
@@ -158,7 +161,7 @@ bool Menu::processInput(Console* console, char received)
       //auto menu = (MenuBase*) node;
       //auto commandName = (PGM_P) menu->getName();
       auto commandName = (PGM_P) i.getCurrent()->getName();
-      
+
       // if the first characters of input match the command-
       if(strncmp_P(inputLine, commandName, inputPos) == 0)
       {
@@ -171,8 +174,19 @@ bool Menu::processInput(Console* console, char received)
     {
       auto commandName = (PGM_P) candidate->getName();
 
-      cout << FPSTR((commandName + inputPos));
-      console->appendToInputLine_P(commandName + inputPos);
+      // only render the suffix, not the whole command again,
+      // since user typed in prefix already
+      commandName += inputPos;
+
+#ifdef ESP8266
+      // FIX: I believe we can replace FPSTR with FLASHSTRING on ESP8266 for our
+      // usage scenarios
+      // but not easy to test right now
+      cout << FPSTR(commandName);
+#else
+      cout << FLASHSTRING(commandName);
+#endif
+      console->appendToInputLine_P(commandName);
     }
     else if(candidate_count > 1)
     {
@@ -182,11 +196,11 @@ bool Menu::processInput(Console* console, char received)
 
       for(; i; i++)
       {
-        auto commandName = (PGM_P) i.getCurrent()->getName();
+        auto commandName = i()->getName();
 
         // if the first characters of input match the command-
-        if(strncmp_P(inputLine, commandName, inputPos) == 0)
-          cout << FPSTR(commandName) << ' ';
+        if(strncmp_P(inputLine, (PGM_P) commandName, inputPos) == 0)
+          cout << commandName << ' ';
       }
 
       cout.println();

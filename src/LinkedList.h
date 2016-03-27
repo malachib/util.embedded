@@ -139,15 +139,23 @@ public:
     return temp;
   }
 
+  // cast operator
   operator TNode* const ()
   {
-    return current;
+    return getCurrent();
   }
 
+  // function operator
+  TNode* operator()() const
+  {
+    return getCurrent();
+  }
+
+  /*
   operator bool const ()
   {
     return current != NULL;
-  }
+  }*/
 
   TNode* getCurrent() const { return current; }
 };
