@@ -2,9 +2,8 @@
 
 namespace FactUtilEmbedded
 {
-  class PowerControl
+  class PowerControlBase
   {
-  public:
-    //static void 
+
   };
 }
