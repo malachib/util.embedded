@@ -3,17 +3,8 @@
 #include "../fact/features.h"
 #include <stdarg.h>
 
-#ifdef DRIVER_FEATURE_VTABLE
-#define VIRTUAL virtual
-#define ABSTRACT = 0
-#define OVERRIDE override
-#else
-#define VIRTUAL
-#define ABSTRACT {}
-#define OVERRIDE
-#endif
-
-
+#define FACT_VE defined(DRIVER_FEATURE_VTABLE)
+#include "../fact/virtual_def.h"
 
 class IDriver
 {
@@ -77,3 +68,5 @@ inline void* operator new(size_t size, void* ptr)
     return ptr;
 }
 #endif
+
+#include "../fact/virtual_undef.h"

@@ -2,6 +2,7 @@
 
 #include <fact/Menu.h>
 #include <fact/lib.h>
+#include <fact/power.h>
 #include <MenuService.h>
 #include <Console.h>
 #include <Service.h>

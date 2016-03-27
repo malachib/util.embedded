@@ -2,6 +2,9 @@
 
 #include "core.h"
 
+#define FACT_VE defined(DRIVER_FEATURE_VTABLE)
+#include "../fact/virtual_def.h"
+
 namespace driver {
 
 #define DEVICE_GNSS_FEATURE_DECIMAL 0x01
@@ -45,3 +48,5 @@ public:
     double* altitude = NULL) ABSTRACT;
 };
 }
+
+#include "../fact/virtual_undef.h"
