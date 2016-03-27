@@ -1,6 +1,5 @@
 #include "Console.h"
 #include "fact/Menu.h"
-#include "WString.h"
 
 using namespace FactUtilEmbedded;
 
