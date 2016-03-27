@@ -81,7 +81,7 @@ namespace FactUtilEmbedded
 
         TimerItem(uint8_t timer) : timer(timer) {}
 
-        inline void on()
+        inline void on() const
         {
           switch(timer)
           {
@@ -116,7 +116,7 @@ namespace FactUtilEmbedded
           }
         }
 
-        inline void off()
+        inline void off() const
         {
           switch(timer)
           {
@@ -147,7 +147,7 @@ namespace FactUtilEmbedded
         }
       };
 
-      TimerItem operator[](uint8_t timer)
+      const TimerItem operator[](uint8_t timer) const
       {
         return TimerItem(timer);
       }
@@ -161,7 +161,7 @@ namespace FactUtilEmbedded
 
         UsartItem(uint8_t index) : index(index) {}
 
-        void on()
+        void on() const
         {
           switch(index)
           {
@@ -180,7 +180,7 @@ namespace FactUtilEmbedded
         }
 
 
-        void off()
+        void off() const
         {
           switch(index)
           {
@@ -199,7 +199,7 @@ namespace FactUtilEmbedded
         }
       };
 
-      UsartItem operator[](uint8_t index)
+      const UsartItem operator[](uint8_t index) const
       {
         return UsartItem(index);
       }
