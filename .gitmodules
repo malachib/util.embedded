@@ -1,3 +1,6 @@
 [submodule "ext/Catch"]
 	path = ext/Catch
 	url = https://github.com/philsquared/Catch.git
+[submodule "test.pio/power/lib/Adafruit_SleepyDog"]
+	path = test.pio/power/lib/Adafruit_SleepyDog
+	url = https://github.com/malachib/Adafruit_SleepyDog.git
