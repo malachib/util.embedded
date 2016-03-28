@@ -1,5 +1,8 @@
 #pragma once
 
+// SAM series I think needs Arduino.h header for SAM_SERIES stuff
+#include <Arduino.h>
+
 #ifdef __AVR__
 #include "hardware/power_avr.h"
 #elif defined(ESP8266)
