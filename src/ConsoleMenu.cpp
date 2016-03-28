@@ -11,6 +11,10 @@
 using namespace FactUtilEmbedded;
 
 
+#ifndef CONSOLE_FEATURE_COUT
+#define out cout
+#define in cin
+#endif
 
 void ConsoleMenu::handleCommand(Parameters p)
 {
@@ -35,10 +39,10 @@ void ConsoleMenu::showPrompt()
     cout.println();
 #endif
     breadCrumb[i]->showPrompt();
-    if(i != (breadCrumbPos - 1)) cout << ' ';
+    if(i != (breadCrumbPos - 1)) out << ' ';
   }
 
-  cout << F("> ");
+  out << F("> ");
 }
 
 #if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)

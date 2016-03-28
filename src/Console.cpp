@@ -17,6 +17,11 @@ using namespace FactUtilEmbedded;
 #define CONSOLE_BEHAVIOR_MAX_PARAMETER 8
 #endif
 
+#ifndef CONSOLE_FEATURE_COUT
+#define out cout
+#define in cin
+#endif
+
 
 // TODO: refactor code so that handler is an inline call and processInput
 // contains all the smarts (not inline call).  This way, we can enable/disable
@@ -24,9 +29,9 @@ using namespace FactUtilEmbedded;
 // a -D switch
 void Console::handler()
 {
-  while(cin.available() > 0)
+  while(in.available() > 0)
   {
-    char received = cin.read();
+    char received = in.read();
 
     if(processInput(this, received))
     {
@@ -35,7 +40,7 @@ void Console::handler()
     else
     if(received == '\n' || received == 13)
     {
-      cout.println();
+      out.println();
 
       int paramCounter = 0;
       const char* parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
@@ -84,7 +89,7 @@ void Console::handler()
       cout.println("handle command 1");
 #endif
 
-      cout.println();
+      out.println();
 
       showPrompt();
 
@@ -98,7 +103,7 @@ void Console::handler()
 #ifdef DEBUG
         cout << F("Max len");
 #else
-        cout << (char)7; // old ASCII beep
+        out << (char)7; // old ASCII beep
 #endif
         return;
       }

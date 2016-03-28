@@ -37,10 +37,11 @@ class Console : public IMenu
 {
   char inputLine[CONSOLE_INPUTLINE_MAX];
   uint8_t inputPos = 0;
+protected:
 #ifdef CONSOLE_FEATURE_COUT
-  Print& out;
+  Stream& out;
 #ifndef CONSOLE_FEATURE_CIN
-#define in out
+#define in cin
 #else
   Stream& in;
 #endif
@@ -68,7 +69,11 @@ public:
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
   
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-  Console(Print& out) : out(out) {}
+  Console(Stream& out) : out(out) {}
+  
+  Stream& getOut() const { return out; }
+#else
+  Stream& getOut() const { return cout; }
 #endif
 };
 
@@ -95,7 +100,7 @@ protected:
 public:
   ConsoleMenu(IMenu* rootMenu
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-    , Print& out) : Console(out)
+    , Stream& out) : Console(out)
 #else
     )
 #endif

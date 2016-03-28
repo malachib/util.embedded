@@ -15,7 +15,6 @@ using namespace FactUtilEmbedded;
 #endif
 
 
-
 MenuCommand* Menu::canHandle(Parameters p)
 {
 #ifdef DEBUG2
@@ -27,6 +26,8 @@ MenuCommand* Menu::canHandle(Parameters p)
 
 void Menu::handleCommand(Parameters p)
 {
+  MENU_DECLARE_COUT;
+  
 #ifdef DEBUG2
   cout.println("Menu::handle command");
 #endif
@@ -45,37 +46,39 @@ void Menu::handleCommand(Parameters p)
   }
   else
   {
-    cout.println();
-    cout << F(ERROR_UNRECOGNIZED_COMMAND) << *p.parameters;
-    cout.println();
+    out.println();
+    out << F(ERROR_UNRECOGNIZED_COMMAND) << *p.parameters;
+    out.println();
   }
 }
 
 
 void Menu::showHelp(Parameters p)
 {
+  MENU_DECLARE_COUT;
+  
   if(p.count == 0)
   {
     SinglyLinkedNode* node = getHeadMenu();
 
-    cout.println();
+    out.println();
 
 #ifndef MEMORY_OPT_CODE
-    cout << F("Fact util v") << F(FACT_UTIL_EMBEDDED_VERSION);
-    cout.println();
+    out << F("Fact util v") << F(FACT_UTIL_EMBEDDED_VERSION);
+    out.println();
 
     if(node == NULL)
     {
-      cout << F("No commands registered");
+      out << F("No commands registered");
       return;
     }
 
 #endif
 
-    cout << F(INFO_AVAILABLE_COMMAND);
+    out << F(INFO_AVAILABLE_COMMAND);
 
-    cout.println();
-    cout.println();
+    out.println();
+    out.println();
 
 #ifdef DEBUG
     uint8_t counter = 0;
@@ -104,7 +107,7 @@ void Menu::showHelp(Parameters p)
     {
       auto menu = (MenuBase*) node;
 
-      cout << F("  ");
+      out << F("  ");
 
       const __FlashStringHelper* name = menu->getName();
       const __FlashStringHelper* description = menu->getDescription();
@@ -113,8 +116,8 @@ void Menu::showHelp(Parameters p)
       if(name == NULL) { cout.println(F("Name=NULL")); continue; }
       if(description == NULL) { cout.println(F("Desc=NULL")); continue; }
 #endif
-      showKeyValuePair(name, description, width);
-      cout.println();
+      showKeyValuePair(out, name, description, width);
+      out.println();
 
 #ifdef DEBUG
       counter++;
@@ -122,9 +125,9 @@ void Menu::showHelp(Parameters p)
     }
 
 #ifdef DEBUG
-    cout.println();
-    cout << counter << F(" item(s) shown");
-    cout.println();
+    out.println();
+    out << counter << F(" item(s) shown");
+    out.println();
 #endif
   }
 }

@@ -37,3 +37,9 @@ public:
 #define cin _dummyStream
 #define cout _dummyStream
 #endif
+
+#ifdef CONSOLE_FEATURE_COUT
+#define MENU_DECLARE_COUT Stream& out = p.console->getOut();
+#else
+#define MENU_DECLARE_COUT Stream& out = cout;
+#endif

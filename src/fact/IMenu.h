@@ -21,10 +21,10 @@ namespace FactUtilEmbedded
       uint8_t count;
 
   #ifdef CONSOLE_BEHAVIOR_PROPAGATE
-      Console* console;
+      const Console* console;
   #endif
 
-      Parameters(const char** parameters, int count, Console* console) :
+      Parameters(const char** parameters, int count, const Console* console) :
         parameters(parameters), count(count)
   #ifdef CONSOLE_BEHAVIOR_PROPAGATE
         ,console(console)
@@ -51,6 +51,7 @@ namespace FactUtilEmbedded
     friend NestedMenuHandler;
 
   protected:
+    // TODO: need to add Console* to showPrompt, or perhaps we need a Context object?
     virtual void showPrompt() = 0;
     virtual void handleCommand(Parameters p) = 0;
     // return value of true means input was processed and needs no further processing.
@@ -61,13 +62,23 @@ namespace FactUtilEmbedded
 #endif
     bool processInput(Console* console, char c) { return false; }
 
-    static void _showKeyValuePair(const __FlashStringHelper* key, uint8_t keyPadding);
+    static void _showKeyValuePair(
+#ifdef CONSOLE_FEATURE_COUT
+      Stream& out,
+#endif
+      const __FlashStringHelper* key, uint8_t keyPadding);
 
     template <class T>
-    static void showKeyValuePair(const __FlashStringHelper* key, T value, uint8_t keyPadding)
+    static void showKeyValuePair(
+      Stream& out, const __FlashStringHelper* key, T value, uint8_t keyPadding)
     {
-      _showKeyValuePair(key, keyPadding);
-      cout.print(value);
+      _showKeyValuePair(
+#ifdef CONSOLE_FEATURE_COUT
+        out,
+#endif
+        key, keyPadding);
+        
+      out.print(value);
     }
   };
 

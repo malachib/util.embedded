@@ -13,16 +13,24 @@ void MenuGeneric::handleCommand(IMenu::Parameters p)
 }
 
 // TODO: Switch this to PGM_P
-void IMenu::_showKeyValuePair(const __FlashStringHelper* key, uint8_t keyPadding)
+void IMenu::_showKeyValuePair(
+#ifdef CONSOLE_FEATURE_COUT
+  Stream& out,
+#endif
+  const __FlashStringHelper* key, uint8_t keyPadding)
 {
+#ifndef CONSOLE_FEATURE_COUT
+  auto out = cout;
+#endif
+
   // FIX: some Print classes don't seem to return proper bytes-written
   size_t nameLength = strlen_P((const char*) key);
   //size_t nameLength = cout.print(menu->getName());
-  cout.print(key);
+  out.print(key);
   if(keyPadding > nameLength)
     keyPadding -= nameLength;
 
-  while(keyPadding-- > 0) cout.print(' ');
+  while(keyPadding-- > 0) out.print(' ');
 }
 
 void NestedMenuHandler::handleCommand(Parameters p)
