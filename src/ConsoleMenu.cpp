@@ -25,7 +25,7 @@ void ConsoleMenu::handleCommand(Parameters p)
 
 
 
-void ConsoleMenu::showPrompt(Console* console)
+void ConsoleMenu::showPrompt()
 {
   Stream& out = getOut();
 
@@ -35,7 +35,7 @@ void ConsoleMenu::showPrompt(Console* console)
     cout << F("ConsoleMenu::showPrompt: ") << i;
     cout.println();
 #endif
-    breadCrumb[i]->showPrompt(console);
+    breadCrumb[i]->showPrompt(this);
     if(i != (breadCrumbPos - 1)) out << ' ';
   }
 
@@ -43,8 +43,8 @@ void ConsoleMenu::showPrompt(Console* console)
 }
 
 #if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
-bool ConsoleMenu::processInput(Console* console, char received)
+bool ConsoleMenu::processInput(char received)
 {
-  return getActiveMenu()->processInput(console, received);
+  return getActiveMenu()->processInput(this, received);
 }
 #endif

@@ -33,7 +33,7 @@ void Console::handler()
     Stream& out = getOut();
     char received = in.read();
 
-    if(processInput(this, received))
+    if(processInput(received))
     {
 
     }
@@ -50,7 +50,7 @@ void Console::handler()
       // No input = just show prompt again
       if(inputPos == 0)
       {
-        showPrompt(this);
+        showPrompt();
         return;
       }
 
@@ -91,7 +91,7 @@ void Console::handler()
 
       out.println();
 
-      showPrompt(this);
+      showPrompt();
 
       inputPos = 0;
     }

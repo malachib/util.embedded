@@ -32,8 +32,30 @@ protected:
   virtual void exit() = 0;
 };
 
+class IConsole : public IMenuBase
+{
+  friend Menu;
+
+protected:
+  virtual void showPrompt() = 0;
+  virtual void handleCommand(Parameters p) = 0;
+};
+
+
+class ConsoleBase : public IConsole
+{
+protected:
+  // return value of true means input was processed and needs no further processing.
+  // note that process does not mean command executed, but only that the one character
+  // was handled in a specific way (i.e. tab completion)
+#ifdef CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR
+  virtual
+#endif
+  bool processInput(char c) { return false; }
+};
+
 // Glues I/O logic to menu (interacts with Serial, etc)
-class Console : public IMenu
+class Console : public ConsoleBase
 {
   char inputLine[CONSOLE_INPUTLINE_MAX];
   uint8_t inputPos = 0;
@@ -90,12 +112,12 @@ class ConsoleMenu : public Console
 #endif
 
 #if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
-  virtual bool processInput(Console* console, char received) override;
+  virtual bool processInput(char received) override;
 #endif
 
 protected:
   virtual void handleCommand(Parameters p) override;
-  virtual void showPrompt(Console* console) override;
+  virtual void showPrompt() override;
 
 public:
   ConsoleMenu(IMenu* rootMenu
