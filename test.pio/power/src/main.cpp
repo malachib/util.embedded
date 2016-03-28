@@ -17,15 +17,26 @@ MenuService menuService(svc1);
 Menu menu;
 ConsoleMenu console(&menu);
 
+#ifdef ESP8266
+#define ESP_VOID byte v = 0
+#else
+#define ESP_VOID
+#endif
 
-void powerdown_adc()
+
+
+void powerdown_adc(ESP_VOID)
 {
+#ifndef ESP8266
   Power.adc.off();
+#endif
 }
 
-void powerdown_usb()
+void powerdown_usb(ESP_VOID)
 {
+#ifndef ESP8266
   Power.usb.off();
+#endif
 }
 
 CREATE_MENUFUNCTION(menu_powerdown_adc, powerdown_adc, "Power down ADC");
@@ -37,7 +48,9 @@ void setup()
   cout << F("Starting up");
   cout.println();
 
+#ifndef ESP8266
   Power.timer[0].off();
+#endif
   //Power.usart[0].off();
   //power_timer0_disable();
 
