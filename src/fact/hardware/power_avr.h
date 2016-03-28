@@ -45,11 +45,13 @@ namespace FactUtilEmbedded
     {
       static inline void off()
       {
-        power_usb_disable();
-
         USBCON |= _BV(FRZCLK);  //freeze USB clock
         PLLCSR &= ~_BV(PLLE);   // turn off USB PLL
         USBCON &= ~_BV(USBE);   // disable USB
+
+        // have to disable after, otherwise it seems not all the above commands run
+        // and USB stays pseudo-connected to host
+        power_usb_disable();
       }
 
       static inline void on()
@@ -248,7 +250,10 @@ namespace FactUtilEmbedded
     // all vary slightly.  For example 32u4 & 328P have SLEEP_MODE_STANDBY, but
     // attiny85 does not
     static void sleep(uint8_t mode = SLEEP_MODE_PWR_SAVE
-      ,bool bod_disable = false)
+#ifdef AVR_PICOPOWER
+      ,bool bod_disable = false
+#endif
+    )
     {
       set_sleep_mode(mode);
       cli();
