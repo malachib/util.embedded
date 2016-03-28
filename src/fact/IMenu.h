@@ -33,7 +33,12 @@ namespace FactUtilEmbedded
 
       Parameters inc()
       {
-        Parameters p(parameters + 1, count - 1, console);
+        Parameters p(parameters + 1, count - 1,
+#ifdef CONSOLE_BEHAVIOR_PROPAGATE
+          console);
+#else
+          nullptr);
+#endif
         return p;
       }
     };
