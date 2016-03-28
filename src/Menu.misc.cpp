@@ -21,7 +21,7 @@ void IMenu::_showKeyValuePair(
   const __FlashStringHelper* key, uint8_t keyPadding)
 {
 #ifndef CONSOLE_FEATURE_COUT
-  auto out = cout;
+  Stream& out = cout;
 #endif
 
   // FIX: some Print classes don't seem to return proper bytes-written
