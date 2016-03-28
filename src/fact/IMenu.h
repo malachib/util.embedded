@@ -18,13 +18,13 @@ namespace FactUtilEmbedded
     struct Parameters
     {
       const char** parameters;
-      uint8_t count;
+      const uint8_t count;
 
   #ifdef CONSOLE_BEHAVIOR_PROPAGATE
       const Console* console;
   #endif
 
-      Parameters(const char** parameters, int count, const Console* console) :
+      Parameters(const char** parameters, const int count, const Console* console) :
         parameters(parameters), count(count)
   #ifdef CONSOLE_BEHAVIOR_PROPAGATE
         ,console(console)
@@ -33,15 +33,12 @@ namespace FactUtilEmbedded
 
       Parameters inc()
       {
-  #ifdef CONSOLE_BEHAVIOR_PROPAGATE
         Parameters p(parameters + 1, count - 1, console);
-  #else
-        Parameters p(parameters + 1, count - 1, NULL);
-  #endif
-
         return p;
       }
     };
+  protected:
+    virtual void handleCommand(Parameters p) = 0;
   };
 
   class IMenu : public IMenuBase
@@ -51,10 +48,7 @@ namespace FactUtilEmbedded
     friend NestedMenuHandler;
 
   protected:
-    // TODO: consider breaking off an IConsole because Consoles don't technically
-    // need Console* parameter on their implementation.
     virtual void showPrompt(Console* console) = 0;
-    virtual void handleCommand(Parameters p) = 0;
     // return value of true means input was processed and needs no further processing.
     // note that process does not mean command executed, but only that the one character
     // was handled in a specific way (i.e. tab completion)

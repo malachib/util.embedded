@@ -208,7 +208,7 @@ bool Menu::processInput(Console* console, char received)
       }
 
       out.println();
-      console->showPrompt(console);
+      console->showPrompt();
       out << console->getInputLine();
     }
     return true;

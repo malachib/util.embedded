@@ -38,13 +38,6 @@ class IConsole : public IMenuBase
 
 protected:
   virtual void showPrompt() = 0;
-  virtual void handleCommand(Parameters p) = 0;
-};
-
-
-class ConsoleBase : public IConsole
-{
-protected:
   // return value of true means input was processed and needs no further processing.
   // note that process does not mean command executed, but only that the one character
   // was handled in a specific way (i.e. tab completion)
@@ -54,8 +47,9 @@ protected:
   bool processInput(char c) { return false; }
 };
 
-// Glues I/O logic to menu (interacts with Serial, etc)
-class Console : public ConsoleBase
+
+// Glues I/O Stream to some kind of action processor
+class Console : public IConsole
 {
   char inputLine[CONSOLE_INPUTLINE_MAX];
   uint8_t inputPos = 0;
@@ -84,11 +78,11 @@ public:
 
   void appendToInputLine_P(PGM_P src);
 
-  uint8_t getInputPos() { return inputPos; }
+  uint8_t getInputPos() const { return inputPos; }
 
 public:
   void handler();
-  bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
+  //bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 
 #ifdef CONSOLE_FEATURE_COUT_ONLY
   Console(Stream& out) : out(out) {}
@@ -131,7 +125,7 @@ public:
     breadCrumbPos = 1;
   }
 
-  IMenu* getActiveMenu() { return breadCrumb[breadCrumbPos - 1]; }
+  IMenu* getActiveMenu() const { return breadCrumb[breadCrumbPos - 1]; }
 };
 
 
