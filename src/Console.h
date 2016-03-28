@@ -12,6 +12,10 @@
 #define CONSOLE_INPUTLINE_MAX 80
 #endif
 
+#if defined(CONSOLE_FEATURE_COUT) and not defined(CONSOLE_FEATURE_CIN)
+#define CONSOLE_FEATURE_COUT_ONLY
+#endif
+
 namespace FactUtilEmbedded
 {
 
@@ -33,8 +37,14 @@ class Console : public IMenu
 {
   char inputLine[CONSOLE_INPUTLINE_MAX];
   uint8_t inputPos = 0;
-  //Print& cout; // TODO
-  //Print& cin;
+#ifdef CONSOLE_FEATURE_COUT
+  Print& out;
+#ifndef CONSOLE_FEATURE_CIN
+#define in out
+#else
+  Stream& in;
+#endif
+#endif
 public:
   char* getInputLine()
   {
@@ -54,10 +64,12 @@ public:
   uint8_t getInputPos() { return inputPos; }
 
 public:
-
-public:
   void handler();
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
+  
+#ifdef CONSOLE_FEATURE_COUT_ONLY
+  Console(Print& out) : out(out) {}
+#endif
 };
 
 
@@ -81,7 +93,12 @@ protected:
   virtual void showPrompt() override;
 
 public:
-  ConsoleMenu(IMenu* rootMenu)
+  ConsoleMenu(IMenu* rootMenu
+#ifdef CONSOLE_FEATURE_COUT_ONLY
+    , Print& out) : Console(out)
+#else
+    )
+#endif
   {
     breadCrumb[0] = rootMenu;
     breadCrumbPos = 1;

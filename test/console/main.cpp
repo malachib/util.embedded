@@ -39,7 +39,7 @@ public:
 };
 
 MainMenu mainMenu;
-ConsoleMenu console(&mainMenu);
+ConsoleMenu console(&mainMenu, cout);
 
 int main()
 {
