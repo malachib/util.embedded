@@ -27,7 +27,7 @@ MenuCommand* Menu::canHandle(Parameters p)
 void Menu::handleCommand(Parameters p)
 {
   MENU_DECLARE_COUT;
-  
+
 #ifdef DEBUG2
   cout.println("Menu::handle command");
 #endif
@@ -56,7 +56,7 @@ void Menu::handleCommand(Parameters p)
 void Menu::showHelp(Parameters p)
 {
   MENU_DECLARE_COUT;
-  
+
   if(p.count == 0)
   {
     SinglyLinkedNode* node = getHeadMenu();
@@ -137,6 +137,8 @@ void Menu::showHelp(Parameters p)
 #if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
 bool Menu::processInput(Console* console, char received)
 {
+  Stream& out = console->getOut();
+
   // look for tab character
   if(received == 9)
   {
@@ -184,9 +186,9 @@ bool Menu::processInput(Console* console, char received)
       // FIX: I believe we can replace FPSTR with FLASHSTRING on ESP8266 for our
       // usage scenarios
       // but not easy to test right now
-      cout << FPSTR(commandName);
+      out << FPSTR(commandName);
 #else
-      cout << FLASHSTRING(commandName);
+      out << FLASHSTRING(commandName);
 #endif
       console->appendToInputLine_P(commandName);
     }
@@ -194,7 +196,7 @@ bool Menu::processInput(Console* console, char received)
     {
       layer1::LinkedListIterator<MenuBase> i = getIterator();
 
-      cout.println();
+      out.println();
 
       for(; i; i++)
       {
@@ -202,12 +204,12 @@ bool Menu::processInput(Console* console, char received)
 
         // if the first characters of input match the command-
         if(strncmp_P(inputLine, (PGM_P) commandName, inputPos) == 0)
-          cout << commandName << ' ';
+          out << commandName << ' ';
       }
 
-      cout.println();
-      console->showPrompt();
-      cout << console->getInputLine();
+      out.println();
+      console->showPrompt(console);
+      out << console->getInputLine();
     }
     return true;
   }

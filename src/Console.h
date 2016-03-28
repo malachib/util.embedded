@@ -67,13 +67,13 @@ public:
 public:
   void handler();
   bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
-  
+
 #ifdef CONSOLE_FEATURE_COUT_ONLY
   Console(Stream& out) : out(out) {}
-  
+
   Stream& getOut() const { return out; }
 #else
-  Stream& getOut() const { return cout; }
+  static Stream& getOut() { return cout; }
 #endif
 };
 
@@ -95,12 +95,12 @@ class ConsoleMenu : public Console
 
 protected:
   virtual void handleCommand(Parameters p) override;
-  virtual void showPrompt() override;
+  virtual void showPrompt(Console* console) override;
 
 public:
   ConsoleMenu(IMenu* rootMenu
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-    , Stream& out) : Console(out)
+    , Stream& out = cout) : Console(out)
 #else
     )
 #endif

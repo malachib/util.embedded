@@ -11,11 +11,6 @@
 using namespace FactUtilEmbedded;
 
 
-#ifndef CONSOLE_FEATURE_COUT
-#define out cout
-#define in cin
-#endif
-
 void ConsoleMenu::handleCommand(Parameters p)
 {
 #ifdef DEBUG2
@@ -30,15 +25,17 @@ void ConsoleMenu::handleCommand(Parameters p)
 
 
 
-void ConsoleMenu::showPrompt()
+void ConsoleMenu::showPrompt(Console* console)
 {
+  Stream& out = getOut();
+
   for(int i = 0; i < breadCrumbPos; i++)
   {
 #ifdef DEBUG2
     cout << F("ConsoleMenu::showPrompt: ") << i;
     cout.println();
 #endif
-    breadCrumb[i]->showPrompt();
+    breadCrumb[i]->showPrompt(console);
     if(i != (breadCrumbPos - 1)) out << ' ';
   }
 

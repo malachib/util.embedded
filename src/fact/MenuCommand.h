@@ -42,7 +42,7 @@ namespace FactUtilEmbedded
     //public SinglyLinkedNode
   {
   protected:
-    virtual void showPrompt() override;
+    virtual void showPrompt(Console* console) override;
 
     MenuCommand() {}
 

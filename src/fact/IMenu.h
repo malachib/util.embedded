@@ -52,7 +52,7 @@ namespace FactUtilEmbedded
 
   protected:
     // TODO: need to add Console* to showPrompt, or perhaps we need a Context object?
-    virtual void showPrompt() = 0;
+    virtual void showPrompt(Console* console) = 0;
     virtual void handleCommand(Parameters p) = 0;
     // return value of true means input was processed and needs no further processing.
     // note that process does not mean command executed, but only that the one character
@@ -77,7 +77,7 @@ namespace FactUtilEmbedded
         out,
 #endif
         key, keyPadding);
-        
+
       out.print(value);
     }
   };

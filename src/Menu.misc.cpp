@@ -1,3 +1,4 @@
+#include "Console.h"
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
@@ -46,17 +47,19 @@ void NestedMenuHandler::handleCommand(Parameters p)
   }
 }
 
-void NestedMenuHandler::showPrompt()
+void NestedMenuHandler::showPrompt(Console* console)
 {
+  Stream& out = console->getOut();
+
   // TODO: We can turn getName into showLocalPrompt if we want to go even more OOP
-  cout << getName();
+  out << getName();
   if(getSelected())
   {
-    cout << ' ';
-    getSelected()->showPrompt();
+    out << ' ';
+    getSelected()->showPrompt(console);
   }
   else
   {
-    cout << '>';
+    out << '>';
   }
 }

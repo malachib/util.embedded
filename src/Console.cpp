@@ -18,7 +18,6 @@ using namespace FactUtilEmbedded;
 #endif
 
 #ifndef CONSOLE_FEATURE_COUT
-#define out cout
 #define in cin
 #endif
 
@@ -31,6 +30,7 @@ void Console::handler()
 {
   while(in.available() > 0)
   {
+    Stream& out = getOut();
     char received = in.read();
 
     if(processInput(this, received))
@@ -50,7 +50,7 @@ void Console::handler()
       // No input = just show prompt again
       if(inputPos == 0)
       {
-        showPrompt();
+        showPrompt(this);
         return;
       }
 
@@ -91,7 +91,7 @@ void Console::handler()
 
       out.println();
 
-      showPrompt();
+      showPrompt(this);
 
       inputPos = 0;
     }
@@ -108,7 +108,7 @@ void Console::handler()
         return;
       }
 #endif
-      cout << received;
+      out << received;
       inputLine[inputPos++] = received;
     }
   }

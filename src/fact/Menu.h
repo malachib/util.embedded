@@ -29,7 +29,7 @@ namespace FactUtilEmbedded
       IMenu* getSelected() const { return selected; }
 
       virtual void handleCommand(Parameters p) override;
-      virtual void showPrompt() override;
+      virtual void showPrompt(Console* console) override;
   public:
   };
 }

@@ -1,16 +1,17 @@
+#include "Console.h"
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
 
 
 
-void MenuCommand::showPrompt()
+void MenuCommand::showPrompt(Console* console)
 {
 #ifdef DEBUG3
   cout.println(F("Menu::showPrompt"));
 #endif
 
-  if(getName() != NULL) cout << getName();
+  if(getName() != NULL) console->getOut() << getName();
 
 #ifdef DEBUG3
   cout.println(F("Menu::showPrompt exit"));
