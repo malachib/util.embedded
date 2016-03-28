@@ -15,9 +15,15 @@
 #define AVR_USART_COUNT 2
 #endif
 
-#if defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATtiny85__)
+#define AVR_TIMER_COUNT 2
 #define AVR_PICOPOWER
 #define AVR_BOD_POWERDOWN
+#endif
+
+#if not defined(__AVR_ATtiny85__)
+#define AVR_TWI
+#define AVR_SPI
 #endif
 
 // define SWITCH_FN_HELPER_MAX first
@@ -206,6 +212,7 @@ namespace FactUtilEmbedded
 
     } usart;
 
+#ifdef AVR_TWI
     struct TwiControl
     {
       static inline void on()
@@ -219,8 +226,9 @@ namespace FactUtilEmbedded
       }
 
     } twi;
+#endif
 
-
+#ifdef AVR_SPI
     struct SpiControl
     {
       static inline void on()
@@ -234,6 +242,7 @@ namespace FactUtilEmbedded
       }
 
     } spi;
+#endif
 
     // be sure to choose the specific mode for the MPU at hand, as they
     // all vary slightly.  For example 32u4 & 328P have SLEEP_MODE_STANDBY, but
