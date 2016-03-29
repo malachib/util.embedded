@@ -16,10 +16,16 @@
 #define AVR_USART_COUNT 2
 #endif
 
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATtiny85__)
+#if defined(__AVR_ATtiny85__)
+// TODO: for Attiny, also do some prescalar goodies CLKPR = bit(CLKPCE) - but not in power area
+#define AVR_USI
+#define AVR_TIMER_COUNT 2
+#endif
+
+#if defined(__AVR_ATmega328P__)
 #define AVR_TIMER_COUNT 2
 #define AVR_PICOPOWER
-#define AVR_BOD_POWERDOWN
+//#define AVR_BOD_POWERDOWN // using AVR_PICOPOWER for this
 #endif
 
 #if not defined(__AVR_ATtiny85__)
@@ -247,6 +253,21 @@ namespace FactUtilEmbedded
     } spi;
 #endif
 
+#ifdef AVR_USI
+    struct UsiControl
+    {
+      static inline void on()
+      {
+        power_usi_enable();
+      }
+
+      static inline void off()
+      {
+        power_usi_disable();
+      }
+    } usi;
+#endif
+
     // experimental, not ready
     struct Command
     {
@@ -274,6 +295,8 @@ namespace FactUtilEmbedded
     // attiny85 does not
     static void sleep(uint8_t mode = SLEEP_MODE_PWR_SAVE
 #ifdef AVR_PICOPOWER
+      // it is assumed bod is on by default, and also assumed bod should be
+      // switched back on after sleep
       ,bool bod_disable = false
 #endif
     )
@@ -288,6 +311,13 @@ namespace FactUtilEmbedded
       sleep_cpu();
       // will wake up here
       sleep_disable();
+#ifdef AVR_PICOPOWER
+/*
+  // may have to explicitly define this ourselves
+  MCUCR &= ~_BV(BODS);
+ */
+      if(bod_disable) { sleep_bod_enable(); }
+#endif
       sei(); // TODO: figure out if we need that 2nd sei here.  RocketStream's lib does, but others dont
     }
 
