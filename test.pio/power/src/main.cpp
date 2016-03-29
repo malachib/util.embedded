@@ -8,10 +8,8 @@
 #include <Console.h>
 #include <Service.h>
 
-#include <Adafruit_SleepyDog.h>
-
 #ifndef ESP8266
-#include <avr/wdt.h>
+#include <fact/watchdog.h>
 #endif
 
 using namespace util;
@@ -59,8 +57,8 @@ void sleep_4(ESP_VOID)
   digitalWrite(PIN_LED, LOW);
   Power.usb.off();
   wdt_enable(WDTO_4S); // set WDTO itself
-  Watchdog.setupPreset(WDTO_4S); // set behavior to only cause an interrupt, not a reset
-  Watchdog.sleepPreset();
+  //Watchdog.setupPreset(WDTO_4S); // set behavior to only cause an interrupt, not a reset
+  //Watchdog.sleepPreset();
   digitalWrite(PIN_LED, HIGH);
 
   //while ( (PLLCSR & (1 << PLOCK)) == 0){}
