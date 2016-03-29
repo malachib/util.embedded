@@ -60,10 +60,13 @@ void sleep_4(ESP_VOID)
 #ifdef __AVR_ATmega32U4__
   Power.usb.off();
 #endif
-  // Untested code here:
-  Watchdog.isr.on();
-  Watchdog.enable(WDTO_4S);
-  Power.sleep(SLEEP_MODE_PWR_DOWN);
+  Power.sleepWithWatchdog(WDTO_4S);
+  
+  // This worked (although no multimeter was used):
+  //Watchdog.isr.on();
+  //Watchdog.enable(WDTO_4S);
+  //Power.sleep(SLEEP_MODE_PWR_DOWN);
+
   //wdt_enable(WDTO_4S); // set WDTO itself
   //Watchdog.setupPreset(WDTO_4S); // set behavior to only cause an interrupt, not a reset
   //Watchdog.sleepPreset();

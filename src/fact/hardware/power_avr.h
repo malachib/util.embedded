@@ -5,6 +5,7 @@
 
 #include <Arduino.h>
 #include "power_base.h"
+#include "watchdog_avr.h"
 #include <avr/power.h>
 #include <avr/sleep.h>
 
@@ -246,6 +247,28 @@ namespace FactUtilEmbedded
     } spi;
 #endif
 
+    // experimental, not ready
+    struct Command
+    {
+#ifdef AVR_SPI
+      bool spi;
+#endif
+#ifdef AVR_TWI
+      bool twi;
+#endif
+#ifdef AVR_PICOPOWER
+      bool bod;
+#endif
+#ifdef AVR_USB
+      bool usb;
+#endif
+
+      void sleep()
+      {
+        // TBD:
+      }
+    };
+
     // be sure to choose the specific mode for the MPU at hand, as they
     // all vary slightly.  For example 32u4 & 328P have SLEEP_MODE_STANDBY, but
     // attiny85 does not
@@ -266,6 +289,13 @@ namespace FactUtilEmbedded
       // will wake up here
       sleep_disable();
       sei(); // TODO: figure out if we need that 2nd sei here.  RocketStream's lib does, but others dont
+    }
+
+    inline void sleepWithWatchdog(uint8_t interval, uint8_t mode = SLEEP_MODE_PWR_DOWN)
+    {
+      Watchdog.isr.on();
+      Watchdog.enable(interval);
+      sleep(mode);
     }
   };
 
