@@ -28,8 +28,10 @@ ISR(WDT_vect)
 namespace FactUtilEmbedded
 {
   WatchdogControl Watchdog;
+  WatchdogControl::Control WatchdogControl::isr;
+  WatchdogControl::Control WatchdogControl::systemReset;
   
-  uint8_t WatchdogControl::buildPrescalar(const uint8_t wdto) const
+  uint8_t WatchdogControl::buildPrescalar(const uint8_t wdto)
   {
   #ifdef ATTINY
       // 0=16ms, 1=32ms,2=64ms,3=128ms,4=250ms,5=500ms
@@ -57,7 +59,7 @@ namespace FactUtilEmbedded
   #define _WDTCR WDTCSR
   #endif
   
-  void WatchdogControl::enable(const uint8_t wdto) const
+  void WatchdogControl::enable(const uint8_t wdto)
   {
     uint8_t wd_control = buildPrescalar(wdto);
     

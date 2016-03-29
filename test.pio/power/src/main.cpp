@@ -14,6 +14,8 @@
 
 using namespace util;
 
+#define COUT_BPS 115200
+
 Service svc1;
 
 MenuService menuService(svc1);
@@ -55,8 +57,14 @@ void sleep_4(ESP_VOID)
   digitalWrite(PIN_LED, HIGH);
   delay(500);
   digitalWrite(PIN_LED, LOW);
+#ifdef __AVR_ATmega32U4__
   Power.usb.off();
-  wdt_enable(WDTO_4S); // set WDTO itself
+#endif
+  // Untested code here:
+  Watchdog.isr.on();
+  Watchdog.enable(WDTO_4S);
+  Power.sleep(SLEEP_MODE_PWR_DOWN);
+  //wdt_enable(WDTO_4S); // set WDTO itself
   //Watchdog.setupPreset(WDTO_4S); // set behavior to only cause an interrupt, not a reset
   //Watchdog.sleepPreset();
   digitalWrite(PIN_LED, HIGH);
@@ -66,8 +74,10 @@ void sleep_4(ESP_VOID)
   //USBCON &= ~(1 << FRZCLK);
   //USBCON.FRZCLK = 0;   // Usb_unfreeze_clock();
 
+#ifdef __AVR_ATmega32U4__
   Power.usb.on();
-  Serial.begin(115200);
+#endif
+  cout.begin(COUT_BPS);
   delay(100);
 #endif
 }
@@ -81,7 +91,7 @@ void setup()
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, LOW);
 
-  cout.begin(115200);
+  cout.begin(COUT_BPS);
   cout << F("Starting up");
   cout.println();
 

@@ -7,7 +7,7 @@ namespace FactUtilEmbedded
 {
   class WatchdogControl
   {
-    uint8_t buildPrescalar(const uint8_t wdto) const;
+    static uint8_t buildPrescalar(const uint8_t wdto);
     
   public:
     struct Control
@@ -29,8 +29,8 @@ namespace FactUtilEmbedded
       bool enabled = false;
     };
 
-    Control isr;
-    Control systemReset;
+    static Control isr;
+    static Control systemReset;
     
     // "Reset the watchdog timer. When the watchdog timer is enabled, 
     // a call to this instruction is required before the timer expires, 
@@ -39,7 +39,7 @@ namespace FactUtilEmbedded
     static void reset() { wdt_reset(); }
     static void disable() { wdt_disable(); }
     
-    void enable(const uint8_t wdto) const;
+    static void enable(const uint8_t wdto);
   };
   
   extern WatchdogControl Watchdog;
