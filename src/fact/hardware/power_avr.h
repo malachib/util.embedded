@@ -5,33 +5,9 @@
 
 #include <Arduino.h>
 #include "power_base.h"
-#include "watchdog_avr.h"
 #include <avr/power.h>
 #include <avr/sleep.h>
-
-#if defined(__AVR_ATmega32U4__)
-// https://harizanov.com/2013/02/power-saving-techniques-on-the-atmega32u4/
-#define AVR_USB
-#define AVR_TIMER_COUNT 4
-#define AVR_USART_COUNT 2
-#endif
-
-#if defined(__AVR_ATtiny85__)
-// TODO: for Attiny, also do some prescalar goodies CLKPR = bit(CLKPCE) - but not in power area
-#define AVR_USI
-#define AVR_TIMER_COUNT 2
-#endif
-
-#if defined(__AVR_ATmega328P__)
-#define AVR_TIMER_COUNT 2
-#define AVR_PICOPOWER
-//#define AVR_BOD_POWERDOWN // using AVR_PICOPOWER for this
-#endif
-
-#if not defined(__AVR_ATtiny85__)
-#define AVR_TWI
-#define AVR_SPI
-#endif
+#include "avr/features.h"
 
 // define SWITCH_FN_HELPER_MAX first
 #define SWITCH_FN_HELPER(index, prefix, suffix) \
@@ -304,6 +280,9 @@ namespace FactUtilEmbedded
       set_sleep_mode(mode);
       cli();
       sleep_enable();
+      // beware: this is the preferred line to set up recurring ISRs, according
+      // to http://playground.arduino.cc/Learning/ArduinoSleepCode
+      // however, it seems to me merely setting cli() earlier should do the trick
 #ifdef AVR_PICOPOWER
       if(bod_disable) { sleep_bod_disable(); }
 #endif
@@ -319,13 +298,6 @@ namespace FactUtilEmbedded
       if(bod_disable) { sleep_bod_enable(); }
 #endif
       sei(); // TODO: figure out if we need that 2nd sei here.  RocketStream's lib does, but others dont
-    }
-
-    inline void sleepWithWatchdog(uint8_t interval, uint8_t mode = SLEEP_MODE_PWR_DOWN)
-    {
-      Watchdog.isr.on();
-      Watchdog.enable(interval);
-      sleep(mode);
     }
   };
 
