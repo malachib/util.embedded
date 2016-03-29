@@ -27,6 +27,7 @@ extern CONSOLE_STREAM_EXTERN cout;
 // stuff will compile (and be optimized out)
 // Beware not to actually use Console/Menu stuff with this DummyStream
 #if !defined(cout) and !defined(CONSOLE_STREAM_EXTERN)
+#define USE_DUMMY_STREAM
 class DummyStream : public Stream
 {
 public:

@@ -21,7 +21,7 @@ using namespace FactUtilEmbedded;
 #define in cin
 #endif
 
-#if !defined(CONSOLE_STREAM_EXTERN)
+#ifdef USE_DUMMY_STREAM
 DummyStream _dummyStream;
 #endif
 
