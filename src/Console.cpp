@@ -18,7 +18,11 @@ using namespace FactUtilEmbedded;
 #endif
 
 #ifndef CONSOLE_FEATURE_COUT
+#ifndef cin
+#define in cout
+#else
 #define in cin
+#endif
 #endif
 
 #ifdef USE_DUMMY_STREAM

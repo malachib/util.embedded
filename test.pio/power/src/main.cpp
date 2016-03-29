@@ -14,7 +14,12 @@
 
 using namespace util;
 
+
+#ifdef __AVR_ATtiny85__
+#define COUT_BPS 9600
+#else
 #define COUT_BPS 115200
+#endif
 
 Service svc1;
 
@@ -29,9 +34,18 @@ ConsoleMenu console(&menu);
 #define ESP_VOID
 #endif
 
+#ifndef __AVR_ATtiny85__
 #define PIN_LED 17
+#endif
 
+#ifdef __AVR_ATtiny85__
+#include <SoftwareSerial.h>
 
+#define PIN_RX PB0
+#define PIN_TX PB1
+
+SoftwareSerial cout(PIN_RX, PIN_TX);
+#endif
 
 void powerdown_adc(ESP_VOID)
 {
@@ -50,6 +64,7 @@ void powerdown_usb(ESP_VOID)
 void sleep_4(ESP_VOID)
 {
 #ifndef ESP8266
+#ifdef PIN_LED
   digitalWrite(PIN_LED, HIGH);
   delay(500);
   digitalWrite(PIN_LED, LOW);
@@ -57,6 +72,7 @@ void sleep_4(ESP_VOID)
   digitalWrite(PIN_LED, HIGH);
   delay(500);
   digitalWrite(PIN_LED, LOW);
+#endif
 #ifdef __AVR_ATmega32U4__
   Power.usb.off();
 #endif
@@ -67,10 +83,9 @@ void sleep_4(ESP_VOID)
   //Watchdog.enable(WDTO_4S);
   //Power.sleep(SLEEP_MODE_PWR_DOWN);
 
-  //wdt_enable(WDTO_4S); // set WDTO itself
-  //Watchdog.setupPreset(WDTO_4S); // set behavior to only cause an interrupt, not a reset
-  //Watchdog.sleepPreset();
+#ifdef PIN_LED
   digitalWrite(PIN_LED, HIGH);
+#endif
 
   //while ( (PLLCSR & (1 << PLOCK)) == 0){}
   //while (PLLCSR.PLOCK != 1);   // while (!Pll_ready());
@@ -91,8 +106,10 @@ CREATE_MENUFUNCTION(menu_sleep4, sleep_4, "Sleep for 4 seconds");
 
 void setup()
 {
+#ifdef PIN_LED
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, LOW);
+#endif
 
   cout.begin(COUT_BPS);
   cout << F("Starting up");
