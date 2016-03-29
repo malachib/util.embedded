@@ -42,7 +42,7 @@ void powerdown_adc(ESP_VOID)
 
 void powerdown_usb(ESP_VOID)
 {
-#ifndef ESP8266
+#if not defined(ESP8266) and not defined(__AVR_ATtiny85__)
   Power.usb.off();
 #endif
 }
@@ -61,7 +61,7 @@ void sleep_4(ESP_VOID)
   Power.usb.off();
 #endif
   Power.sleepWithWatchdog(WDTO_4S);
-  
+
   // This worked (although no multimeter was used):
   //Watchdog.isr.on();
   //Watchdog.enable(WDTO_4S);

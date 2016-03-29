@@ -21,6 +21,9 @@ using namespace FactUtilEmbedded;
 #define in cin
 #endif
 
+#if !defined(CONSOLE_STREAM_EXTERN)
+DummyStream _dummyStream;
+#endif
 
 // TODO: refactor code so that handler is an inline call and processInput
 // contains all the smarts (not inline call).  This way, we can enable/disable
