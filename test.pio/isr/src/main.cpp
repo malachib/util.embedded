@@ -5,7 +5,7 @@ using namespace FactUtilEmbedded;
 
 void setup()
 {
-  auto ctx = Interrupt.getContext(7);
+  auto ctx = Interrupt.getContext(10);
   //ctx.write();
 
   InterruptControl::PinChangeContextMulti multi;

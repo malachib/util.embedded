@@ -117,10 +117,17 @@ namespace FactUtilEmbedded
     static PinChangeContext getContext(uint8_t pin)
     {
 #ifdef __AVR_ATmega32U4__
+      // building this based on what I see in pins_arduino for the 32u4
       switch(pin)
       {
-        case 7: return PinChangeContext(0, 10);
+        case  9: return PinChangeContext(0, 5);
+        case 10: return PinChangeContext(0, 6);
+        case 11: return PinChangeContext(0, 7);
+        case 14: return PinChangeContext(0, 3); // MISO/PB3
+        case 16: return PinChangeContext(0, 2); // MOSI/PB2
       }
+#elif __AVR_ATtiny85__
+#elif __AVR_ATmega328P__
 #endif
     }
   };
