@@ -6,6 +6,7 @@
 #define AVR_PCICR_COUNT 3
 #elif __AVR_ATtiny85__
 #define AVR_PCICR_COUNT 1
+#define PCMSK0 PCMSK
 #else
 #error Unsupported MPU
 #endif
@@ -28,7 +29,12 @@ namespace FactUtilEmbedded
 
       void write()
       {
+#ifdef __AVR_ATtiny85__
+        // turn on both external and pin change interrupts
+        GIMSK = 0b01100000;
+#else
         PCICR = _PCICR;
+#endif
 
         if(_PCICR & 0b00000001)
         {
@@ -74,25 +80,30 @@ namespace FactUtilEmbedded
 
         if(c.getPCICR() & 0b00000001)
         {
-          PCMSK0 |= c.getPCMSK();
+          _PCMSK0 |= c.getPCMSK();
         }
 #if AVR_PCICR_COUNT > 1
         if(c.getPCICR() & 0b00000010)
         {
-          PCMSK1 |= c.getPCMSK();
+          _PCMSK1 |= c.getPCMSK();
         }
 #endif
 #if AVR_PCICR_COUNT > 2
         if(c.getPCICR() & 0b00000100)
         {
-          PCMSK2 |= c.getPCMSK();
+          _PCMSK2 |= c.getPCMSK();
         }
 #endif
       }
 
       void write()
       {
+#ifdef __AVR_ATtiny85__
+        // turn on both external and pin change interrupts
+        GIMSK = 0b01100000;
+#else
         PCICR = _PCICR;
+#endif
 
         if(_PCMSK0 != 0)
         {
@@ -127,6 +138,11 @@ namespace FactUtilEmbedded
         case 16: return PinChangeContext(0, 2); // MOSI/PB2
       }
 #elif __AVR_ATtiny85__
+      switch(pin)
+      {
+        case PB0: return PinChangeContext(0, 0);
+        case PB1: return PinChangeContext(0, 1);
+      }
 #elif __AVR_ATmega328P__
 #endif
     }

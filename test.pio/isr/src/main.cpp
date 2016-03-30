@@ -1,11 +1,21 @@
 #include <Arduino.h>
 #include <fact/interrupt.h>
 
+// Including this only because shared platformini file expects it
+// however, linker optimizes it back out as long as we don't really use it
+#include <SoftwareSerial.h>
+
 using namespace FactUtilEmbedded;
+
+//#define PIN 10;
 
 void setup()
 {
+#ifndef __AVR_ATtiny85__
   auto ctx = Interrupt.getContext(10);
+#else
+  auto ctx = Interrupt.getContext(PB0);
+#endif
   //ctx.write();
 
   InterruptControl::PinChangeContextMulti multi;
