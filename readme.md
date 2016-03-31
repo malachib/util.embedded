@@ -1,8 +1,6 @@
 Util.Embedded
 =============
 
-Reusable low-level utilities for embedded development
-
 Licensed under GPL v3
 
 Branches:
@@ -13,9 +11,13 @@ dev: [![Build Status](https://travis-ci.org/malachib/util.embedded.svg?branch=de
 Overview
 --------
 
-Comprises handy functionality for use in your cross-platform endeavors:
+Comprises reusable low-level functionality for use in your embedded and/or 
+cross-platform endeavors.
+
+Code is Arduino and PlatformIO friendly
 
 * Debug console: Menuing system for serial port (or other stream) control code to run diagnostics and acquire status
+    * Telnet capable (coming soon)
 * Linked lists, single and doubly linked
 * Circular buffer
 * C#-like event code
@@ -24,6 +26,14 @@ Comprises handy functionality for use in your cross-platform endeavors:
  * Canned Wifi Service for use with ESP8266 (must define MQTT_TYPE_WIFI)
 * Abstract driver layer (work in progress):
  * GNSS (GPS)
+* Hardware helper layer - strong effort put to be HAL-like, but no promises =)
+    * AVR
+        * power management
+        * sleep
+        * watchdog
+        * pin change interrupts
+    * SAM
+        * sleep (coming soon)
  
 Data/Memory code size
 ---------------------
@@ -39,7 +49,15 @@ its appetite:
   MEMORY_OPT_CODE is not enabled)
  * CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND: Enable 'tab' key to auto-complete a menu
    name in console mode
+ * CONSOLE_FEATURE_COUT: Presently disabled by default, this switches Console code 
+   from global singular-stream to Console managing its own private stream; useful
+   for multiple consoles speaking over different streams (i.e. Serial and telnet)
 * DRIVER_FEATURE_VTABLE_SUPPRESS: Disables virtual tables/polymorphism for drivers
+
+Other preprocessor defines
+--------------------------
+
+(coming soon)
 
 
 Code paradigm:
@@ -49,3 +67,16 @@ Code paradigm:
 * layer 3: low-level.  buffer pointers and size fields used
 * layer 4: reserved
 * layer 5: mid-level.  virtual functions allowed
+
+Hardware Compatibility
+----------------------
+
+Tested and works on the following:
+
+Device               | Features 
+-------------------- | --------
+ATmega328P           |
+ESP8266 12E          |
+ATtiny85             |
+ATSAMD21G            |
+x86                  |
