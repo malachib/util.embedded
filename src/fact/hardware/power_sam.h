@@ -9,6 +9,7 @@
 //   https://github.com/arduino-libraries/RTCZero/blob/master/src/RTCZero.cpp
 // Note their deviation from the official ASF code:
 //   https://github.com/avrxml/asf/blob/4a77ebe534c2f0386730ad8d3a03168f22c23e22/sam0/drivers/system/power/power_sam_l/power.h
+// Note also Adafruit made a copy of ASF for themselves https://github.com/adafruit/Adafruit_ASFcore
 // official code never touches SCB reg, and the non-official code doesn't touch PM->SLEEP.reg as often
 
 #define GENERIC_CONTROL_STRUCT(name, instance, target) \
@@ -18,6 +19,8 @@ struct name \
   static void off() { target = 0; } \
 } instance;
 
+// Since SAM0 series has a full blown Power Manager, this class maps largely to
+// that
 namespace FactUtilEmbedded
 {
   class PowerControl
@@ -31,30 +34,43 @@ namespace FactUtilEmbedded
       system_sleep();
     }*/
     
-    /*
-    template <class T>
-    struct GenericControl
-    {
-      static void on() { T = 1; }
-      static void off() { T = 0; }
-    };*/
-    
-    
     struct ClockControl
     {
-      //GenericControl<PM->APBBMASK.bit.USB_> usb2;
-
-      // NOTE: none of these are touching the AHB USB clock , TBD...
       GENERIC_CONTROL_STRUCT(Usb2, usb, PM->APBBMASK.bit.USB_);
       
-      struct UsbControl
+      struct ApbControl
       {
-        //void on() { PM->APBBMASK |= 1 << USB; }
-        //void off() { PM->APBBMASK &= ~(1 << USB); }
-        static void on() { PM->APBBMASK.bit.USB_ = 1; }
-        static void off() { PM->APBBMASK.bit.USB_ = 0; }
-        
-      } _usb;
+        class ApbItem
+        {
+          const uint8_t bus;
+          
+        public:
+          ApbItem(const uint8_t bus) : bus(bus) {}
+          
+          void setDivider(uint8_t p)
+          {
+            switch(bus)
+            {
+              case 0: PM->APBASEL.reg = p; break;
+              case 1: PM->APBBSEL.reg = p; break;
+              case 2: PM->APBCSEL.reg = p; break;
+            }
+          }
+
+          template <uint8_t p>
+          void setDivider()
+          {
+            static_assert(p < 8, "prescalar must be less than 8");
+            setDivider(p);
+          }
+          
+        };
+
+        const ApbItem operator[](uint8_t bus) const
+        {
+          return ApbItem(bus);
+        }
+      } apb;
       
     };
 
@@ -75,7 +91,14 @@ namespace FactUtilEmbedded
       void off() {}
     } adc;
 
-
+    static void sleep()
+    {
+      // Data Synchronization Barrier
+      __DSB();
+      // wait for interrupt to wake us up
+      __WFI();
+    }
+    
     // from datasheet:
     // IDLE mode: The CPU is stopped. Optionally, some synchronous clock domains are stopped,
     // depending on the IDLE argument. Regulator operates in normal mode.
@@ -87,24 +110,21 @@ namespace FactUtilEmbedded
     // 2: CPU, AHB and APB domains stopped
     //
     // code not complete
-    void idle(uint8_t level)
+    static void idle(uint8_t level)
     {
       SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
       PM->SLEEP.reg = level;
-      
-      __DSB();
-      // wait for interrupt to wake us up
-      __WFI();
+      sleep();
     }
     
     //
     // In STANDDBY sleep mode, the power manager is frozen and is able to go back to ACTIVE mode upon
     // any asynchronous interrupt
-    void standby()
+    static void standby()
     {
+      // enable deepsleep AKA standby mode
       SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
-      __DSB();
-      __WFI();
+      sleep();
     }
 
     // non-cpu clocks can temporarily wakeup to then trigger (or not) a wakeup
