@@ -63,7 +63,7 @@ void powerdown_usb(ESP_VOID)
 
 void sleep_4(ESP_VOID)
 {
-#ifndef ESP8266
+#if not defined(ESP8266) and not defined(SAMD_SERIES)
 #ifdef PIN_LED
   digitalWrite(PIN_LED, HIGH);
   delay(500);
@@ -115,7 +115,7 @@ void setup()
   cout << F("Starting up");
   cout.println();
 
-#ifndef ESP8266
+#if not defined(ESP8266) and not defined(SAMD_SERIES)
   Power.timer[1].off();
   Power.timer[1].on();
 #endif
