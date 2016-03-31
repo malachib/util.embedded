@@ -3,5 +3,9 @@
 #if SAM_SERIES
 #include "power_sam.h"
 
-FactUtilEmbedded::PowerControl Power;
+namespace FactUtilEmbedded
+{
+  PowerControl Power;
+  PowerControl::ClockControl PowerControl::clock;
+}
 #endif
