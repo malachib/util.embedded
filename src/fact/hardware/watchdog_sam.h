@@ -8,6 +8,7 @@ namespace FactUtilEmbedded
   class WatchdogControl
   {
   public:
+#ifdef ASF_ENABLED
     static void reset() { wdt_reset_count(); }
     static void enable(wdt_period timeout_period)
     {
@@ -27,5 +28,6 @@ namespace FactUtilEmbedded
     {
       return wdt_register_callback(callback, WDT_CALLBACK_EARLY_WARNING);
     }
+#endif
   };
 }
