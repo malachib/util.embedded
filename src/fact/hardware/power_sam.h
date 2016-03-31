@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sam.h>
+
 // good overview of SAMD power management: http://www.atmel.com/Images/Atmel-42248-SAM-D20-Power-Measurements_ApplicationNote_AT04188.pdf
 
 // sleep modes http://asf.atmel.com/docs/3.16.0/samd21/html/group__asfdoc__sam0__system__group.html#asfdoc_sam0_system_module_overview_sleep_mode
@@ -91,8 +93,16 @@ namespace FactUtilEmbedded
       void off() {}
     } adc;
 
-    static void sleep()
+    static inline void sleep()
     {
+      // lifted straight from ASF.  Note: I think I'd want this as a default
+      // system wide anyway, so consider moving this elsewhere
+#if SAMD_SERIES
+      /* Errata: Make sure that the Flash does not power all the way down
+       * when in sleep mode. */
+      NVMCTRL->CTRLB.bit.SLEEPPRM = NVMCTRL_CTRLB_SLEEPPRM_DISABLED_Val;
+#endif
+      
       // Data Synchronization Barrier
       __DSB();
       // wait for interrupt to wake us up
