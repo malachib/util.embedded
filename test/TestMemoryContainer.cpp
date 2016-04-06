@@ -17,11 +17,17 @@ SCENARIO( "Memry Container tests", "[buffer]" )
   GIVEN("layer 2 testing")
   {
     uint8_t _buffer[1024];
+    int _buffer2[10];
+    
     layer2::MemoryContainer<1024> buf(_buffer);
+    layer2::Array<int, 10> a(_buffer2);
     
     buf.clear();
     buf.getData();
+    a.clear();
+    a[10] = 7;
     
+    REQUIRE(a[10] == 7);
     REQUIRE(buf.getSize() == 1024);
   }
   GIVEN("layer 3 testing")

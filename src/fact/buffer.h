@@ -3,6 +3,10 @@
 #include <Arduino.h>
 #include <string.h>
 
+// TODO: utilize some of these templating goodies 
+// to auto-detect array size (maybe? with specialization?)
+// http://stackoverflow.com/questions/437150/can-someone-explain-this-template-code-that-gives-me-the-size-of-an-array
+
 namespace FactUtilEmbedded
 {
   namespace layer1
@@ -23,7 +27,17 @@ namespace FactUtilEmbedded
       
     public:
       void clear() { memset(data, 0, size); }
-      uint8_t* const getData() const { return data; }
+      uint8_t* getData() const { return data; }
+    };
+    
+    template <class T, uint16_t size>
+    class Array : public MemoryContainer<size * sizeof(T)>
+    {
+    public:
+      // FIX: definitely will hit data alignment issues here
+      T* getData() const { return (T*) getData(); }
+      T& getValue(uint16_t index) const { return getData()[index]; }
+      T& operator[](uint16_t index) const { return getValue(index); }
     };
   }
   
@@ -36,7 +50,7 @@ namespace FactUtilEmbedded
     public:
       MemoryContainerBase(void* const data) : data(data) {}
       
-      void* const getData() const { return data; }
+      void* getData() const { return data; }
     };
     
     template <uint16_t size>
@@ -48,6 +62,18 @@ namespace FactUtilEmbedded
       MemoryContainer(void* const data) : layer2::MemoryContainerBase(data) {}
       
       void clear() { memset(getData(), 0, size); }
+    };
+    
+    template <class T, uint16_t size>
+    class Array : public MemoryContainer<size * sizeof(T)>
+    {
+    public:
+      Array(T* const data) : MemoryContainer<size * sizeof(T)>(data) {}
+      
+      // FIX: definitely will hit data alignment issues here
+      T* getData() const { return (T*) MemoryContainerBase::getData(); }
+      T& getValue(uint16_t index) const { return getData()[index]; }
+      T& operator[](uint16_t index) const { return getValue(index); }
     };
   }
   
@@ -66,6 +92,19 @@ namespace FactUtilEmbedded
       TSize getSize() const { return size; }
       void clear() { memset(getData(), 0, size); }
     };
+
+    template <class T, class TSize = uint16_t>
+    class Array : public MemoryContainer<TSize>
+    {
+    public:
+      Array(T* const data, TSize size) : 
+        MemoryContainer<TSize>(data, size * sizeof(T)) {}
+      
+      // FIX: definitely will hit data alignment issues here
+      T* getData() const { return (T*) MemoryContainer<TSize>::getData(); }
+      T& getValue(uint16_t index) const { return getData()[index]; }
+      T& operator[](uint16_t index) const { return getValue(index); }
+    };
   }
   
   namespace layer5
@@ -75,6 +114,12 @@ namespace FactUtilEmbedded
     {
       virtual TSize getSize() const = 0;
       virtual void clear() = 0;
+    };
+    
+    template <class T, class TSize = uint16_t>
+    class IArray
+    {
+      virtual T& operator[](TSize index) = 0;
     };
     
     template <class TSize = uint16_t>
