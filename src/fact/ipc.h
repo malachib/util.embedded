@@ -61,3 +61,29 @@ public:
     parameters.invoke(func);
   }
 };
+
+class IPCHelper
+{
+public:
+
+  //IPCMessage
+};
+
+
+typedef void (*_test_func1)();
+typedef void (*_test_func2)(int);
+
+template<class TOut> TOut createIPCMessage(_test_func1);
+//template<class TOut, class TIn> createIPCMessage(void (*func)(), TIn in);
+
+//template<>
+IPCMessage<ParameterClass_1<int>, _test_func1> createIPCMessage(_test_func1 func1)
+{
+  return IPCMessage<ParameterClass_1<int>, _test_func1>();
+}
+
+
+IPCMessage<ParameterClass_2<int, int>, _test_func2> createIPCMessage(_test_func2 func1)
+{
+  return IPCMessage<ParameterClass_2<int, int>, _test_func2>();
+}
