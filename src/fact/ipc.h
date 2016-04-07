@@ -29,6 +29,7 @@ public:
     return func(param1);
   }
 
+  // TClass and TIn1 must always match
   template <class TClass, class TOut>
   TOut invoke(TOut (TClass::*func)())
   {
@@ -51,6 +52,7 @@ public:
   }
 
 
+  // TClass and TIn1 must always match
   template <class TClass, class TOut>
   TOut invoke(TOut (TClass::*func)(TIn2))
   {
