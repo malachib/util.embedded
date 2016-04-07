@@ -47,7 +47,7 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
   }
   WHEN("Doing 1 parameter")
   {
-    auto m = IPCHelper::create(test2_ipc, 32.0);
+    auto m = IPCHelper::create(test2_ipc, 32.0F);
     /*
     auto m = createIPCMessage(test2_ipc);
     m.parameters.param1 = 32; */

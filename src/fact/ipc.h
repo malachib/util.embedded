@@ -167,15 +167,37 @@ IPCMessage<ParameterClass_2<T*, TIn1>, void (T::*)(TIn1)> createIPCMessage(void 
 class IPCHelper
 {
 public:
-  template <class TFunc>
-  static IPCMessage<ParameterClass_0, TFunc> create(TFunc func)
+  // ditching template class TFunc trick because:
+  // a) it doesn't gracefully resolve func ref vs func ptr
+  // b) it forces TIn resolution to hang primarily off of create parameters
+  //    vs actual function parameters, and we'd prefer function parameters
+
+/*
+  template <class TFunc, class TIn1>
+  static IPCMessage<ParameterClass_1<TIn1>, TFunc> _create(TFunc func, TIn1 in1)
+  {
+    auto m = createIPCMessage(func);
+    m.parameters.param1 = in1;
+    return m;
+  }*/
+
+
+  //template <class TOut>
+  static IPCMessage<ParameterClass_0, void (&)()> create(void (&func)())
   {
     return createIPCMessage(func);
   }
 
+  template <class TIn1>
+  static IPCMessage<ParameterClass_1<TIn1>, void (&)(TIn1)> create(void (&func)(TIn1), TIn1 in1)
+  {
+    auto m = createIPCMessage(func);
+    m.parameters.param1 = in1;
+    return m;
+  }
 
-  template <class TFunc, class TIn1>
-  static IPCMessage<ParameterClass_1<TIn1>, TFunc> create(TFunc func, TIn1 in1)
+  template <class TClass>
+  static IPCMessage<ParameterClass_1<TClass>, void (TClass::*)()> create(void (TClass::*func)(), TClass in1)
   {
     auto m = createIPCMessage(func);
     m.parameters.param1 = in1;
