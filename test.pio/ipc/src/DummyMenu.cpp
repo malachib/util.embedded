@@ -1,17 +1,20 @@
 #include <fact/Menu.h>
+#include <fact/MenuFunction.h>
 
 using namespace util;
 
 #include "DummyMenu.h"
 
+
 MenuGeneric menuGeneric1(dummyHandler);
 MenuGeneric menuGeneric2(dummyHandler);
-
+CREATE_MENUFUNCTION(menuInvoker, testInvoker, "Test out CallHolder class");
 
 DummyMenu::DummyMenu()
 {
   add(menuGeneric1, F("generic1"), F("desc for generic1"));
   add(menuGeneric2, F("generic2"), F("desc for generic2"));
+  add(menuInvoker);
   //add(menuService, F("svc1"), F("desc for svc1"));
 }
 

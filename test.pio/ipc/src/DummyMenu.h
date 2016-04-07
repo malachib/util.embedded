@@ -10,3 +10,4 @@ public:
 };
 
 void dummyHandler(IMenu::Parameters p);
+void testInvoker();
