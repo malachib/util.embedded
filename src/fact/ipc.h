@@ -7,6 +7,8 @@
 //
 // note also: TOut usage may not be compatible with ESP8266 compiler
 
+namespace FactUtilEmbedded
+{
 class ParameterClass_0
 {
 public:
@@ -98,7 +100,7 @@ public:
 class IPCHelper;
 
 template <class TParameters, class TFunc>
-class IPCMessage : public IInvoker
+class CallHolder : public IInvoker
 {
   friend IPCHelper;
 
@@ -108,7 +110,7 @@ protected:
 public:
   TParameters parameters;
 
-  IPCMessage(TFunc func) : func(func) {}
+  CallHolder(TFunc func) : func(func) {}
 
   virtual void invoke() override
   {
@@ -127,44 +129,44 @@ public:
 
 /*
   template <class TFunc, class TIn1>
-  static IPCMessage<ParameterClass_1<TIn1>, TFunc> _create(TFunc func, TIn1 in1)
+  static CallHolder<ParameterClass_1<TIn1>, TFunc> _create(TFunc func, TIn1 in1)
   {
-    auto m = createIPCMessage(func);
+    auto m = createCallHolder(func);
     m.parameters.param1 = in1;
     return m;
   }*/
 
 
   template <class TOut>
-  static IPCMessage<ParameterClass_0, TOut (&)()> create(TOut (&func)())
+  static CallHolder<ParameterClass_0, TOut (&)()> create(TOut (&func)())
   {
-    IPCMessage<ParameterClass_0, TOut (&)()> m(func);
+    CallHolder<ParameterClass_0, TOut (&)()> m(func);
     return m;
   }
 
   template <class TOut, class TIn1>
-  static IPCMessage<ParameterClass_1<TIn1>, TOut (&)(TIn1)> create(TOut (&func)(TIn1), TIn1 in1)
+  static CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)> create(TOut (&func)(TIn1), TIn1 in1)
   {
-    IPCMessage<ParameterClass_1<TIn1>, TOut (&)(TIn1)> m(func);
+    CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)> m(func);
 
     m.parameters.param1 = in1;
     return m;
   }
 
   template <class TOut, class TClass>
-  static IPCMessage<ParameterClass_1<TClass*>, TOut (TClass::*)()> create(TOut (TClass::*func)(), TClass* in1)
+  static CallHolder<ParameterClass_1<TClass*>, TOut (TClass::*)()> create(TOut (TClass::*func)(), TClass* in1)
   {
-    IPCMessage<ParameterClass_1<TClass*>, TOut (TClass::*)()> m(func);
+    CallHolder<ParameterClass_1<TClass*>, TOut (TClass::*)()> m(func);
 
     m.parameters.param1 = in1;
     return m;
   }
 
   template <class TOut, class TIn1, class TIn2>
-  static IPCMessage<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)>
+  static CallHolder<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)>
     create(TOut (&func)(TIn1, TIn2), TIn1 in1, TIn2 in2)
   {
-    IPCMessage<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)> m(func);
+    CallHolder<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)> m(func);
 
     m.parameters.param1 = in1;
     m.parameters.param2 = in2;
@@ -172,13 +174,14 @@ public:
   }
 
   template <class TOut, class TClass, class TIn2>
-  static IPCMessage<ParameterClass_2<TClass*, TIn2>, TOut (TClass::*)(TIn2)>
+  static CallHolder<ParameterClass_2<TClass*, TIn2>, TOut (TClass::*)(TIn2)>
     create(TOut (TClass::*func)(TIn2), TClass* in1, TIn2 in2)
   {
-    IPCMessage<ParameterClass_2<TClass*, TIn2>, TOut (TClass::*)(TIn2)> m(func);
+    CallHolder<ParameterClass_2<TClass*, TIn2>, TOut (TClass::*)(TIn2)> m(func);
 
     m.parameters.param1 = in1;
     m.parameters.param2 = in2;
     return m;
   }
 };
+}
