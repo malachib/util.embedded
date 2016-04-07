@@ -43,29 +43,24 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
 {
   WHEN("Doing 0 parameter")
   {
-    createIPCMessage(test1_ipc).invoke();
+    //createIPCMessage(test1_ipc).invoke();
+    IPCHelper::create(test1_ipc).invoke();
   }
   WHEN("Doing 1 parameter")
   {
     auto m = IPCHelper::create(test2_ipc, 32.0F);
-    /*
-    auto m = createIPCMessage(test2_ipc);
-    m.parameters.param1 = 32; */
     m.invoke();
   }
   WHEN("Doing 2 parameter")
   {
-    auto m2 = createIPCMessage(test3_ipc);
-    m2.parameters.param1 = 7;
-    m2.parameters.param2 = "lucky #7";
+    auto m2 = IPCHelper::create(test3_ipc, 7.0F, "lucky #7");
     m2.invoke();
   }
   WHEN("Doing 0 parameter, instance method")
   {
     TestParameterClass tpc;
 
-    auto m = createIPCMessage(&TestParameterClass::test);
-    m.parameters.param1 = &tpc;
+    auto m = IPCHelper::create(&TestParameterClass::test, &tpc);
     m.invoke();
   }
   WHEN("Doing 1 parameter, instance method")
@@ -73,10 +68,6 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     TestParameterClass tpc;
 
     auto m = IPCHelper::create(&TestParameterClass::test2, &tpc, 7);
-    /*auto m = createIPCMessage(&TestParameterClass::test2);
-    m.parameters.param1 = &tpc;
-    m.parameters.param2 = 7;
-    m.invoke(); */
 
     IInvoker* invoker = &m;
 
