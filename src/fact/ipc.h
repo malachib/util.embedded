@@ -71,7 +71,6 @@ public:
 
 
 typedef void (*_test_func1)();
-typedef void (*_test_func2)(int);
 
 template<class TOut> TOut createIPCMessage(_test_func1);
 //template<class TOut, class TIn> createIPCMessage(void (*func)(), TIn in);
@@ -82,8 +81,10 @@ IPCMessage<ParameterClass_1<int>, _test_func1> createIPCMessage(_test_func1 func
   return IPCMessage<ParameterClass_1<int>, _test_func1>();
 }
 
-
-IPCMessage<ParameterClass_2<int, int>, _test_func2> createIPCMessage(_test_func2 func1)
+template<class TIn>
+IPCMessage<ParameterClass_1<TIn>, void (*)(TIn)> createIPCMessage(void (*func)(TIn))
 {
-  return IPCMessage<ParameterClass_2<int, int>, _test_func2>();
+  IPCMessage<ParameterClass_1<TIn>, void (*)(TIn)>() m;
+  return m;
+  //m.parameters.param1 =
 }
