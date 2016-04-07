@@ -22,6 +22,12 @@ public:
   {
     return func(param1);
   }
+
+  template <class TClass, class TOut>
+  TOut invoke(TOut (TClass::*func)())
+  {
+    return ((*param1).*func)();
+  }
 };
 
 template <class TIn1, class TIn2>
@@ -36,6 +42,13 @@ public:
   TOut invoke(TOut (*func)(TIn1, TIn2))
   {
     return func(ParameterClass_1<TIn1>::param1, param2);
+  }
+
+
+  template <class TClass, class TOut>
+  TOut invoke(TOut (TClass::*func)(TIn2))
+  {
+    return ((*ParameterClass_1<TIn1>::param1).*func)(param2);
   }
 };
 
@@ -61,32 +74,45 @@ class ParameterReturnClass
   TOut returnValue;
 };
 
+class IInvoker
+{
+public:
+  /* this doesn't work
+  template <class TOut>
+  virtual TOut invoke() = 0; */
+
+  virtual void invoke() = 0;
+};
+
+
+class IPCHelper;
 
 template <class TParameters, class TFunc>
-class IPCMessage
+class IPCMessage : public IInvoker
 {
+  friend IPCHelper;
+
 protected:
   const TFunc func;
 
 public:
-  IPCMessage(TFunc func) : func(func) {}
-
-  // FIX: temporarily making these public
   TParameters parameters;
 
-  void invoke()
+  IPCMessage(TFunc func) : func(func) {}
+
+  virtual void invoke() override
   {
     parameters.invoke(func);
   }
 };
 
-class IPCHelper
+template <class TParameters, class TFunc>
+class IPCMessageMethod : IPCMessage<TParameters, TFunc>
 {
-public:
-
-  //IPCMessage
+  void invoke()
+  {
+  }
 };
-
 
 //template<class TOut> TOut createIPCMessage(_test_func1);
 
@@ -113,3 +139,48 @@ IPCMessage<ParameterClass_2<TIn1, TIn2>, void (*)(TIn1, TIn2)> createIPCMessage(
   return m;
   //m.parameters.param1 =
 }
+
+
+template <class T>
+IPCMessage<ParameterClass_1<T*>, void (T::*)()> createIPCMessage(void (T::*func)())
+{
+  IPCMessage<ParameterClass_1<T*>, void (T::*)()> m(func);
+  return m;
+}
+
+
+template <class T, class TIn1>
+IPCMessage<ParameterClass_2<T*, TIn1>, void (T::*)(TIn1)> createIPCMessage(void (T::*func)(TIn1))
+{
+  IPCMessage<ParameterClass_2<T*, TIn1>, void (T::*)(TIn1)> m(func);
+  return m;
+}
+
+class IPCHelper
+{
+public:
+  template <class TFunc>
+  static IPCMessage<ParameterClass_0, TFunc> create(TFunc func)
+  {
+    return createIPCMessage(func);
+  }
+
+
+  template <class TFunc, class TIn1>
+  static IPCMessage<ParameterClass_1<TIn1>, TFunc> create(TFunc func, TIn1 in1)
+  {
+    auto m = createIPCMessage(func);
+    m.parameters.param1 = in1;
+    return m;
+  }
+
+  template <class TFunc, class TIn1, class TIn2>
+  static IPCMessage<ParameterClass_2<TIn1, TIn2>, TFunc> create(TFunc func, TIn1 in1, TIn2 in2)
+  {
+    auto m = createIPCMessage(func);
+    m.parameters.param1 = in1;
+    m.parameters.param2 = in2;
+    return m;
+  }
+  //IPCMessage
+};
