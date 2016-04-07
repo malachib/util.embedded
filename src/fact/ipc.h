@@ -1,9 +1,15 @@
+// NOTE: function references are available, but instance-member references are not
+// (only instance-member pointers)
+// I decided to use function references *when we can* to make consuming code more
+// readable.  For why C++ doesn't have instance-member references:
+//
+// http://stackoverflow.com/questions/21952386/why-doesnt-reference-to-member-exist-in-c
 
 class ParameterClass_0
 {
 public:
   template <class TOut>
-  TOut invoke(TOut (*func)())
+  TOut invoke(TOut (&func)())
   {
     return func();
   }
@@ -18,7 +24,7 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
 
 public:
   template <class TOut>
-  TOut invoke(TOut (*func)(TIn))
+  TOut invoke(TOut (&func)(TIn))
   {
     return func(param1);
   }
@@ -39,7 +45,7 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
 
 public:
   template <class TOut>
-  TOut invoke(TOut (*func)(TIn1, TIn2))
+  TOut invoke(TOut (&func)(TIn1, TIn2))
   {
     return func(ParameterClass_1<TIn1>::param1, param2);
   }
@@ -61,7 +67,7 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
 
 public:
   template <class TOut>
-  TOut invoke(TOut (*func)(TIn1, TIn2, TIn3))
+  TOut invoke(TOut (&func)(TIn1, TIn2, TIn3))
   {
     return func(ParameterClass_1<TIn1>::param1, ParameterClass_2<TIn1, TIn2>::param2, param3);
   }
@@ -117,25 +123,25 @@ class IPCMessageMethod : IPCMessage<TParameters, TFunc>
 //template<class TOut> TOut createIPCMessage(_test_func1);
 
 //template<>
-IPCMessage<ParameterClass_0, void (*)()> createIPCMessage(void (*func)())
+IPCMessage<ParameterClass_0, void (&)()> createIPCMessage(void (&func)())
 {
-  IPCMessage<ParameterClass_0, void (*)()> m(func);
+  IPCMessage<ParameterClass_0, void (&)()> m(func);
   return m;
 }
 
 template<class TIn>
-IPCMessage<ParameterClass_1<TIn>, void (*)(TIn)> createIPCMessage(void (*func)(TIn))
+IPCMessage<ParameterClass_1<TIn>, void (&)(TIn)> createIPCMessage(void (&func)(TIn))
 {
-  IPCMessage<ParameterClass_1<TIn>, void (*)(TIn)> m(func);
+  IPCMessage<ParameterClass_1<TIn>, void (&)(TIn)> m(func);
   return m;
   //m.parameters.param1 =
 }
 
 
 template<class TIn1, class TIn2>
-IPCMessage<ParameterClass_2<TIn1, TIn2>, void (*)(TIn1, TIn2)> createIPCMessage(void (*func)(TIn1, TIn2))
+IPCMessage<ParameterClass_2<TIn1, TIn2>, void (&)(TIn1, TIn2)> createIPCMessage(void (&func)(TIn1, TIn2))
 {
-  IPCMessage<ParameterClass_2<TIn1, TIn2>, void (*)(TIn1, TIn2)> m(func);
+  IPCMessage<ParameterClass_2<TIn1, TIn2>, void (&)(TIn1, TIn2)> m(func);
   return m;
   //m.parameters.param1 =
 }
