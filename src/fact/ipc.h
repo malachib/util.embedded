@@ -4,6 +4,8 @@
 // readable.  For why C++ doesn't have instance-member references:
 //
 // http://stackoverflow.com/questions/21952386/why-doesnt-reference-to-member-exist-in-c
+//
+// note also: TOut usage may not be compatible with ESP8266 compiler
 
 class ParameterClass_0
 {
@@ -125,42 +127,43 @@ class IPCMessageMethod : IPCMessage<TParameters, TFunc>
 //template<class TOut> TOut createIPCMessage(_test_func1);
 
 //template<>
-IPCMessage<ParameterClass_0, void (&)()> createIPCMessage(void (&func)())
+template <class TOut>
+IPCMessage<ParameterClass_0, TOut (&)()> createIPCMessage(TOut (&func)())
 {
-  IPCMessage<ParameterClass_0, void (&)()> m(func);
+  IPCMessage<ParameterClass_0, TOut (&)()> m(func);
   return m;
 }
 
-template<class TIn>
-IPCMessage<ParameterClass_1<TIn>, void (&)(TIn)> createIPCMessage(void (&func)(TIn))
+template<class TOut, class TIn>
+IPCMessage<ParameterClass_1<TIn>, TOut (&)(TIn)> createIPCMessage(TOut (&func)(TIn))
 {
-  IPCMessage<ParameterClass_1<TIn>, void (&)(TIn)> m(func);
-  return m;
-  //m.parameters.param1 =
-}
-
-
-template<class TIn1, class TIn2>
-IPCMessage<ParameterClass_2<TIn1, TIn2>, void (&)(TIn1, TIn2)> createIPCMessage(void (&func)(TIn1, TIn2))
-{
-  IPCMessage<ParameterClass_2<TIn1, TIn2>, void (&)(TIn1, TIn2)> m(func);
+  IPCMessage<ParameterClass_1<TIn>, TOut (&)(TIn)> m(func);
   return m;
   //m.parameters.param1 =
 }
 
 
-template <class T>
-IPCMessage<ParameterClass_1<T*>, void (T::*)()> createIPCMessage(void (T::*func)())
+template<class TOut, class TIn1, class TIn2>
+IPCMessage<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)> createIPCMessage(TOut (&func)(TIn1, TIn2))
 {
-  IPCMessage<ParameterClass_1<T*>, void (T::*)()> m(func);
+  IPCMessage<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)> m(func);
+  return m;
+  //m.parameters.param1 =
+}
+
+
+template <class TOut, class T>
+IPCMessage<ParameterClass_1<T*>, TOut (T::*)()> createIPCMessage(TOut (T::*func)())
+{
+  IPCMessage<ParameterClass_1<T*>, TOut (T::*)()> m(func);
   return m;
 }
 
 
-template <class T, class TIn1>
-IPCMessage<ParameterClass_2<T*, TIn1>, void (T::*)(TIn1)> createIPCMessage(void (T::*func)(TIn1))
+template <class TOut, class T, class TIn1>
+IPCMessage<ParameterClass_2<T*, TIn1>, TOut (T::*)(TIn1)> createIPCMessage(TOut (T::*func)(TIn1))
 {
-  IPCMessage<ParameterClass_2<T*, TIn1>, void (T::*)(TIn1)> m(func);
+  IPCMessage<ParameterClass_2<T*, TIn1>, TOut (T::*)(TIn1)> m(func);
   return m;
 }
 
@@ -182,35 +185,45 @@ public:
   }*/
 
 
-  //template <class TOut>
-  static IPCMessage<ParameterClass_0, void (&)()> create(void (&func)())
+  template <class TOut>
+  static IPCMessage<ParameterClass_0, TOut (&)()> create(TOut (&func)())
   {
     return createIPCMessage(func);
   }
 
-  template <class TIn1>
-  static IPCMessage<ParameterClass_1<TIn1>, void (&)(TIn1)> create(void (&func)(TIn1), TIn1 in1)
+  template <class TOut, class TIn1>
+  static IPCMessage<ParameterClass_1<TIn1>, TOut (&)(TIn1)> create(TOut (&func)(TIn1), TIn1 in1)
   {
     auto m = createIPCMessage(func);
     m.parameters.param1 = in1;
     return m;
   }
 
-  template <class TClass>
-  static IPCMessage<ParameterClass_1<TClass>, void (TClass::*)()> create(void (TClass::*func)(), TClass in1)
+  template <class TOut, class TClass>
+  static IPCMessage<ParameterClass_1<TClass*>, TOut (TClass::*)()> create(TOut (TClass::*func)(), TClass* in1)
   {
     auto m = createIPCMessage(func);
     m.parameters.param1 = in1;
     return m;
   }
 
-  template <class TFunc, class TIn1, class TIn2>
-  static IPCMessage<ParameterClass_2<TIn1, TIn2>, TFunc> create(TFunc func, TIn1 in1, TIn2 in2)
+  template <class TOut, class TIn1, class TIn2>
+  static IPCMessage<ParameterClass_2<TIn1, TIn2>, TOut (&)(TIn1, TIn2)>
+    create(TOut (&func)(TIn1, TIn2), TIn1 in1, TIn2 in2)
   {
     auto m = createIPCMessage(func);
     m.parameters.param1 = in1;
     m.parameters.param2 = in2;
     return m;
   }
-  //IPCMessage
+
+  template <class TOut, class TClass, class TIn2>
+  static IPCMessage<ParameterClass_2<TClass*, TIn2>, TOut (TClass::*)(TIn2)>
+    create(TOut (TClass::*func)(TIn2), TClass* in1, TIn2 in2)
+  {
+    auto m = createIPCMessage(func);
+    m.parameters.param1 = in1;
+    m.parameters.param2 = in2;
+    return m;
+  }
 };
