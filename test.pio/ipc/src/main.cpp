@@ -24,8 +24,9 @@ ConsoleMenu console(&menu);
 
 union TEST
 {
-  uint8_t buffer[64];
-  //IInvoker invoker;
+  // we use unsigned char because it allows the crazy casting we want to do
+  unsigned char* buffer[64];
+  //IInvoker invoker; // can't do this because IInvoker is an abstract class, but in effect we are doing this
 } _TEST;
 
 void dummyHandler(IMenu::Parameters p)
@@ -43,6 +44,7 @@ void testFunc1(int value)
 
 void testInvoker()
 {
+  //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
   ((IInvoker*)&_TEST.buffer)->invoke();
 }
 
@@ -56,6 +58,7 @@ void setup()
   
   auto f = IPCHelper::create(testFunc1, 3);
   memcpy(_TEST.buffer, &f, sizeof(f));
+  //memcpy(_TEST.buffer, &f, sizeof(f));
 
   //menu.getHeadMenu();
 }
