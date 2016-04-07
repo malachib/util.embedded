@@ -4,6 +4,7 @@
 
 #include <fact/ipc.h>
 #include <fact/Menu.h>
+#include <fact/MenuFunction.h>
 #include <fact/lib.h>
 #include <MenuService.h>
 #include <Console.h>
@@ -11,15 +12,10 @@
 
 using namespace util;
 
-#include "DummyMenu.h"
 
-void dummyHandler(IMenu::Parameters p);
 
-Service svc1;
 
-MenuService menuService(svc1);
-
-DummyMenu menu;
+Menu menu;
 ConsoleMenu console(&menu);
 
 union TEST
@@ -28,11 +24,6 @@ union TEST
   unsigned char* buffer[64];
   //IInvoker invoker; // can't do this because IInvoker is an abstract class, but in effect we are doing this
 } _TEST;
-
-void dummyHandler(IMenu::Parameters p)
-{
-  menu.testHelp();
-}
 
 
 void testFunc1(int value)
@@ -48,6 +39,8 @@ void testInvoker()
   ((IInvoker*)&_TEST.buffer)->invoke();
 }
 
+CREATE_MENUFUNCTION(menuInvoker, testInvoker, "Test out CallHolder class");
+CREATE_MENUFUNCTION(menuDirect, testFunc1, "Directly invoke function");
 
 void setup()
 {
@@ -55,12 +48,13 @@ void setup()
   Serial << F("Starting up");
   Serial.println();
   
-  
+  menu.add(menuInvoker);
+  menu.add(menuDirect);
+
   auto f = IPCHelper::create(testFunc1, 3);
   memcpy(_TEST.buffer, &f, sizeof(f));
   //memcpy(_TEST.buffer, &f, sizeof(f));
 
-  //menu.getHeadMenu();
 }
 
 
