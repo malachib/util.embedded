@@ -40,6 +40,10 @@ public:
   ParameterClass_1(TIn& param1) : param1(param1) {}
   ParameterClass_1() {}
   
+  void invoke(stub func) { func(param1); }
+  
+  void invokeExp(void (*func)(TIn)) { func(param1); }
+  
   template <class TOut>
   TOut invoke(TOut (&func)(TIn))
   {

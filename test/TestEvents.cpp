@@ -168,7 +168,19 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
     }
     GIVEN("Experimental event code")
     {
+      EventFiringClass efc;
+      EventExp1<EventFiringClass*> eventExp1;
+
+      eventResponder3_counter = 0;
       
+      eventExp1 += eventResponder3;
+      eventExp1(&efc);
+      
+      REQUIRE(eventResponder3_counter == 1);
+
+      eventExp1(&efc);
+
+      REQUIRE(eventResponder3_counter == 2);
     }
   }
 }

@@ -146,6 +146,7 @@ class EventManager : public HandleManager
   class Event : Handle
   {
   public:
+    void* getDataExp() { return data; }
     eventCallback getCallback() { return (eventCallback) data; }
     handle getNext() { return next; }
   };
@@ -170,12 +171,34 @@ public:
     {
       Event* event = getEvent(h);
       
-      auto callback = (TParameterClass::stub)(event->getCallback());
+      auto callback = reinterpret_cast<typename TParameterClass::stub>(*(event->getCallback()));
       
-      p.invoke(callback);
+      p.invoke(*callback);
+      h = event->getNext();
       //p.
     }
   }
+
+/*
+  template <class TIn1>
+  void _invokeExp(handle h, FactUtilEmbedded::rpc::ParameterClass_1<TIn1>& p)
+  {
+    while(h != nullHandle)
+    {
+      Event* event = getEvent(h);
+      
+      auto callback = reinterpret_cast<void (*)(TIn1)>(event->getDataExp());
+      
+#ifdef UNIT_TEST
+      //printf("Callback = %lx\r\n", callback);
+#endif
+      
+      p.invokeExp(callback);
+      h = event->getNext();
+
+      //p.
+    }
+  } */
 };
 
 extern EventManager eventManager;
@@ -201,28 +224,63 @@ class EventExp : public HandleBase
 protected:
   void add(void* data)
   {
+#ifdef UNIT_TEST
+    //printf("data = %lx\r\n", data);
+#endif
     HandleBase::add(&eventManager, data);
+  }
+  
+  void remove(void* data)
+  {
+    HandleBase::remove(&eventManager, data);
+  }
+};
+
+
+template <class TStub, class TEvent>
+class EventStubGenerator : public EventExp
+{
+public:
+  TEvent& operator+=(TStub callback)
+  {
+    add((void*)callback);
+    return (TEvent&)*this;
+  }
+
+  TEvent& operator-=(TStub callback)
+  {
+    remove((void*)callback);
+    return (TEvent&)*this;
   }
 };
 
 template <class TIn1>
-class EventExp1 : public EventExp
+class EventExp1 : 
+  public EventStubGenerator<void (&)(TIn1), EventExp1<TIn1>>
+  //public EventExp
 {
-  typedef FactUtilEmbedded::rpc::ParameterClass_1<TIn1> ParameterClass;
   typedef void (&stub)(TIn1);
   
 public:
   EventExp1& operator()(TIn1 in1)
   {
-    ParameterClass p(in1);
-    eventManager._invokeExp(handle, p);
+    FactUtilEmbedded::rpc::ParameterClass_1<TIn1> p(in1);
+    eventManager._invokeExp(HandleBase::handle, p);
+    return *this;
   }
   
+  /*
   EventExp1& operator+=(stub callback)
   {
     add(callback);
     return *this;
   }
+
+  EventExp1& operator-=(stub callback)
+  {
+    remove(callback);
+    return *this;
+  } */
 };
 
 
@@ -288,20 +346,6 @@ public:
     return *this;
   }
   
-  template <class TIn1>
-  void invokeExp(TIn1 in1)
-  {
-    FactUtilEmbedded::rpc::ParameterClass_1<TIn1> p(in1);
-    eventManager._invokeExp(handle, p);
-  }
-
-  template <class TIn1, class TIn2>
-  void invokeExp(TIn1 in1, TIn2 in2)
-  {
-    FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> p(in1, in2);
-    eventManager._invokeExp(handle, p);
-  }
-
   void clear() { HandleBase::clear(&eventManager); }
 };
 
