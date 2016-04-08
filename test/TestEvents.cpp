@@ -166,5 +166,9 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       REQUIRE(eventResponder4_counter == 4);
       REQUIRE(eventResponder3_counter == 1);
     }
+    GIVEN("Experimental event code")
+    {
+      
+    }
   }
 }

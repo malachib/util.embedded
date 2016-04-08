@@ -9,6 +9,7 @@
 #include "fact/lib.h"
 #endif
 #include "fact/features.h"
+#include "fact/rpc.h"
 
 #include <stdarg.h>
 
@@ -161,6 +162,20 @@ public:
     //va_end(argp);
   } */
   void invoke(handle event, void* parameter, va_list argp);
+  
+  template <class TParameterClass>
+  void _invokeExp(handle h, TParameterClass p)
+  {
+    while(h != nullHandle)
+    {
+      Event* event = getEvent(h);
+      
+      auto callback = (TParameterClass::stub)(event->getCallback());
+      
+      p.invoke(callback);
+      //p.
+    }
+  }
 };
 
 extern EventManager eventManager;
@@ -178,6 +193,48 @@ protected:
     handle = HandleManager::nullHandle;
   }
   void remove(HandleManager* manager, void* data);
+};
+
+
+class EventExp : public HandleBase
+{
+protected:
+  void add(void* data)
+  {
+    HandleBase::add(&eventManager, data);
+  }
+};
+
+template <class TIn1>
+class EventExp1 : public EventExp
+{
+  typedef FactUtilEmbedded::rpc::ParameterClass_1<TIn1> ParameterClass;
+  typedef void (&stub)(TIn1);
+  
+public:
+  EventExp1& operator()(TIn1 in1)
+  {
+    ParameterClass p(in1);
+    eventManager._invokeExp(handle, p);
+  }
+  
+  EventExp1& operator+=(stub callback)
+  {
+    add(callback);
+    return *this;
+  }
+};
+
+
+template <class TIn1, class TIn2>
+class EventExp2 : public EventExp
+{
+public:
+  EventExp2& operator()(TIn1 in1, TIn2 in2)
+  {
+    FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> p(in1, in2);
+    eventManager._invokeExp(handle, p);
+  }
 };
 
 
@@ -229,6 +286,20 @@ public:
     _invoke(parameter, va);
 
     return *this;
+  }
+  
+  template <class TIn1>
+  void invokeExp(TIn1 in1)
+  {
+    FactUtilEmbedded::rpc::ParameterClass_1<TIn1> p(in1);
+    eventManager._invokeExp(handle, p);
+  }
+
+  template <class TIn1, class TIn2>
+  void invokeExp(TIn1 in1, TIn2 in2)
+  {
+    FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> p(in1, in2);
+    eventManager._invokeExp(handle, p);
   }
 
   void clear() { HandleBase::clear(&eventManager); }

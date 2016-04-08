@@ -153,6 +153,14 @@ void EventManager::invoke(HandleManager::handle h, void* parameter, va_list argp
   }
 }
 
+/*
+template<class TIn>
+void EventManager::_invokeExp(HandleManager::handle h, FactUtilEmbedded::rpc::ParameterClass_1 p)
+{
+  
+}
+*/
+
 void HandleBase::add(HandleManager* manager, void* data)
 {
   if(handle == HandleManager::nullHandle)

@@ -32,9 +32,14 @@ class ParameterClass_1
 {
 protected:
 public: // FIX: temporarily making these public as we iron out architecture & POC
-    TIn param1;
+  TIn param1;
+  
+  typedef void (&stub)(TIn);
 
 public:
+  ParameterClass_1(TIn& param1) : param1(param1) {}
+  ParameterClass_1() {}
+  
   template <class TOut>
   TOut invoke(TOut (&func)(TIn))
   {
@@ -63,6 +68,10 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
   TIn2 param2;
 
 public:
+  ParameterClass_2() {}
+  ParameterClass_2(TIn1& in1, TIn2& in2) : ParameterClass_1<TIn1>(in1), param2(in2)
+  {}
+    
   template <class TOut>
   TOut invoke(TOut (&func)(TIn1, TIn2))
   {
@@ -83,6 +92,8 @@ public:
     cout << F("p2: ") << param2;
     cout.println();
   }
+
+  typedef void (&stub)(TIn1, TIn2);
 };
 
 template <class TIn1, class TIn2, class TIn3>
