@@ -202,14 +202,7 @@ bool Service::start()
 
 void Service::restart()
 {
-  if(invoker)
-  {
-    LightweightService::setStatusMessage(NULL);
-    setState(Starting);
-    invoker(startFunc, this);
-  }
-  else
-    restart(startFunc);
+  restart(startFunc);
 }
 #endif
 }

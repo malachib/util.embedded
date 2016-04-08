@@ -257,6 +257,8 @@ public:
 
     return (IInvoker&)invoker;
   }
+
+  inline uint8_t available() { return queue.available(); }
 };
 }
 }

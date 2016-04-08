@@ -17,8 +17,6 @@ protected:
 
 public:
   MenuService(Service& service) : service(service) {}
-  MenuService(Service& service, startServiceInvoker invoker);
-
 };
 
 }

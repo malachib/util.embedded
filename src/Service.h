@@ -23,7 +23,6 @@ class Service;
 
 typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
-typedef void (*startServiceInvoker)(startService1 startFunc, Service* service);
 
 
 // aka lightweight service
@@ -100,12 +99,6 @@ protected:
   }
 
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
-  void setInvoker(startServiceInvoker invoker)
-  {
-    this->invoker = invoker;
-  }
-
-  startServiceInvoker invoker; // FIX: kludgey - this helps us invoke on a different "thread" if desired
   startService1 startFunc;
 #endif
 
