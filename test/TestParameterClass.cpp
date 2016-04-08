@@ -97,11 +97,11 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     INFO("Size of control struct m = " << sizeof(m));
     INFO("Size of control struct m2 = " << sizeof(m2));
 
-    IInvoker* i = &m;
+    IInvoker& i = m;
 
     INFO("Putting calls into the queue");
-    callQueue.put(i);
-    callQueue.put(&m2);
+    callQueue.put(i, sizeof(m));
+    callQueue.put(m2, sizeof(m2));
 
     // WHEN/GIVEN etc tightly scope things and subsequent WHEN/GIVEN
     // should NOT depend on the contents of a peer WHEN/GIVEN
@@ -114,21 +114,19 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     {
       INFO("Call #1");
       REQUIRE(callQueue.queue.getPositionGet() == 0);
-      IInvoker* invoker = callQueue.get();
-      INFO("invoker = " << invoker);
-      REQUIRE(memcmp(i, invoker, 32) == 0);
-      REQUIRE(memcmp(&m, invoker, 32) == 0);
-      //invoker->debugPrint();
-      invoker->invoke();
+      IInvoker& invoker = callQueue.get();
+      INFO("invoker = " << &invoker);
+      REQUIRE(memcmp(&i, &invoker, 32) == 0);
+      invoker.invoke();
       REQUIRE(tpc.getValue() == 2);
 
       INFO("Call #2");
       REQUIRE(callQueue.queue.getPositionGet() == 1);
-      IInvoker* invoker2 = callQueue.get();
-      INFO("invoker2 = " << invoker2);
+      IInvoker& invoker2 = callQueue.get();
+      INFO("invoker2 = " <<& invoker2);
       //REQUIRE(memcmp(&m, &m, 8) == 0);
       //invoker2->debugPrint();
-      invoker2->invoke();
+      invoker2();
       REQUIRE(tpc.getValue() == 7);
     }
   }

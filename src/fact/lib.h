@@ -343,19 +343,13 @@ public:
 
   const T& peek() const
   {
-    uint16_t position_get = getPositionGet();
-    /*
-    auto position_get = position >= currentCapacity ?
-      (position - currentCapacity) :
-      ((size - 1) - (currentCapacity - position));*/
-
-    return buffer[position_get];
+    return buffer[getPositionGet()];
   }
 
   // Returns empty, freshly available buffer slot for a put
   // mainly useful for fast-writing to circular buffer manually vs
   // a full put operation
-  T& peekLast() const { return buffer[position]; }
+  const T& peekLast() const { return buffer[position]; }
 
   // acquire how many elements are available to be read
   uint16_t available() const
@@ -372,15 +366,18 @@ public:
     }*/
   }
 
-  void put(T value)
+  void put(const T& value)
   {
     buffer[position] = value;
     incrementPosition();
   }
 
-  void put(T* value)
+  // size override for those times one doesn't want to copy
+  // the entire object, for esoteric optimization reasons.  Should
+  // always optimize to be a constant, so no overhead
+  void put(T* value, uint16_t sizeOverride = 0)
   {
-    memcpy(&buffer[position], value, sizeof(T));
+    memcpy(&buffer[position], value, sizeOverride ? sizeOverride : sizeof(T));
     incrementPosition();
   }
 

@@ -115,6 +115,11 @@ public:
   virtual void invoke() = 0;
 
   virtual void debugPrint() const = 0;
+
+  void operator()()
+  {
+    invoke();
+  }
 };
 
 
@@ -233,18 +238,18 @@ public:
 public:
   CallQueue() : queue(elements, bufferSize) {}
 
-  void put(IInvoker* invoker)
+  inline void put(IInvoker& invoker, size_t size)
   {
-    // dangerous *and* slow code, copies elementSize bytes from wherever invoker is
-    // pointing
-    queue.put((Element*)invoker);
+    // TODO: put size sanity check here to make sure we don't go over
+    // size limit
+    queue.put((Element*)&invoker, size);
   }
 
-  IInvoker* get()
+  inline IInvoker& get()
   {
     const Element& invoker = queue.get();
 
-    return (IInvoker*)&invoker;
+    return (IInvoker&)invoker;
   }
 };
 
