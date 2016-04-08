@@ -152,6 +152,11 @@ void Print::print(int value)
 	print((long)value);
 }
 
+void Print::print(float value)
+{
+	printf("%f", value);
+}
+
 void Print::print(char value)
 {
 	printf("%c", value);

@@ -282,6 +282,18 @@ class CircularBuffer : public CircularBufferBase<T>
       position_get = 0;
   }*/
 
+#ifdef UNIT_TEST
+public:
+#endif
+  uint16_t getPositionGet() const
+  {
+    auto position_get = position >= currentCapacity ?
+      (position - currentCapacity) :
+      ((size - 1) - (currentCapacity - position));
+
+    return position_get;
+  }
+
 public:
   CircularBuffer<T>(T* bufferToUse, uint16_t size) : size(size)
   {
@@ -320,7 +332,8 @@ public:
   // TODO: See if template classes really *always* generate inline functions
   // TODO: turn this into a byte oriented version, then templatize the child class so that
   // we aren't generating inline functions all over town
-  T get()
+  // TODO: Try to optimize this with a return of const T&
+  const T& get()
   {
     const T& value = peek();
     //incrementPositionGet();
@@ -330,9 +343,11 @@ public:
 
   const T& peek() const
   {
+    uint16_t position_get = getPositionGet();
+    /*
     auto position_get = position >= currentCapacity ?
       (position - currentCapacity) :
-      ((size - 1) - (currentCapacity - position));
+      ((size - 1) - (currentCapacity - position));*/
 
     return buffer[position_get];
   }
