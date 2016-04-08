@@ -6,5 +6,6 @@ using namespace FactUtilEmbedded::vmem;
 
 SCENARIO( "VMemory tests", "[vmem]" )
 {
-    Descriptor d;
+  Manager m;
+  Descriptor d;
 }
