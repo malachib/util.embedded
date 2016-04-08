@@ -13,6 +13,8 @@
 
 namespace FactUtilEmbedded
 {
+  namespace rpc
+  {
 class ParameterClass_0
 {
 public:
@@ -114,7 +116,9 @@ public:
 
   virtual void invoke() = 0;
 
+#ifdef DEBUG
   virtual void debugPrint() const = 0;
+#endif
 
   void operator()()
   {
@@ -123,18 +127,18 @@ public:
 };
 
 
-class IPCHelper;
+class CallHolderFactory;
 
 template <class TParameters, class TFunc>
 class CallHolder : public IInvoker
 {
-  friend IPCHelper;
+  friend CallHolderFactory;
 
 protected:
   const TFunc func;
+  TParameters parameters;
 
 public:
-  TParameters parameters;
 
   CallHolder(TFunc func) : func(func) {}
 
@@ -143,6 +147,7 @@ public:
     parameters.invoke(func);
   }
 
+#ifdef DEBUG
   virtual void debugPrint() const override
   {
     parameters.debugPrint();
@@ -151,10 +156,11 @@ public:
 #endif
     cout.println();
   }
+#endif
 };
 
 
-class IPCHelper
+class CallHolderFactory
 {
 public:
   // ditching template class TFunc trick because:
@@ -252,5 +258,5 @@ public:
     return (IInvoker&)invoker;
   }
 };
-
+}
 }
