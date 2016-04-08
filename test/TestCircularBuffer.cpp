@@ -60,4 +60,21 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
       REQUIRE(buffer.available() == 4);
     }
   }
+  GIVEN("A more complex but small buffer")
+  {
+    long _buffer[4];
+    CircularBuffer<long> buffer(_buffer, 4);
+    WHEN("Inserting and retrieving")
+    {
+      buffer.put(7);
+      buffer.put(77);
+      buffer.put(777);
+      REQUIRE(buffer.get() == 7);
+      REQUIRE(buffer.getPositionGet() == 1);
+      REQUIRE(buffer.get() == 77);
+      REQUIRE(buffer.getPositionGet() == 2);
+      REQUIRE(buffer.get() == 777);
+      REQUIRE(buffer.getPositionGet() == 3);
+    }
+  }
 }
