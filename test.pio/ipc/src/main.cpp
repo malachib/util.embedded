@@ -84,6 +84,8 @@ void setup()
 {
   Serial.begin(115200);
   Serial << F("Starting up");
+  Serial << (int) 1; // integer rendering takes us from 4084 to 4490, 406 bytes
+  //Serial << 'a';   // character rendering already present
   Serial.println();
   
 #ifdef FEATURE_CONSOLE
