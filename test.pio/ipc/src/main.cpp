@@ -26,10 +26,11 @@ ConsoleMenu console(&menu);
 #endif
 
 #ifdef FEATURE_IPC
+// TODO: would like to ensure _TEST starts on a proper boundary
 union TEST
 {
   // we use unsigned char because it allows the crazy casting we want to do
-  unsigned char* buffer[64];
+  uint8_t buffer[16];
   //IInvoker invoker; // can't do this because IInvoker is an abstract class, but in effect we are doing this
 } _TEST;
 
@@ -39,9 +40,10 @@ union TEST
 void testInvoker()
 {
   auto f = IPCHelper::create(testFunc1, 3);
+  //f.invoke();
   memcpy(_TEST.buffer, &f, sizeof(f));
   //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
-  ((IInvoker*)&_TEST.buffer)->invoke();
+  ((IInvoker*)&_TEST)->invoke();
 }
 #endif
 
@@ -49,9 +51,20 @@ void testInvoker()
 void testInvoker2()
 {
   auto f = IPCHelper::create(testFunc2, 'a');
-  memcpy(_TEST.buffer, &f, sizeof(f));
+  memcpy(&_TEST.buffer, &f, sizeof(f));
   //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
-  ((IInvoker*)&_TEST.buffer)->invoke();
+  ((IInvoker*)&_TEST)->invoke();
+}
+#endif
+
+
+#ifdef FEATURE_IPC3
+void testInvoker3()
+{
+  auto f = IPCHelper::create(testFunc2, 'b');
+  memcpy(&_TEST.buffer, &f, sizeof(f));
+  //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
+  ((IInvoker*)&_TEST)->invoke();
 }
 #endif
 
@@ -77,6 +90,9 @@ CREATE_MENUFUNCTION(menuInvoker, testInvoker, "Test out CallHolder class");
 #ifdef FEATURE_IPC2
 CREATE_MENUFUNCTION(menuInvoker2, testInvoker2, "Test out CallHolder class");
 #endif
+#ifdef FEATURE_IPC3
+CREATE_MENUFUNCTION(menuInvoker3, testInvoker3, "Test out CallHolder class");
+#endif
 CREATE_MENUFUNCTION(menuDirect, testFunc1, "Directly invoke function");
 #endif
 
@@ -95,6 +111,9 @@ void setup()
 #ifdef FEATURE_IPC2
   menu.add(menuInvoker2);
 #endif
+#ifdef FEATURE_IPC3
+  menu.add(menuInvoker3);
+#endif
   menu.add(menuDirect);
 #endif
 
@@ -105,6 +124,9 @@ void setup()
 #endif
 #ifdef FEATURE_IPC2
   testInvoker2();
+#endif
+#ifdef FEATURE_IPC3
+  testInvoker3();
 #endif
 #endif
 }
