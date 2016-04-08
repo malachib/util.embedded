@@ -21,7 +21,7 @@ public:
   {
     return func();
   }
-  
+
   void debugPrint() const {}
 };
 
@@ -45,7 +45,7 @@ public:
   {
     return ((*param1).*func)();
   }
-  
+
   void debugPrint() const
   {
     cout << F("p1: ") << param1;
@@ -137,7 +137,7 @@ public:
   {
     parameters.invoke(func);
   }
-  
+
   virtual void debugPrint() const override
   {
     parameters.debugPrint();
@@ -217,30 +217,33 @@ public:
 
 // NOTE: we probably want elementSize of 2 or 4 byte increments for alignment issues
 template <uint8_t elementSize, uint8_t bufferSize>
-class CallQueue 
+class CallQueue
 {
+#ifdef UNIT_TEST
+public:
+#endif
   union Element
   {
     uint8_t buffer[elementSize];
   };
-  
+
   Element elements[bufferSize];
   CircularBuffer<Element> queue;
-  
+
 public:
   CallQueue() : queue(elements, bufferSize) {}
-  
+
   void put(IInvoker* invoker)
   {
     // dangerous *and* slow code, copies elementSize bytes from wherever invoker is
     // pointing
     queue.put((Element*)invoker);
   }
-  
+
   IInvoker* get()
   {
     const Element& invoker = queue.get();
-    
+
     return (IInvoker*)&invoker;
   }
 };

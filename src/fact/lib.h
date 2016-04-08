@@ -282,6 +282,18 @@ class CircularBuffer : public CircularBufferBase<T>
       position_get = 0;
   }*/
 
+#ifdef UNIT_TEST
+public:
+#endif
+  uint16_t getPositionGet() const
+  {
+    auto position_get = position >= currentCapacity ?
+      (position - currentCapacity) :
+      ((size - 1) - (currentCapacity - position));
+
+    return position_get;
+  }
+
 public:
   CircularBuffer<T>(T* bufferToUse, uint16_t size) : size(size)
   {
@@ -331,9 +343,11 @@ public:
 
   const T& peek() const
   {
+    uint16_t position_get = getPositionGet();
+    /*
     auto position_get = position >= currentCapacity ?
       (position - currentCapacity) :
-      ((size - 1) - (currentCapacity - position));
+      ((size - 1) - (currentCapacity - position));*/
 
     return buffer[position_get];
   }
