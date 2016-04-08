@@ -153,6 +153,18 @@ void EventManager::invoke(HandleManager::handle h, void* parameter, va_list argp
   }
 }
 
+void EventManager::__invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, void* pc)
+{
+  while(h != nullHandle)
+  {
+    Event* event = getEvent(h);
+    
+    p_invoke(pc, event->getDataExp());
+    h = event->getNext();
+    //p.
+  }
+}
+
 /*
 template<class TIn>
 void EventManager::_invokeExp(HandleManager::handle h, FactUtilEmbedded::rpc::ParameterClass_1 p)

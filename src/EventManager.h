@@ -164,8 +164,24 @@ public:
   } */
   void invoke(handle event, void* parameter, va_list argp);
   
+  typedef void (&_p_invoke)(void* pc, void* callback);
+  
+  // this is a function helper to encapsulate template behavior, so that
+  // we can reuse our loop function elsewhere to hopefully save code space
+  // now what we need to do is to do some code size comparisons
   template <class TParameterClass>
-  void _invokeExp(handle h, TParameterClass p)
+  static void __p_invoke(void* pc, void* callback)
+  {
+    auto _pc = reinterpret_cast<TParameterClass*>(pc);
+    
+    // very fragile code
+    auto _callback = reinterpret_cast<typename TParameterClass::stub>(*callback);
+    
+    _pc->invoke(*_callback);
+  }
+  
+  template <class TParameterClass>
+  void _invokeExp(handle h, TParameterClass& p)
   {
     while(h != nullHandle)
     {
@@ -175,30 +191,17 @@ public:
       
       p.invoke(*callback);
       h = event->getNext();
-      //p.
     }
   }
+  
+  void __invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, void* pc);
 
-/*
-  template <class TIn1>
-  void _invokeExp(handle h, FactUtilEmbedded::rpc::ParameterClass_1<TIn1>& p)
+  template <class TParameterClass>
+  void __invokeExp(HandleManager::handle h, TParameterClass& p)
   {
-    while(h != nullHandle)
-    {
-      Event* event = getEvent(h);
-      
-      auto callback = reinterpret_cast<void (*)(TIn1)>(event->getDataExp());
-      
-#ifdef UNIT_TEST
-      //printf("Callback = %lx\r\n", callback);
-#endif
-      
-      p.invokeExp(callback);
-      h = event->getNext();
-
-      //p.
-    }
-  } */
+    _p_invoke p_invoke = __p_invoke<TParameterClass>;
+    __invokeExpHelper(h, p_invoke, &p);
+  }
 };
 
 extern EventManager eventManager;
@@ -269,6 +272,11 @@ public:
     return *this;
   }
   
+  void invokeExp(TIn1 in1)
+  {
+    FactUtilEmbedded::rpc::ParameterClass_1<TIn1> p(in1);
+    eventManager.__invokeExp(HandleBase::handle, p);
+  }
   /*
   EventExp1& operator+=(stub callback)
   {

@@ -181,6 +181,10 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       eventExp1(&efc);
 
       REQUIRE(eventResponder3_counter == 2);
+      
+      eventExp1.invokeExp(&efc);
+
+      REQUIRE(eventResponder3_counter == 3);
     }
   }
 }
