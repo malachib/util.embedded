@@ -3,14 +3,14 @@ Util.Embedded
 
 Licensed under GPL v3
 
-Branches: 
+Branches:
 master [![Build Status](https://travis-ci.org/malachib/util.embedded.svg?branch=master)](https://travis-ci.org/malachib/util.embedded)
 dev [![Build Status](https://travis-ci.org/malachib/util.embedded.svg?branch=dev)](https://travis-ci.org/malachib/util.embedded)
 
 Overview
 --------
 
-Comprises reusable low-level functionality for use in your embedded and/or 
+Comprises reusable low-level functionality for use in your embedded and/or
 cross-platform endeavors.
 
 Code is Arduino and PlatformIO friendly
@@ -20,6 +20,7 @@ Code is Arduino and PlatformIO friendly
 * Linked lists, single and doubly linked
 * Circular buffer
 * C#-like event code
+* Cross-thread RPC mechanism (if using an external threading tool)
 * Service objects facilitating start, stop and status querying
  * Canned MQTT Service for use with Adafruit's MQTT libraries (must define either MQTT_TYPE_WIFI or MQTT_TYPE_FONA).  Hard wired to either WiFi or FONA at this time
  * Canned Wifi Service for use with ESP8266 (must define MQTT_TYPE_WIFI)
@@ -33,7 +34,7 @@ Code is Arduino and PlatformIO friendly
         * pin change interrupts
     * SAM
         * sleep (coming soon)
- 
+
 Data/Memory code size
 ---------------------
 
@@ -44,11 +45,11 @@ its appetite:
  * MEMORY_OPT_CODE: Trim code space by reducing size of string descriptions,
    some debug/bounds code, and a few potentially less critical features
  * MEMORY_OPT_DATA: Trim data space by reducing various buffer sizes
-* CONSOLE_FEATURE_FULL: Enable all options for Console (enabled by default when 
+* CONSOLE_FEATURE_FULL: Enable all options for Console (enabled by default when
   MEMORY_OPT_CODE is not enabled)
  * CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND: Enable 'tab' key to auto-complete a menu
    name in console mode
- * CONSOLE_FEATURE_COUT: Presently disabled by default, this switches Console code 
+ * CONSOLE_FEATURE_COUT: Presently disabled by default, this switches Console code
    from global singular-stream to Console managing its own private stream; useful
    for multiple consoles speaking over different streams (i.e. Serial and telnet)
 * DRIVER_FEATURE_VTABLE_SUPPRESS: Disables virtual tables/polymorphism for drivers
@@ -72,7 +73,7 @@ Hardware Compatibility
 
 Tested and works on the following:
 
-Device               | Features 
+Device               | Features
 -------------------- | --------
 ATmega328P           |
 ESP8266 12E          |
