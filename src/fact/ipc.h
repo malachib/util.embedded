@@ -1,3 +1,5 @@
+#pragma once
+
 // NOTE: function references are available, but instance-member references are not
 // (only instance-member pointers)
 // I decided to use function references *when we can* to make consuming code more
@@ -6,6 +8,8 @@
 // http://stackoverflow.com/questions/21952386/why-doesnt-reference-to-member-exist-in-c
 //
 // note also: TOut usage may not be compatible with ESP8266 compiler
+#include "lib.h"
+#include "../Console.h"
 
 namespace FactUtilEmbedded
 {
@@ -17,6 +21,8 @@ public:
   {
     return func();
   }
+  
+  void debugPrint() const {}
 };
 
 template <class TIn>
@@ -38,6 +44,12 @@ public:
   TOut invoke(TOut (TClass::*func)())
   {
     return ((*param1).*func)();
+  }
+  
+  void debugPrint() const
+  {
+    cout << F("p1: ") << param1;
+    cout.println();
   }
 };
 
@@ -61,6 +73,13 @@ public:
   TOut invoke(TOut (TClass::*func)(TIn2))
   {
     return ((*ParameterClass_1<TIn1>::param1).*func)(param2);
+  }
+
+  void debugPrint() const
+  {
+    ParameterClass_1<TIn1>::debugPrint();
+    cout << F("p2: ") << param2;
+    cout.println();
   }
 };
 
@@ -94,6 +113,8 @@ public:
   virtual TOut invoke() = 0; */
 
   virtual void invoke() = 0;
+
+  virtual void debugPrint() const = 0;
 };
 
 
@@ -115,6 +136,15 @@ public:
   virtual void invoke() override
   {
     parameters.invoke(func);
+  }
+  
+  virtual void debugPrint() const override
+  {
+    parameters.debugPrint();
+#ifdef UNIT_TEST
+    //cout << F("Func ptr: ") << (uint32_t)(long)func;
+#endif
+    cout.println();
   }
 };
 
@@ -184,4 +214,35 @@ public:
     return m;
   }
 };
+
+// NOTE: we probably want elementSize of 2 or 4 byte increments for alignment issues
+template <uint8_t elementSize, uint8_t bufferSize>
+class CallQueue 
+{
+  union Element
+  {
+    uint8_t buffer[elementSize];
+  };
+  
+  Element elements[bufferSize];
+  CircularBuffer<Element> queue;
+  
+public:
+  CallQueue() : queue(elements, bufferSize) {}
+  
+  void put(IInvoker* invoker)
+  {
+    // dangerous *and* slow code, copies elementSize bytes from wherever invoker is
+    // pointing
+    queue.put((Element*)invoker);
+  }
+  
+  IInvoker* get()
+  {
+    const Element& invoker = queue.get();
+    
+    return (IInvoker*)&invoker;
+  }
+};
+
 }

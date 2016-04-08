@@ -320,7 +320,8 @@ public:
   // TODO: See if template classes really *always* generate inline functions
   // TODO: turn this into a byte oriented version, then templatize the child class so that
   // we aren't generating inline functions all over town
-  T get()
+  // TODO: Try to optimize this with a return of const T&
+  const T& get()
   {
     const T& value = peek();
     //incrementPositionGet();

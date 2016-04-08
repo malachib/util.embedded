@@ -83,6 +83,7 @@ public:
 	void print(unsigned short);
 	void print(unsigned int);
 	void print(unsigned long);
+	void print(float);
 	void print(int);
 	void print(long);
 	void print(const __FlashStringHelper* s)

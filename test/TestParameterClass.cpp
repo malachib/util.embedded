@@ -85,6 +85,40 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
 
     REQUIRE(tpc.getValue() == 7);
   }
+  GIVEN("CallQueue class")
+  {
+    CallQueue<16, 4> callQueue;
+
+    TestParameterClass tpc;
+    auto m = IPCHelper::create(&TestParameterClass::test, &tpc);
+    auto m2 = IPCHelper::create(&TestParameterClass::test2, &tpc, 7);
+    IInvoker* i = &m;
+    
+    WHEN("Putting calls into the queue")
+    {
+      callQueue.put(i);
+      callQueue.put(&m2);
+      //i->debugPrint();
+    }
+    
+    WHEN("Retrieving calls from the queue")
+    {
+      GIVEN("Call #1")
+      {
+        IInvoker* invoker = callQueue.get();
+        //invoker->debugPrint();
+        invoker->invoke();
+        REQUIRE(tpc.getValue() == 2);
+      }
+      GIVEN("Call #2")
+      {
+        IInvoker* invoker = callQueue.get();
+        //invoker->debugPrint();
+        invoker->invoke();
+        REQUIRE(tpc.getValue() == 7);
+      }
+    }
+  }
 
   GIVEN("")
   {
