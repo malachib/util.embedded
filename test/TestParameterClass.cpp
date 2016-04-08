@@ -116,7 +116,7 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
       REQUIRE(callQueue.queue.getPositionGet() == 0);
       IInvoker& invoker = callQueue.get();
       INFO("invoker = " << &invoker);
-      REQUIRE(memcmp(&i, &invoker, 32) == 0);
+      REQUIRE(memcmp((void*)&i, (void*)&invoker, 32) == 0);
       invoker.invoke();
       REQUIRE(tpc.getValue() == 2);
 

@@ -25,6 +25,7 @@ void eventResponder2(PropertyWithEvents<const char*>* e)
   //printf("eventResponder2: %d\r\n", counter2);
 }
 
+std::string _fluidParameter = "fluid parameter";
 
 class EventFiringClass
 {
@@ -33,14 +34,19 @@ public:
 
   Event testEvent1;
 
-  void fireTestEvent1() { testEvent1(this); }
+  void fireTestEvent1() { testEvent1(this, _fluidParameter.c_str()); }
 };
 
 int eventResponder3_counter = 0;
 int eventResponder4_counter = 0;
 
-void eventResponder4(EventFiringClass* source)
+void eventResponder4(EventFiringClass* source, va_list argp)
 {
+  auto fluidParameter = va_arg(argp, const char*);
+  //INFO("Fluid parameter = " << fluidParameter);
+  //printf("\r\n Firing: %s", fluidParameter);
+  REQUIRE(fluidParameter != NULL);
+  REQUIRE(_fluidParameter == fluidParameter);
   eventResponder4_counter++;
 }
 
@@ -135,9 +141,13 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
     }
     WHEN("Removing middle one from a 3-long event list")
     {
+      INFO("Phase 1");
+      
       eventResponder3_counter = 0;
       eventResponder4_counter = 0;
       EventFiringClass efc;
+
+      INFO("Phase 2");
 
       efc.testEvent1 += eventResponder4;
       efc.testEvent1 += eventResponder3;
@@ -145,8 +155,12 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       efc.fireTestEvent1();
       REQUIRE(eventResponder4_counter == 2);
       REQUIRE(eventResponder3_counter == 1);
+    
+      INFO("Phase 3");
       
       efc.testEvent1 -= eventResponder3;
+      
+      INFO("Phase 4");
       
       efc.fireTestEvent1();
       REQUIRE(eventResponder4_counter == 4);

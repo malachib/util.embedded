@@ -10,10 +10,32 @@
 #endif
 #include "fact/features.h"
 
+#include <stdarg.h>
+
+
+#define VA_WRAPPER(p) \
+    VAWrapper va;     \
+    va_start(va.argp, p) \
+
+class VAWrapper
+{
+public:
+  va_list argp;
+
+  // don't call this explicitly - use VA_WRAPPER macro
+  VAWrapper()
+  {
+  }
+  
+  // because we can expect this to always inline out and not really use a ref,
+  // this should always work
+  operator va_list&() { return argp; }
+  
+  ~VAWrapper() { va_end(argp); }
+};
+
 // Thank you Mikael Patel for inspiration https://github.com/mikaelpatel/Arduino-Scheduler/blob/master/Scheduler/Queue.h
 
-
-typedef void (*eventCallback)(void* parameter);
 
 #ifndef HANDLEMANAGER_CAPACITY
 #ifdef MEMORY_OPT_DATA
@@ -113,6 +135,8 @@ public:
   }
 };
 
+typedef void (*eventCallback)(void* sender, va_list argp);
+
 //template <uint8_t NMEMB>
 class EventManager : public HandleManager
 {
@@ -128,7 +152,15 @@ class EventManager : public HandleManager
   Event* getEvent(handle event) { return (Event*) getHandle(event); }
 
 public:
-  void invoke(handle event, void* parameter);
+  /*
+  void invoke(handle event, void* parameter, ...)
+  {
+    VA_WRAPPER(parameter);
+    //va_start(argp, parameter);
+    invoke(event, parameter, va.argp);
+    //va_end(argp);
+  } */
+  void invoke(handle event, void* parameter, va_list argp);
 };
 
 extern EventManager eventManager;
@@ -153,13 +185,22 @@ protected:
 template <class T>
 class Event : public HandleBase
 {
+  typedef void _eventCallback(T);
+  typedef void __eventCallback(T, va_list);
+
 public:
-  void add(void (*callback)(T parameter))
+  void add(_eventCallback callback)
   {
     HandleBase::add(&eventManager, (void*)callback);
   }
 
-  Event& operator+=(void (*callback)(T parameter))
+  void add(__eventCallback callback)
+  {
+    HandleBase::add(&eventManager, (void*)callback);
+  }
+
+  template <class TCallback>
+  Event& operator+=(TCallback callback)
   {
     add(callback);
     return *this;
@@ -171,14 +212,22 @@ public:
     return *this;
   }
 
-  void invoke(T parameter)
+  void _invoke(T parameter, va_list argp)
   {
-    eventManager.invoke(handle, (void*) parameter);
+    eventManager.invoke(handle, (void*) parameter, argp);
+  }
+  
+  void invoke(T parameter ...)
+  {
+    VA_WRAPPER(parameter);
+    _invoke(parameter, va);
   }
 
-  Event& operator()(T parameter)
+  Event& operator()(T parameter...)
   {
-    invoke(parameter);
+    VA_WRAPPER(parameter);
+    _invoke(parameter, va);
+
     return *this;
   }
 
@@ -198,14 +247,16 @@ protected:
   // (which is what we want)
   EventWrapper() {}
 
-  void invoke(T parameter)
+  void invoke(T parameter ...)
   {
-    events.invoke(parameter);
+    VA_WRAPPER(parameter);
+    events._invoke(parameter, va.argp);
   }
 
-  EventWrapper operator()(T parameter)
+  EventWrapper operator()(T parameter ...)
   {
-    invoke(parameter);
+    VA_WRAPPER(parameter);
+    events._invoke(parameter, va.argp);
     return *this;
   }
 
@@ -215,13 +266,15 @@ public:
     return events;
   }
 
-  EventWrapper& operator+=(void (*callback)(T parameter))
+  template <class TCallback>
+  EventWrapper& operator+=(TCallback callback)
   {
     events += callback;
     return *this;
   }
   
-  EventWrapper& operator-=(void (*callback)(T parameter))
+  template <class TCallback>
+  EventWrapper& operator-=(TCallback callback)
   {
     events -= callback;
     return *this;
