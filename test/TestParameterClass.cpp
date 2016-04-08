@@ -87,6 +87,7 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
   }
   GIVEN("CallQueue class")
   {
+    // 64-bit machine pointers can be large.  sizeof m2 on Linux GNU is 40 bytes
     CallQueue<128, 4> callQueue;
 
     TestParameterClass tpc;
@@ -96,34 +97,36 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     INFO("Size of control struct m = " << sizeof(m));
     INFO("Size of control struct m2 = " << sizeof(m2));
 
-    IInvoker* i = &m;
+    IInvoker& i = m;
 
+    INFO("Putting calls into the queue");
+    callQueue.put(i, sizeof(m));
+    callQueue.put(m2, sizeof(m2));
+
+    // WHEN/GIVEN etc tightly scope things and subsequent WHEN/GIVEN
+    // should NOT depend on the contents of a peer WHEN/GIVEN
     WHEN("Putting calls into the queue")
     {
-      callQueue.put(i);
-      callQueue.put(&m2);
       //i->debugPrint();
     }
 
     WHEN("Retrieving calls from the queue")
     {
       INFO("Call #1");
-      INFO("position_get = " << callQueue.queue.getPositionGet())
-      IInvoker* invoker = callQueue.get();
-      INFO("invoker = " << invoker);
-      REQUIRE(memcmp(i, invoker, 32) == 0);
-      REQUIRE(memcmp(&m, invoker, 32) == 0);
-      //invoker->debugPrint();
-      invoker->invoke();
+      REQUIRE(callQueue.queue.getPositionGet() == 0);
+      IInvoker& invoker = callQueue.get();
+      INFO("invoker = " << &invoker);
+      REQUIRE(memcmp(&i, &invoker, 32) == 0);
+      invoker.invoke();
       REQUIRE(tpc.getValue() == 2);
 
       INFO("Call #2");
-      INFO("position_get = " << callQueue.queue.getPositionGet())
-      IInvoker* invoker2 = callQueue.get();
-      INFO("invoker2 = " << invoker2);
+      REQUIRE(callQueue.queue.getPositionGet() == 1);
+      IInvoker& invoker2 = callQueue.get();
+      INFO("invoker2 = " <<& invoker2);
       //REQUIRE(memcmp(&m, &m, 8) == 0);
       //invoker2->debugPrint();
-      //invoker2->invoke();
+      invoker2();
       REQUIRE(tpc.getValue() == 7);
     }
   }
