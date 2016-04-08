@@ -1,9 +1,9 @@
 #include "catch.hpp"
 
-#include <fact/ipc.h>
+#include <fact/rpc.h>
 #include <menu/Properties.h>
 
-using namespace FactUtilEmbedded;
+using namespace FactUtilEmbedded::rpc;
 
 class TestParameterClass
 {
@@ -48,18 +48,18 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
 {
   WHEN("Doing 0 parameter")
   {
-    IPCHelper::create(test1_ipc).invoke();
+    CallHolderFactory::create(test1_ipc).invoke();
     REQUIRE(ipc_test_value == 1);
   }
   WHEN("Doing 1 parameter")
   {
-    auto m = IPCHelper::create(test2_ipc, 32.0F);
+    auto m = CallHolderFactory::create(test2_ipc, 32.0F);
     m.invoke();
     REQUIRE(ipc_test_value == 32);
   }
   WHEN("Doing 2 parameter")
   {
-    auto m2 = IPCHelper::create(test3_ipc, 7.0F, "lucky #7");
+    auto m2 = CallHolderFactory::create(test3_ipc, 7.0F, "lucky #7");
     m2.invoke();
     REQUIRE(ipc_test_value == 7);
     REQUIRE(ipc_test_str == "lucky #7");
@@ -68,7 +68,7 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
   {
     TestParameterClass tpc;
 
-    auto m = IPCHelper::create(&TestParameterClass::test, &tpc);
+    auto m = CallHolderFactory::create(&TestParameterClass::test, &tpc);
     m.invoke();
 
     REQUIRE(tpc.getValue() == 2);
@@ -77,7 +77,7 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
   {
     TestParameterClass tpc;
 
-    auto m = IPCHelper::create(&TestParameterClass::test2, &tpc, 7);
+    auto m = CallHolderFactory::create(&TestParameterClass::test2, &tpc, 7);
 
     IInvoker* invoker = &m;
 
@@ -91,8 +91,8 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     CallQueue<128, 4> callQueue;
 
     TestParameterClass tpc;
-    auto m = IPCHelper::create(&TestParameterClass::test, &tpc);
-    auto m2 = IPCHelper::create(&TestParameterClass::test2, &tpc, 7);
+    auto m = CallHolderFactory::create(&TestParameterClass::test, &tpc);
+    auto m2 = CallHolderFactory::create(&TestParameterClass::test2, &tpc, 7);
 
     INFO("Size of control struct m = " << sizeof(m));
     INFO("Size of control struct m2 = " << sizeof(m2));
