@@ -27,11 +27,11 @@ public:
   VAWrapper()
   {
   }
-  
+
   // because we can expect this to always inline out and not really use a ref,
   // this should always work
   operator va_list&() { return argp; }
-  
+
   ~VAWrapper() { va_end(argp); }
 };
 
@@ -55,7 +55,7 @@ class HandleBase;
 class HandleManager
 {
   friend HandleBase;
-  
+
 public:
   static const uint8_t nullHandle = 0;
   typedef uint8_t handle;
@@ -106,7 +106,7 @@ protected:
 
   // remove handle with "data" as its data from within a handle chain
   // (not the entire handle pool).  Returns false if startNode itself
-  // needs to be removed (external remove must happen), otherwise 
+  // needs to be removed (external remove must happen), otherwise
   // true
   static bool remove(Handle* handles, Handle* startNode, void* data);
 
@@ -114,7 +114,7 @@ protected:
   {
     return &handles[h - 1];
   }
-  
+
 public:
   // clears and initializes handle list overall
   void init();
@@ -145,7 +145,7 @@ typedef void (*eventCallback)(void* sender);
 //template <uint8_t NMEMB>
 class EventManager : public HandleManager
 {
-  // NOTE: be sure to not change the memory size from Handle, 
+  // NOTE: be sure to not change the memory size from Handle,
   // so that handles map properly onto HandleManager::Handle
   class Event : Handle
   {
@@ -171,9 +171,9 @@ public:
 #else
   void invoke(handle event, void* parameter);
 #endif
-  
+
   typedef void (&_p_invoke)(void* pc, void* callback);
-  
+
   // this is a function helper to encapsulate template behavior, so that
   // we can reuse our loop function elsewhere to hopefully save code space
   // now what we need to do is to do some code size comparisons
@@ -181,30 +181,30 @@ public:
   static void __p_invoke(void* pc, void* callback)
   {
     auto _pc = reinterpret_cast<TParameterClass*>(pc);
-    
+
     // very fragile code
     // note sure why but stub ends up being a function PTR not reference, even
     // though stubs are explicitly references
     auto safecast = (uint8_t*) callback;
     auto _callback = reinterpret_cast<typename TParameterClass::stub>(*safecast);
-    
+
     _pc->invoke(*_callback);
   }
-  
+
   template <class TParameterClass>
   void _invokeExp(handle h, TParameterClass& p)
   {
     while(h != nullHandle)
     {
       Event* event = getEvent(h);
-      
+
       auto callback = reinterpret_cast<typename TParameterClass::stub>(*(event->getCallback()));
-      
+
       p.invoke(*callback);
       h = event->getNext();
     }
   }
-  
+
   void __invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, void* pc);
 
   template <class TParameterClass>
@@ -233,6 +233,18 @@ protected:
 };
 
 
+template <class TEvent>
+TEvent& operator+= (TEvent& event, typename TEvent::stub func)
+{
+  event.add(func);
+}
+
+template <class TEvent>
+TEvent& operator-= (TEvent& event, typename TEvent::stub func)
+{
+  event.remove(func);
+}
+
 class EventExp : public HandleBase
 {
 protected:
@@ -243,64 +255,45 @@ protected:
 #endif
     HandleBase::add(&eventManager, data);
   }
-  
+
   void remove(void* data)
   {
     HandleBase::remove(&eventManager, data);
   }
-};
 
-
-template <class TStub, class TEvent>
-class EventStubGenerator : public EventExp
-{
-public:
-  TEvent& operator+=(TStub callback)
+  // not used yet
+  template <class TParameterClass>
+  void invoke(TParameterClass& p)
   {
-    add((void*)callback);
-    return (TEvent&)*this;
-  }
-
-  TEvent& operator-=(TStub callback)
-  {
-    remove((void*)callback);
-    return (TEvent&)*this;
+    eventManager._invokeExp(HandleBase::handle, p);
   }
 };
 
 template <class TIn1>
-class EventExp1 : 
-  public EventStubGenerator<void (&)(TIn1), EventExp1<TIn1>>
-  //public EventExp
+class EventExp1 : public EventExp
 {
-  typedef void (&stub)(TIn1);
-  
 public:
+  typedef FactUtilEmbedded::rpc::ParameterClass_1<TIn1> ParameterClass;
+  typedef typename ParameterClass::stub stub;
+  //void (&stub)(TIn1);
+
+  void add(stub func) { EventExp::add((void*) func);}
+  void remove(stub func) { EventExp::remove((void*) func);}
+
   EventExp1& operator()(TIn1 in1)
   {
-    FactUtilEmbedded::rpc::ParameterClass_1<TIn1> p(in1);
+    ParameterClass p(in1);
     eventManager._invokeExp(HandleBase::handle, p);
     return *this;
   }
-  
+
   void invokeExp(TIn1 in1)
   {
-    FactUtilEmbedded::rpc::ParameterClass_1<TIn1> p(in1);
+    ParameterClass p(in1);
     eventManager.__invokeExp(HandleBase::handle, p);
   }
-  /*
-  EventExp1& operator+=(stub callback)
-  {
-    add(callback);
-    return *this;
-  }
-
-  EventExp1& operator-=(stub callback)
-  {
-    remove(callback);
-    return *this;
-  } */
 };
+
 
 
 template <class TIn1, class TIn2>
@@ -339,7 +332,7 @@ public:
     add(callback);
     return *this;
   }
-  
+
   Event& operator-=(void (*callback)(T parameter))
   {
     HandleBase::remove(&eventManager, (void*)callback);
@@ -351,7 +344,7 @@ public:
   {
     eventManager.invoke(handle, (void*) parameter, argp);
   }
-  
+
   void invoke(T parameter ...)
   {
     VA_WRAPPER(parameter);
@@ -370,14 +363,14 @@ public:
   {
     eventManager.invoke(handle, (void*) parameter);
   }
-  
+
   Event& operator()(T parameter)
   {
     invoke(parameter);
     return *this;
   }
 #endif
-  
+
   void clear() { HandleBase::clear(&eventManager); }
 };
 
@@ -427,7 +420,7 @@ public:
     events += callback;
     return *this;
   }
-  
+
   template <class TCallback>
   EventWrapper& operator-=(TCallback callback)
   {
