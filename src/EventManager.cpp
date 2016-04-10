@@ -139,16 +139,25 @@ void HandleManager::clear(handle h)
   }
 }
 
-void EventManager::invoke(HandleManager::handle h, void* parameter, va_list argp)
+void EventManager::invoke(HandleManager::handle h, void* parameter
+#ifdef EVENT_FEATURE_VA
+  , va_list argp
+#endif
+)
 {
   while(h != nullHandle)
   {
     Event* event = getEvent(h);
+  
     
+#ifdef EVENT_FEATURE_VA
     va_list argp_copy;
     // we need to constantly copy argp because callbacks can move its pointer forward
     va_copy(argp_copy, argp);
     event->getCallback()(parameter, argp_copy);
+#else
+    event->getCallback()(parameter);
+#endif
     h = event->getNext();
   }
 }

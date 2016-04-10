@@ -42,11 +42,13 @@ int eventResponder4_counter = 0;
 
 void eventResponder4(EventFiringClass* source, va_list argp)
 {
+#ifdef EVENT_FEATURE_VA
   auto fluidParameter = va_arg(argp, const char*);
   //INFO("Fluid parameter = " << fluidParameter);
   //printf("\r\n Firing: %s", fluidParameter);
   REQUIRE(fluidParameter != NULL);
   REQUIRE(_fluidParameter == fluidParameter);
+#endif
   eventResponder4_counter++;
 }
 

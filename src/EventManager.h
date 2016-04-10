@@ -136,7 +136,11 @@ public:
   }
 };
 
+#ifdef EVENT_FEATURE_VA
 typedef void (*eventCallback)(void* sender, va_list argp);
+#else
+typedef void (*eventCallback)(void* sender);
+#endif
 
 //template <uint8_t NMEMB>
 class EventManager : public HandleManager
@@ -162,7 +166,11 @@ public:
     invoke(event, parameter, va.argp);
     //va_end(argp);
   } */
+#ifdef EVENT_FEATURE_VA
   void invoke(handle event, void* parameter, va_list argp);
+#else
+  void invoke(handle event, void* parameter);
+#endif
   
   typedef void (&_p_invoke)(void* pc, void* callback);
   
@@ -335,6 +343,7 @@ public:
     return *this;
   }
 
+#ifdef EVENT_FEATURE_VA
   void _invoke(T parameter, va_list argp)
   {
     eventManager.invoke(handle, (void*) parameter, argp);
@@ -353,6 +362,18 @@ public:
 
     return *this;
   }
+#else
+  void invoke(T parameter)
+  {
+    eventManager.invoke(handle, (void*) parameter);
+  }
+  
+  Event& operator()(T parameter)
+  {
+    invoke(parameter);
+    return *this;
+  }
+#endif
   
   void clear() { HandleBase::clear(&eventManager); }
 };
@@ -372,14 +393,22 @@ protected:
 
   void invoke(T parameter ...)
   {
+#ifdef EVENT_FEATURE_VA
     VA_WRAPPER(parameter);
     events._invoke(parameter, va.argp);
+#else
+    events.invoke(parameter);
+#endif
   }
 
   EventWrapper operator()(T parameter ...)
   {
+#ifdef EVENT_FEATURE_VA
     VA_WRAPPER(parameter);
     events._invoke(parameter, va.argp);
+#else
+    events.invoke(parameter);
+#endif
     return *this;
   }
 
