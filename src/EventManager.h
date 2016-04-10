@@ -183,7 +183,10 @@ public:
     auto _pc = reinterpret_cast<TParameterClass*>(pc);
     
     // very fragile code
-    auto _callback = reinterpret_cast<typename TParameterClass::stub>(*callback);
+    // note sure why but stub ends up being a function PTR not reference, even
+    // though stubs are explicitly references
+    auto safecast = (uint8_t*) callback;
+    auto _callback = reinterpret_cast<typename TParameterClass::stub>(*safecast);
     
     _pc->invoke(*_callback);
   }
