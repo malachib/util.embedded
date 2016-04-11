@@ -101,7 +101,8 @@ public:
 
   typedef void (&stub)(TIn1, TIn2);
   
-  template <class TOut> using stub_out = TOut (&)(TIn1, TIn2);
+  template <class TOut> using stub_func = TOut (&)(TIn1, TIn2);
+  template <class TOut> using stub_method = TOut (&)(TIn1, TIn2);
 };
 
 template <class TIn1, class TIn2, class TIn3>
@@ -177,6 +178,33 @@ public:
     cout.println();
   }
 #endif
+};
+
+
+template <class TParameters, class TOut>
+class StubGen
+{
+public:
+  typedef typename TParameters::template stub_func <TOut> stub;
+};
+
+template <class TParameters, class TOut>
+class CallHolderFunction
+  : CallHolder<TParameters, typename StubGen<TParameters, TOut>::stub>
+  //  CallHolderFunction<TParameters, TOut>::stub>
+{
+public:
+  //TParameters::stub_func<TOut>* getStuff() { return nullptr; }
+  typedef typename TParameters::template stub_func <TOut> stub;
+  
+  stub* getStuff() { return nullptr; }
+};
+
+template <class TParameters, class TOut>
+class CallHolderMethod
+{
+public:
+  //typename TParameters::stub_method<TOut> stub;
 };
 
 
