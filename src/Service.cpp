@@ -124,7 +124,7 @@ bool LightweightService::awaitDependency(LightweightService* dependsOn)
   return true;
 }
 
-const __FlashStringHelper* LightweightService::getStateString()
+const __FlashStringHelper* LightweightService::getStateString() const
 {
   switch(state)
   {

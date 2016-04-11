@@ -161,8 +161,10 @@ namespace FactUtilEmbedded
 
     void debugPrint() const
     {
-      auto buffer = array.getData();
 #if defined(ARDUINO) && defined(DEBUG)
+      auto buffer = array.getData();
+      auto size = array.getSize();
+
       for(int i = 0; i < size; i++)
       {
         Serial << buffer[i] << F(", ");

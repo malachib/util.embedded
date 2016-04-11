@@ -84,8 +84,8 @@ public:
       start(initFunc);
   }
 
-  const __FlashStringHelper* getStateString();
-  const __FlashStringHelper* getStatusMessage()
+  const __FlashStringHelper* getStateString() const;
+  const __FlashStringHelper* getStatusMessage() const
   {
     return statusMessage != NULL ? statusMessage : getStateString();
   }
@@ -194,6 +194,19 @@ inline Print& operator <<(Print& p, LightweightService& arg)
   {
     p.print(F(": "));
     p.print(arg.getStatusMessage());
+  }
+  return p;
+}
+
+// adding const makes this ambiguous, unfortunately; yet if we remove
+// the function altogether, it won't find the LightweightServices& flavor
+inline Print& operator <<(Print& p, Service* s)
+{
+  p.print(s->getStateString());
+  if(s->getStatusMessage() != NULL)
+  {
+    p.print(F(": "));
+    p.print(s->getStatusMessage());
   }
   return p;
 }

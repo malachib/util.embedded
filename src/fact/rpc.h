@@ -133,7 +133,7 @@ public:
 
   virtual void invoke() = 0;
 
-#ifdef DEBUG
+#ifdef DEBUG2
   virtual void debugPrint() const = 0;
 #endif
 
@@ -164,7 +164,7 @@ public:
     parameters.invoke(func);
   }
 
-#ifdef DEBUG
+#ifdef DEBUG2
   virtual void debugPrint() const override
   {
     parameters.debugPrint();
