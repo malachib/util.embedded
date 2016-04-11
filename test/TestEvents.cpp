@@ -134,17 +134,17 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       efc.testEvent1 += eventResponder3;
       efc.fireTestEvent1();
       REQUIRE(eventResponder3_counter == 1);
-      
+
       // this isn't removing the pointer, but should be
       efc.testEvent1 -= eventResponder3;
-      
+
       efc.fireTestEvent1();
       REQUIRE(eventResponder3_counter == 1);
     }
     WHEN("Removing middle one from a 3-long event list")
     {
       INFO("Phase 1");
-      
+
       eventResponder3_counter = 0;
       eventResponder4_counter = 0;
       EventFiringClass efc;
@@ -157,13 +157,13 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       efc.fireTestEvent1();
       REQUIRE(eventResponder4_counter == 2);
       REQUIRE(eventResponder3_counter == 1);
-    
+
       INFO("Phase 3");
-      
+
       efc.testEvent1 -= eventResponder3;
-      
+
       INFO("Phase 4");
-      
+
       efc.fireTestEvent1();
       REQUIRE(eventResponder4_counter == 4);
       REQUIRE(eventResponder3_counter == 1);
@@ -171,20 +171,20 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
     GIVEN("Experimental event code")
     {
       EventFiringClass efc;
-      EventExp1<EventFiringClass*> eventExp1;
+      Event1<EventFiringClass*> eventExp1;
 
       eventResponder3_counter = 0;
-      
+
       eventExp1 += eventResponder3;
       eventExp1(&efc);
-      
+
       REQUIRE(eventResponder3_counter == 1);
 
       eventExp1(&efc);
 
       REQUIRE(eventResponder3_counter == 2);
-      
-      eventExp1.invokeExp(&efc);
+
+      eventExp1.invokeT2(&efc);
 
       REQUIRE(eventResponder3_counter == 3);
     }

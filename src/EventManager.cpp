@@ -162,25 +162,19 @@ void EventManager::invoke(HandleManager::handle h, void* parameter
   }
 }
 
-void EventManager::__invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, const void* pc)
+void EventManager::invokeType2_helper(HandleManager::handle h,
+  const _p_invoke p_invoke,
+  const void* pc) const
 {
   while(h != nullHandle)
   {
     const Event* const event = getEvent(h);
 
-    p_invoke(pc, event->getDataExp());
+    p_invoke(pc, event->getData());
     h = event->getNext();
-    //p.
   }
 }
 
-/*
-template<class TIn>
-void EventManager::_invokeExp(HandleManager::handle h, FactUtilEmbedded::rpc::ParameterClass_1 p)
-{
-
-}
-*/
 
 void HandleBase::add(HandleManager* manager, void* data)
 {

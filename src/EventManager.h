@@ -161,33 +161,22 @@ class EventManager : public HandleManager
 {
   // NOTE: be sure to not change the memory size from Handle,
   // so that handles map properly onto HandleManager::Handle
-  class Event : Handle
+  class Event : public Handle
   {
   public:
-    void* getDataExp() const { return data; }
     eventCallback getCallback() const { return (eventCallback) data; }
-    handle getNext() const { return next; }
   };
 
   const Event* const getEvent(handle event) const
   { return (const Event* const ) getHandleRO(event); }
 
-public:
-  /*
-  void invoke(handle event, void* parameter, ...)
-  {
-    VA_WRAPPER(parameter);
-    //va_start(argp, parameter);
-    invoke(event, parameter, va.argp);
-    //va_end(argp);
-  } */
-#ifdef EVENT_FEATURE_VA
-  void invoke(handle event, void* parameter, va_list argp);
-#else
-  void invoke(handle event, void* parameter);
-#endif
-
   typedef void (&_p_invoke)(const void* pc, const void* callback);
+
+  // shim call to suppress mass template-code generation for many
+  // different varieties of invoke call
+  void invokeType2_helper(HandleManager::handle h,
+    const _p_invoke p_invoke,
+    const void* pc) const;
 
   // somewhat-safely convert Handle's void* data to the specific
   // TParameterClass::stub desired for the operation
@@ -213,26 +202,30 @@ public:
 
     _pc->invoke(castCallback<TParameterClass>(callback));
   }
+public:
+
+#ifdef EVENT_FEATURE_VA
+  void invoke(handle event, void* parameter, va_list argp);
+#else
+  void invoke(handle event, void* parameter);
+#endif
 
   template <class TParameterClass>
-  void _invokeExp(handle h, const TParameterClass& p)
+  void invokeType1(handle h, const TParameterClass& p) const
   {
     while(h != nullHandle)
     {
       const Event* const event = getEvent(h);
 
-      p.invoke(castCallback<TParameterClass>(event->getDataExp()));
+      p.invoke(castCallback<TParameterClass>(event->getData()));
       h = event->getNext();
     }
   }
 
-  void __invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, const void* pc);
-
   template <class TParameterClass>
-  void __invokeExp(HandleManager::handle h, const TParameterClass& p)
+  void invokeType2(HandleManager::handle h, const TParameterClass& p) const
   {
-    _p_invoke p_invoke = __p_invoke<TParameterClass>;
-    __invokeExpHelper(h, p_invoke, &p);
+    invokeType2_helper(h, __p_invoke<TParameterClass>, &p);
   }
 };
 
@@ -255,19 +248,24 @@ protected:
 
 
 template <class TEvent>
-TEvent& operator+= (TEvent& event, typename TEvent::stub func)
+TEvent& operator+= (TEvent& event, typename TEvent::ParameterClass::stub func)
 {
-  event.add(func);
+  event.add((void*)func);
 }
 
 template <class TEvent>
-TEvent& operator-= (TEvent& event, typename TEvent::stub func)
+TEvent& operator-= (TEvent& event, typename TEvent::ParameterClass::stub func)
 {
-  event.remove(func);
+  event.remove((void*)func);
 }
 
 class EventExp : public HandleBase
 {
+  template <class TEvent>
+  friend TEvent& operator+= (TEvent& event, typename TEvent::ParameterClass::stub func);
+  template <class TEvent>
+  friend TEvent& operator-= (TEvent& event, typename TEvent::ParameterClass::stub func);
+
 protected:
   void add(void* data)
   {
@@ -282,43 +280,55 @@ protected:
     HandleBase::remove(&eventManager, data);
   }
 
+  // invoke type 1 generates a bit less up front code, but a bit more code
+  // per call.  Use this if only lightly using event code
   template <class TParameterClass>
   void invoke(const TParameterClass& p)
   {
-    eventManager._invokeExp(HandleBase::handle, p);
+    eventManager.invokeType1(HandleBase::handle, p);
   }
 
+  // invoke type 2 generates more up front code, but less code per invoke call
+  // Use this if using event code more heavily -
+  // NOTE: has an extra function pointer layer, so will run very slightly slower
   template <class TParameterClass>
-  void _invokeExp(const TParameterClass& p)
+  void invokeType2(const TParameterClass& p)
   {
-    eventManager.__invokeExp(HandleBase::handle, p);
+    eventManager.invokeType2(HandleBase::handle, p);
+  }
+};
+
+
+class Event0 : public EventExp
+{
+public:
+  typedef FactUtilEmbedded::rpc::ParameterClass_0 ParameterClass;
+
+  Event0& operator()()
+  {
+    ParameterClass p;
+    invoke(p);
+    return *this;
   }
 };
 
 template <class TIn1>
-class EventExp1 : public EventExp
+class Event1 : public EventExp
 {
 public:
   typedef FactUtilEmbedded::rpc::ParameterClass_1<TIn1> ParameterClass;
-  typedef typename ParameterClass::stub stub;
-  //void (&stub)(TIn1);
 
-  void add(stub func) { EventExp::add((void*) func);}
-  void remove(stub func) { EventExp::remove((void*) func);}
-
-  EventExp1& operator()(TIn1 in1)
+  Event1& operator()(TIn1 in1)
   {
     ParameterClass p(in1);
     invoke(p);
-    //eventManager._invokeExp(HandleBase::handle, p);
     return *this;
   }
 
-  void invokeExp(TIn1 in1)
+  void invokeT2(TIn1 in1)
   {
     ParameterClass p(in1);
-    _invokeExp(p);
-    //eventManager.__invokeExp(HandleBase::handle, p);
+    invokeType2(p);
   }
 };
 
@@ -328,13 +338,15 @@ public:
 
 
 template <class TIn1, class TIn2>
-class EventExp2 : public EventExp
+class Event2 : public EventExp
 {
 public:
-  EventExp2& operator()(TIn1 in1, TIn2 in2)
+  typedef FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> ParameterClass;
+
+  Event2& operator()(TIn1 in1, TIn2 in2)
   {
-    FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> p(in1, in2);
-    eventManager._invokeExp(handle, p);
+    ParameterClass p(in1, in2);
+    eventManager.invokeType1(handle, p);
   }
 };
 

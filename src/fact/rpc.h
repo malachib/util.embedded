@@ -18,6 +18,8 @@ namespace FactUtilEmbedded
 class ParameterClass_0
 {
 public:
+  typedef void (&stub)();
+
   template <class TOut>
   TOut invoke(TOut (&func)()) const
   {

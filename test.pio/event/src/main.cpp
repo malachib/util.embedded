@@ -16,9 +16,9 @@ public:
 #endif
 #endif
 #if defined (FEATURE_EVENT_TEMPLATE1) || defined (FEATURE_EVENT_TEMPLATE2)
-  EventExp1<EventFiringClass*> testEvent1;
+  Event1<EventFiringClass*> testEvent1;
 #if TEST_DEPTH > 0
-  EventExp1<EventFiringClass*> testEvent2;
+  Event1<EventFiringClass*> testEvent2;
 #endif
 #endif
 
@@ -31,9 +31,9 @@ public:
     testEvent2(this);
 #endif
 #else
-    testEvent1.invokeExp(this);
+    testEvent1.invokeT2(this);
 #if TEST_DEPTH > 0
-    testEvent2.invokeExp(this);
+    testEvent2.invokeT2(this);
 #endif
 #endif
 #endif
