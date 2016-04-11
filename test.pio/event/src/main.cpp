@@ -86,17 +86,26 @@ uint8_t eventResponder_counter = 0;
 void eventResponder(EventFiringClass* source)
 {
   eventResponder_counter++;
+  cout << F("Responding to event: ") << eventResponder_counter;
+  cout.println();
 }
 
 #if TEST_DEPTH > 2
 void eventResponder2(EventFiringClass2* source)
 {
   eventResponder_counter++;
+  cout << F("Responding to event2: ") << eventResponder_counter;
+  cout.println();
 }
 #endif
 
 void setup()
 {
+  cout.begin(115200);
+  delay(2000);
+  cout.println(F("Starting..."));
+  delay(2000);
+  
 #ifdef FEATURE_EVENT
   efc.testEvent1 += eventResponder;
 #if TEST_DEPTH > 0
@@ -107,8 +116,11 @@ void setup()
 #endif
 #if TEST_DEPTH > 2
   efc2.testEvent1 += eventResponder2;
+  // do additional call as a TEST_DEPTH #4 (>3)
+  //efc2.testEvent1 += eventResponder2;
 #endif
 #endif
+  cout.println(F("Started"));
 }
 
 void loop()
