@@ -251,12 +251,14 @@ template <class TEvent>
 TEvent& operator+= (TEvent& event, typename TEvent::ParameterClass::stub func)
 {
   event.add((void*)func);
+  return event;
 }
 
 template <class TEvent>
 TEvent& operator-= (TEvent& event, typename TEvent::ParameterClass::stub func)
 {
   event.remove((void*)func);
+  return event;
 }
 
 class EventBase : public HandleBase
