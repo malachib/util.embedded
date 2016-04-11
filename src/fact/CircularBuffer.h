@@ -61,9 +61,9 @@ namespace FactUtilEmbedded
       buffer = bufferToUse;
     }
 
-    CircularBuffer(uint16_t size) : size(size) {}
+    //CircularBuffer(uint16_t size) : size(size) {}
 
-    CircularBuffer() {}
+    //CircularBuffer() {}
 
     void setBuffer(T* buffer, uint16_t size)
     {
