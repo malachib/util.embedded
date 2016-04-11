@@ -163,7 +163,7 @@ void EventManager::invoke(HandleManager::handle h, void* parameter
 }
 
 void EventManager::invokeType2_helper(HandleManager::handle h,
-  const _p_invoke p_invoke,
+  _p_invoke p_invoke,
   const void* pc) const
 {
   while(h != nullHandle)

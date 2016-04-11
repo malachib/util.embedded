@@ -175,7 +175,7 @@ class EventManager : public HandleManager
   // shim call to suppress mass template-code generation for many
   // different varieties of invoke call
   void invokeType2_helper(HandleManager::handle h,
-    const _p_invoke p_invoke,
+    _p_invoke p_invoke,
     const void* pc) const;
 
   // somewhat-safely convert Handle's void* data to the specific
