@@ -287,7 +287,13 @@ protected:
   template <class TParameterClass>
   void invoke(const TParameterClass& p) const
   {
+    // EVENT_FEATURE_TYPE2 brute forces all Event0-Event3 invokes to route
+    // through Type 2 mechanism.  Not necessarily better, just different
+#ifdef EVENT_FEATURE_TYPE2
+    eventManager.invokeType2(handleBase::handle, p);
+#else
     eventManager.invokeType1(HandleBase::handle, p);
+#endif
   }
 
   // invoke type 2 generates more up front code, but less code per invoke call
