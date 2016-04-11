@@ -3,8 +3,9 @@
 #include <iostream>
 #include <cstdarg>
 
-#include "EventManager.h"
+#include <fact/event.h>
 
+using namespace util;
 
 int counter = 0;
 int counter2 = 0;
