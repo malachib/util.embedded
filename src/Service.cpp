@@ -45,7 +45,7 @@ bool LightweightService::start(initErrorStatus initFunc, LightweightService* dep
 {
   if(!awaitDependency(dependsOn))
   {
-    state = Error;
+    //state = Error;
     return false;
   }
 
@@ -57,7 +57,7 @@ bool LightweightService::start(initErrorStatus2 initFunc, LightweightService* de
 {
   if(!awaitDependency(dependsOn))
   {
-    state = Error;
+    //state = Error;
     return false;
   }
 
@@ -87,7 +87,7 @@ bool LightweightService::start(initFullStatus initFunc, LightweightService* depe
 {
   if(!awaitDependency(dependsOn))
   {
-    state = Error;
+    //state = Error;
     return false;
   }
 
@@ -99,13 +99,17 @@ bool LightweightService::start(initFullStatus initFunc, LightweightService* depe
 bool LightweightService::awaitDependency(LightweightService* dependsOn)
 {
 #ifdef DEBUG
-  Serial.println(F("awaitDependency"));
+  cout.println(F("awaitDependency"));
 #endif
 
   if(dependsOn)
   {
+    setState(Waiting);
+
     // TODO: once I have a unified overflow watcher, do timeout logic here (20s)
-    while(dependsOn->getState() == Unstarted || dependsOn->getState() == Starting)
+    while(dependsOn->getState() == Unstarted ||
+        dependsOn->getState() == Starting ||
+        dependsOn->getState() == Waiting)
     {
       yield();
     }
@@ -120,18 +124,15 @@ bool LightweightService::awaitDependency(LightweightService* dependsOn)
   return true;
 }
 
-const __FlashStringHelper* LightweightService::getStatus()
+const __FlashStringHelper* LightweightService::getStateString()
 {
   switch(state)
   {
-#ifdef MEMORY_OPT_CODE
-    case Unstarted: return F("Unstarted");
-#else
-    case Unstarted: return F("Waiting to start");
-#endif
+    case Unstarted: return F(SERVICE_STATUS_UNSTARTED);
     case Starting: return F(SERVICE_STATUS_STARTING);
     case Started: return F(SERVICE_STATUS_STARTED);
     case Error: return F(SERVICE_STATUS_ERROR);
+    case Waiting: return F(SERVICE_STATUS_WAITING);
 #ifdef FACT_LIB_STRICT
     default: return F("Unknown");
 #endif
@@ -155,21 +156,12 @@ void Service::restart(startService1 startFunc)
     setState(Error);
 }
 
-void Service::start(const __FlashStringHelper* name, startService1 startFunc)
-{
-  setName(name);
-#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
-  this->startFunc = startFunc;
-#endif
-  restart(startFunc);
-}
-
-void Service::start(const __FlashStringHelper* name, startService1 startFunc, LightweightService* dependsOn)
+void Service::start(startService1 startFunc, LightweightService* dependsOn)
 {
   if(!awaitDependency(dependsOn))
   {
     LightweightService::setStatusMessage(NULL);
-    setState(Error);
+    //setState(Error);
     return;
   }
 
@@ -177,9 +169,8 @@ void Service::start(const __FlashStringHelper* name, startService1 startFunc, Li
   this->dependsOn = dependsOn;
 #endif
 
-  start(name, startFunc);
+  start(startFunc);
 }
-
 
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
 bool Service::start()

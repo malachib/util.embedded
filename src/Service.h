@@ -11,8 +11,17 @@ namespace FactUtilEmbedded
 
 #define SERVICE_STATUS_STARTING   "Starting"
 #define SERVICE_STATUS_STARTED    "Started"
+#ifdef MEMORY_OPT_CODE
 #define SERVICE_STATUS_UNSTARTED  "Unstarted"
+#else
+#define SERVICE_STATUS_UNSTARTED  "Waiting to start"
+#endif
 #define SERVICE_STATUS_ERROR      "Error"
+#ifdef MEMORY_OPT_CODE
+#define SERVICE_STATUS_WAITING    "Waiting"
+#else
+#define SERVICE_STATUS_WAITING    "Waiting for other service"
+#endif
 
 typedef void (*initBasic)(void);
 typedef const __FlashStringHelper* (*initErrorStatus)(void);
@@ -36,7 +45,8 @@ protected:
     Unstarted = 0,
     Starting = 1,
     Started = 2,
-    Error = 3
+    Error = 3,
+    Waiting = 4 // waiting on not yet started dependency
   };
 
   void setState(State state) { this->state = state; }
@@ -64,15 +74,20 @@ public:
   bool start(initFullStatus initFunc, LightweightService* dependsOn);
   void start(initBasic initFunc)
   {
-    state = Starting;
+    setState(Starting);
     initFunc();
-    state = Started;
+    setState(Started);
+  }
+  void start(initBasic initFunc, LightweightService* dependsOn)
+  {
+    if(awaitDependency(dependsOn))
+      start(initFunc);
   }
 
-  const __FlashStringHelper* getStatus();
+  const __FlashStringHelper* getStateString();
   const __FlashStringHelper* getStatusMessage()
   {
-    return statusMessage != NULL ? statusMessage : getStatus();
+    return statusMessage != NULL ? statusMessage : getStateString();
   }
 
   static const char genericError[] PROGMEM;
@@ -123,9 +138,17 @@ public:
 
   // TODO: phase out explicit naming in favor of constructor-named,
   // this way unstarted services are still named
-  void start(const __FlashStringHelper* name, startService1);
-  void start(const __FlashStringHelper* name, startService1, LightweightService* dependsOn);
-  void start(const __FlashStringHelper* name, startService2);
+  //void start(const __FlashStringHelper* name, startService2);
+
+  void start(startService1 startFunc)
+  {
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+    this->startFunc = startFunc;
+#endif
+    restart(startFunc);
+  }
+  void start(startService1, LightweightService* dependsOn);
+
   void restart(startService1);
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
   void restart();
@@ -133,6 +156,10 @@ public:
 #endif
 
   //void restart(startService1) { }
+  void addDependency(LightweightService* dependsOn)
+  {
+
+  }
 
   // TODO: iron out fact that these shouldn't be public (use private / protected)
   // base class
@@ -162,7 +189,7 @@ class RestartableService : public Service
 
 inline Print& operator <<(Print& p, LightweightService& arg)
 {
-  p.print(arg.getStatus());
+  p.print(arg.getStateString());
   if(arg.getStatusMessage() != NULL)
   {
     p.print(F(": "));
