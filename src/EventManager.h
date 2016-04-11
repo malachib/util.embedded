@@ -9,6 +9,7 @@
 #include "fact/lib.h"
 #endif
 #include "fact/features.h"
+#include "fact/rpc.h"
 
 #include <stdarg.h>
 
@@ -26,11 +27,11 @@ public:
   VAWrapper()
   {
   }
-  
+
   // because we can expect this to always inline out and not really use a ref,
   // this should always work
   operator va_list&() { return argp; }
-  
+
   ~VAWrapper() { va_end(argp); }
 };
 
@@ -54,7 +55,7 @@ class HandleBase;
 class HandleManager
 {
   friend HandleBase;
-  
+
 public:
   static const uint8_t nullHandle = 0;
   typedef uint8_t handle;
@@ -68,8 +69,8 @@ protected:
     void* data;
     handle next;
   public:
-    void* getData() {return data;}
-    handle getNext() {return next;}
+    void* getData() const {return data;}
+    handle getNext() const {return next;}
   };
 
 private:
@@ -105,7 +106,7 @@ protected:
 
   // remove handle with "data" as its data from within a handle chain
   // (not the entire handle pool).  Returns false if startNode itself
-  // needs to be removed (external remove must happen), otherwise 
+  // needs to be removed (external remove must happen), otherwise
   // true
   static bool remove(Handle* handles, Handle* startNode, void* data);
 
@@ -113,11 +114,21 @@ protected:
   {
     return &handles[h - 1];
   }
-  
+
+  static const Handle* const getHandleRO(const Handle* const handles, handle h)
+  {
+    return &handles[h - 1];
+  }
+
+  // helper for RO operations
+  const Handle& getHandleNative(uint8_t h) const
+  {
+    return handles[h];
+  }
 public:
   // clears and initializes handle list overall
   void init();
-  uint8_t available();
+  uint8_t available() const;
 
   // initializes a new handle list
   handle init(void* data);
@@ -129,38 +140,93 @@ public:
   // this handle in the list are cleared
   void clear(handle handle);
   Handle* getHandle(handle handle) { return getHandle(handles, handle); }
+  const Handle* const getHandleRO(handle handle) const
+  {
+    return getHandleRO(handles, handle);
+  }
   bool remove(handle startNode, void* data)
   {
     return remove(handles, getHandle(startNode), data);
   }
 };
 
+#ifdef EVENT_FEATURE_VA
 typedef void (*eventCallback)(void* sender, va_list argp);
+#else
+typedef void (*eventCallback)(void* sender);
+#endif
 
 //template <uint8_t NMEMB>
 class EventManager : public HandleManager
 {
-  // NOTE: be sure to not change the memory size from Handle, 
+  // NOTE: be sure to not change the memory size from Handle,
   // so that handles map properly onto HandleManager::Handle
-  class Event : Handle
+  class Event : public Handle
   {
   public:
-    eventCallback getCallback() { return (eventCallback) data; }
-    handle getNext() { return next; }
+    eventCallback getCallback() const { return (eventCallback) data; }
   };
 
-  Event* getEvent(handle event) { return (Event*) getHandle(event); }
+  const Event* const getEvent(handle event) const
+  { return (const Event* const ) getHandleRO(event); }
 
-public:
-  /*
-  void invoke(handle event, void* parameter, ...)
+  typedef void (&_p_invoke)(const void* pc, const void* callback);
+
+  // shim call to suppress mass template-code generation for many
+  // different varieties of invoke call
+  void invokeType2_helper(HandleManager::handle h,
+    _p_invoke p_invoke,
+    const void* pc) const;
+
+  // somewhat-safely convert Handle's void* data to the specific
+  // TParameterClass::stub desired for the operation
+  template <class TParameterClass>
+  static typename TParameterClass::stub castCallback(const void* callback)
   {
-    VA_WRAPPER(parameter);
-    //va_start(argp, parameter);
-    invoke(event, parameter, va.argp);
-    //va_end(argp);
-  } */
+    // very fragile code
+    // note sure why but stub ends up being a function PTR not reference, even
+    // though stubs are explicitly references
+    auto safecast = (uint8_t*) callback;
+    auto _callback = reinterpret_cast<typename TParameterClass::stub>(*safecast);
+
+    return *_callback;
+  }
+
+  // this is a function helper to encapsulate template behavior, so that
+  // we can reuse our loop function elsewhere to hopefully save code space
+  // now what we need to do is to do some code size comparisons
+  template <class TParameterClass>
+  static void __p_invoke(const void* pc, const void* callback)
+  {
+    auto _pc = reinterpret_cast<const TParameterClass*>(pc);
+
+    _pc->invoke(castCallback<TParameterClass>(callback));
+  }
+public:
+
+#ifdef EVENT_FEATURE_VA
   void invoke(handle event, void* parameter, va_list argp);
+#else
+  void invoke(handle event, void* parameter);
+#endif
+
+  template <class TParameterClass>
+  void invokeType1(handle h, const TParameterClass& p) const
+  {
+    while(h != nullHandle)
+    {
+      const Event* const event = getEvent(h);
+
+      p.invoke(castCallback<TParameterClass>(event->getData()));
+      h = event->getNext();
+    }
+  }
+
+  template <class TParameterClass>
+  void invokeType2(HandleManager::handle h, const TParameterClass& p) const
+  {
+    invokeType2_helper(h, __p_invoke<TParameterClass>, &p);
+  }
 };
 
 extern EventManager eventManager;
@@ -181,6 +247,8 @@ protected:
 };
 
 
+
+
 // be sure sizeof(T) == sizeof(void*)
 template <class T>
 class Event : public HandleBase
@@ -194,10 +262,12 @@ public:
     HandleBase::add(&eventManager, (void*)callback);
   }
 
+#ifdef EVENT_FEATURE_VA
   void add(__eventCallback callback)
   {
     HandleBase::add(&eventManager, (void*)callback);
   }
+#endif
 
   template <class TCallback>
   Event& operator+=(TCallback callback)
@@ -205,18 +275,19 @@ public:
     add(callback);
     return *this;
   }
-  
+
   Event& operator-=(void (*callback)(T parameter))
   {
     HandleBase::remove(&eventManager, (void*)callback);
     return *this;
   }
 
+#ifdef EVENT_FEATURE_VA
   void _invoke(T parameter, va_list argp)
   {
     eventManager.invoke(handle, (void*) parameter, argp);
   }
-  
+
   void invoke(T parameter ...)
   {
     VA_WRAPPER(parameter);
@@ -230,6 +301,18 @@ public:
 
     return *this;
   }
+#else
+  void invoke(T parameter)
+  {
+    eventManager.invoke(handle, (void*) parameter);
+  }
+
+  Event& operator()(T parameter)
+  {
+    invoke(parameter);
+    return *this;
+  }
+#endif
 
   void clear() { HandleBase::clear(&eventManager); }
 };
@@ -249,14 +332,22 @@ protected:
 
   void invoke(T parameter ...)
   {
+#ifdef EVENT_FEATURE_VA
     VA_WRAPPER(parameter);
     events._invoke(parameter, va.argp);
+#else
+    events.invoke(parameter);
+#endif
   }
 
   EventWrapper operator()(T parameter ...)
   {
+#ifdef EVENT_FEATURE_VA
     VA_WRAPPER(parameter);
     events._invoke(parameter, va.argp);
+#else
+    events.invoke(parameter);
+#endif
     return *this;
   }
 
@@ -272,7 +363,7 @@ public:
     events += callback;
     return *this;
   }
-  
+
   template <class TCallback>
   EventWrapper& operator-=(TCallback callback)
   {

@@ -53,6 +53,8 @@ its appetite:
    from global singular-stream to Console managing its own private stream; useful
    for multiple consoles speaking over different streams (i.e. Serial and telnet)
 * DRIVER_FEATURE_VTABLE_SUPPRESS: Disables virtual tables/polymorphism for drivers
+* EVENT_FEATURE_TYPE2: Force events to never operate in Type1 mode, only Type2.  
+   *May* save code space if using events heavily.
 
 Other preprocessor defines
 --------------------------

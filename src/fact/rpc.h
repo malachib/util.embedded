@@ -18,8 +18,10 @@ namespace FactUtilEmbedded
 class ParameterClass_0
 {
 public:
+  typedef void (&stub)();
+
   template <class TOut>
-  TOut invoke(TOut (&func)())
+  TOut invoke(TOut (&func)()) const
   {
     return func();
   }
@@ -32,11 +34,20 @@ class ParameterClass_1
 {
 protected:
 public: // FIX: temporarily making these public as we iron out architecture & POC
-    TIn param1;
+  TIn param1;
+
+  typedef void (&stub)(TIn);
 
 public:
+  ParameterClass_1(const TIn& param1) : param1(param1) {}
+  ParameterClass_1() {}
+
+  void invoke(stub func) { func(param1); }
+
+  void invokeExp(void (*func)(TIn)) { func(param1); }
+
   template <class TOut>
-  TOut invoke(TOut (&func)(TIn))
+  TOut invoke(TOut (&func)(TIn)) const
   {
     return func(param1);
   }
@@ -63,8 +74,12 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
   TIn2 param2;
 
 public:
+  ParameterClass_2() {}
+  ParameterClass_2(const TIn1& in1, const TIn2& in2) : ParameterClass_1<TIn1>(in1), param2(in2)
+  {}
+
   template <class TOut>
-  TOut invoke(TOut (&func)(TIn1, TIn2))
+  TOut invoke(TOut (&func)(TIn1, TIn2)) const
   {
     return func(ParameterClass_1<TIn1>::param1, param2);
   }
@@ -83,6 +98,8 @@ public:
     cout << F("p2: ") << param2;
     cout.println();
   }
+
+  typedef void (&stub)(TIn1, TIn2);
 };
 
 template <class TIn1, class TIn2, class TIn3>
@@ -94,7 +111,7 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
 
 public:
   template <class TOut>
-  TOut invoke(TOut (&func)(TIn1, TIn2, TIn3))
+  TOut invoke(TOut (&func)(TIn1, TIn2, TIn3)) const
   {
     return func(ParameterClass_1<TIn1>::param1, ParameterClass_2<TIn1, TIn2>::param2, param3);
   }

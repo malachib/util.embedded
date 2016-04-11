@@ -3,8 +3,9 @@
 #include <iostream>
 #include <cstdarg>
 
-#include "EventManager.h"
+#include <fact/event.h>
 
+using namespace util;
 
 int counter = 0;
 int counter2 = 0;
@@ -42,11 +43,13 @@ int eventResponder4_counter = 0;
 
 void eventResponder4(EventFiringClass* source, va_list argp)
 {
+#ifdef EVENT_FEATURE_VA
   auto fluidParameter = va_arg(argp, const char*);
   //INFO("Fluid parameter = " << fluidParameter);
   //printf("\r\n Firing: %s", fluidParameter);
   REQUIRE(fluidParameter != NULL);
   REQUIRE(_fluidParameter == fluidParameter);
+#endif
   eventResponder4_counter++;
 }
 
@@ -132,17 +135,17 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       efc.testEvent1 += eventResponder3;
       efc.fireTestEvent1();
       REQUIRE(eventResponder3_counter == 1);
-      
+
       // this isn't removing the pointer, but should be
       efc.testEvent1 -= eventResponder3;
-      
+
       efc.fireTestEvent1();
       REQUIRE(eventResponder3_counter == 1);
     }
     WHEN("Removing middle one from a 3-long event list")
     {
       INFO("Phase 1");
-      
+
       eventResponder3_counter = 0;
       eventResponder4_counter = 0;
       EventFiringClass efc;
@@ -155,16 +158,36 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
       efc.fireTestEvent1();
       REQUIRE(eventResponder4_counter == 2);
       REQUIRE(eventResponder3_counter == 1);
-    
+
       INFO("Phase 3");
-      
+
       efc.testEvent1 -= eventResponder3;
-      
+
       INFO("Phase 4");
-      
+
       efc.fireTestEvent1();
       REQUIRE(eventResponder4_counter == 4);
       REQUIRE(eventResponder3_counter == 1);
+    }
+    GIVEN("Experimental event code")
+    {
+      EventFiringClass efc;
+      Event1<EventFiringClass*> eventExp1;
+
+      eventResponder3_counter = 0;
+
+      eventExp1 += eventResponder3;
+      eventExp1(&efc);
+
+      REQUIRE(eventResponder3_counter == 1);
+
+      eventExp1(&efc);
+
+      REQUIRE(eventResponder3_counter == 2);
+
+      eventExp1.invokeT2(&efc);
+
+      REQUIRE(eventResponder3_counter == 3);
     }
   }
 }
