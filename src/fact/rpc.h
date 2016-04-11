@@ -100,6 +100,8 @@ public:
   }
 
   typedef void (&stub)(TIn1, TIn2);
+  
+  template <class TOut> using stub_out = TOut (&)(TIn1, TIn2);
 };
 
 template <class TIn1, class TIn2, class TIn3>
@@ -152,6 +154,7 @@ class CallHolder : public IInvoker
   friend CallHolderFactory;
 
 protected:
+  //typedef TParameters::
   const TFunc func;
   TParameters parameters;
 
@@ -202,6 +205,12 @@ public:
     return m;
   }
 
+  template <class TOut>
+  static CallHolder<ParameterClass_0, TOut (&)()>& createInPlace(void* mem, TOut (&func)())
+  {
+    return *(new (mem) CallHolder<ParameterClass_0, TOut (&)()>(func));
+  }
+
   template <class TOut, class TIn1>
   static CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)> create(TOut (&func)(TIn1), TIn1 in1)
   {
@@ -209,6 +218,15 @@ public:
 
     m.parameters.param1 = in1;
     return m;
+  }
+
+  template <class TOut, class TIn1>
+  static CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)>& createInPlace(void* mem, TOut (&func)(TIn1), TIn1 in1)
+  {
+    auto m = new (mem) CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)>(func);
+
+    m->parameters.param1 = in1;
+    return *m;
   }
 
   template <class TOut, class TClass>
