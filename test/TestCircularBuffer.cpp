@@ -77,4 +77,20 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
       REQUIRE(buffer.getPositionGet() == 3);
     }
   }
+  GIVEN("A very small buffer, wrapping around")
+  {
+    uint8_t _buffer[3];
+    CircularBuffer<uint8_t> buffer(_buffer, 3);
+
+    buffer.put(7);
+    REQUIRE(buffer.get() == 7);
+    buffer.put(8);
+    REQUIRE(buffer.get() == 8);
+    buffer.put(9);
+    REQUIRE(buffer.get() == 9);
+    buffer.put(10);
+    buffer.put(11);
+    REQUIRE(buffer.get() == 10);
+    REQUIRE(buffer.get() == 11);
+  }
 }
