@@ -259,7 +259,7 @@ TEvent& operator-= (TEvent& event, typename TEvent::ParameterClass::stub func)
   event.remove((void*)func);
 }
 
-class EventExp : public HandleBase
+class EventBase : public HandleBase
 {
   template <class TEvent>
   friend TEvent& operator+= (TEvent& event, typename TEvent::ParameterClass::stub func);
@@ -283,7 +283,7 @@ protected:
   // invoke type 1 generates a bit less up front code, but a bit more code
   // per call.  Use this if only lightly using event code
   template <class TParameterClass>
-  void invoke(const TParameterClass& p)
+  void invoke(const TParameterClass& p) const
   {
     eventManager.invokeType1(HandleBase::handle, p);
   }
@@ -292,14 +292,14 @@ protected:
   // Use this if using event code more heavily -
   // NOTE: has an extra function pointer layer, so will run very slightly slower
   template <class TParameterClass>
-  void invokeType2(const TParameterClass& p)
+  void invokeType2(const TParameterClass& p) const
   {
     eventManager.invokeType2(HandleBase::handle, p);
   }
 };
 
 
-class Event0 : public EventExp
+class Event0 : public EventBase
 {
 public:
   typedef FactUtilEmbedded::rpc::ParameterClass_0 ParameterClass;
@@ -313,7 +313,7 @@ public:
 };
 
 template <class TIn1>
-class Event1 : public EventExp
+class Event1 : public EventBase
 {
 public:
   typedef FactUtilEmbedded::rpc::ParameterClass_1<TIn1> ParameterClass;
@@ -325,7 +325,7 @@ public:
     return *this;
   }
 
-  void invokeT2(TIn1 in1)
+  void invokeT2(TIn1 in1) const
   {
     ParameterClass p(in1);
     invokeType2(p);
@@ -334,11 +334,8 @@ public:
 
 
 
-
-
-
 template <class TIn1, class TIn2>
-class Event2 : public EventExp
+class Event2 : public EventBase
 {
 public:
   typedef FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> ParameterClass;
@@ -364,10 +361,12 @@ public:
     HandleBase::add(&eventManager, (void*)callback);
   }
 
+#ifdef EVENT_FEATURE_VA
   void add(__eventCallback callback)
   {
     HandleBase::add(&eventManager, (void*)callback);
   }
+#endif
 
   template <class TCallback>
   Event& operator+=(TCallback callback)

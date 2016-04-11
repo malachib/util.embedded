@@ -39,7 +39,7 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
   typedef void (&stub)(TIn);
 
 public:
-  ParameterClass_1(TIn& param1) : param1(param1) {}
+  ParameterClass_1(const TIn& param1) : param1(param1) {}
   ParameterClass_1() {}
 
   void invoke(stub func) { func(param1); }
@@ -75,7 +75,7 @@ public: // FIX: temporarily making these public as we iron out architecture & PO
 
 public:
   ParameterClass_2() {}
-  ParameterClass_2(TIn1& in1, TIn2& in2) : ParameterClass_1<TIn1>(in1), param2(in2)
+  ParameterClass_2(const TIn1& in1, const TIn2& in2) : ParameterClass_1<TIn1>(in1), param2(in2)
   {}
 
   template <class TOut>
