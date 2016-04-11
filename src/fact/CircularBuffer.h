@@ -22,14 +22,14 @@ namespace FactUtilEmbedded
   template <class T>
   class CircularBuffer : public CircularBufferBase<T>
   {
-    //layer3::Array<T, uint16_t> array;
+    layer3::Array<T, uint16_t> array;
 
-    T* buffer;
+    //T* buffer;
     // position of where next put will occur
     uint16_t position = 0;
     // position of where next get will occur
     //uint16_t position_get = 0;
-    uint16_t size;
+    //uint16_t size;
 
     uint16_t currentCapacity = 0;
 
@@ -46,6 +46,7 @@ namespace FactUtilEmbedded
     uint16_t getPosition() const { return position; }
     uint16_t getPositionGet() const
     {
+      auto size = array.getSize();
       auto position_get = position >= currentCapacity ?
         (position - currentCapacity) :
         ((size) - (currentCapacity - position));
@@ -55,27 +56,29 @@ namespace FactUtilEmbedded
 
   public:
     CircularBuffer<T>(T* bufferToUse, uint16_t size) :
-      //array(bufferToUse, size),
-      size(size)
+      array(bufferToUse, size) //,
+      //size(size)
     {
-      buffer = bufferToUse;
+      //buffer = bufferToUse;
     }
 
     //CircularBuffer(uint16_t size) : size(size) {}
 
     //CircularBuffer() {}
 
+    /*
     void setBuffer(T* buffer, uint16_t size)
     {
       this->buffer = buffer;
       this->size = size;
-    }
+    }*/
 
     // normally we would scope this as protected, but
     // for speed we want to be able to peekLast / incrementPosition
     // instead of copying large messages around with a regular 'put'
     void incrementPosition()
     {
+      auto size = array.getSize();
       //if(available() == size)
         //incrementPositionGet();
 
@@ -104,13 +107,18 @@ namespace FactUtilEmbedded
 
     const T& peek() const
     {
+      auto buffer = array.getData();
       return buffer[getPositionGet()];
     }
 
     // Returns empty, freshly available buffer slot for a put
     // mainly useful for fast-writing to circular buffer manually vs
     // a full put operation
-    const T& peekLast() const { return buffer[position]; }
+    const T& peekLast() const
+    {
+      auto buffer = array.getData();
+      return buffer[position];
+    }
 
     // acquire how many elements are available to be read
     uint16_t available() const
@@ -129,6 +137,7 @@ namespace FactUtilEmbedded
 
     void put(const T& value)
     {
+      auto buffer = array.getData();
       buffer[position] = value;
       incrementPosition();
     }
@@ -138,6 +147,7 @@ namespace FactUtilEmbedded
     // always optimize to be a constant, so no overhead
     void put(T* value, uint16_t sizeOverride = 0)
     {
+      auto buffer = array.getData();
       memcpy(&buffer[position], value, sizeOverride ? sizeOverride : sizeof(T));
       incrementPosition();
     }
@@ -151,7 +161,8 @@ namespace FactUtilEmbedded
 
     void debugPrint() const
     {
-  #if defined(ARDUINO) && defined(DEBUG)
+      auto buffer = array.getData();
+#if defined(ARDUINO) && defined(DEBUG)
       for(int i = 0; i < size; i++)
       {
         Serial << buffer[i] << F(", ");
