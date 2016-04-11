@@ -1,5 +1,7 @@
 #pragma once
 
+#include "buffer.h"
+
 namespace FactUtilEmbedded
 {
 
@@ -20,6 +22,8 @@ namespace FactUtilEmbedded
   template <class T>
   class CircularBuffer : public CircularBufferBase<T>
   {
+    //layer3::Array<T, uint16_t> array;
+
     T* buffer;
     // position of where next put will occur
     uint16_t position = 0;
@@ -39,17 +43,20 @@ namespace FactUtilEmbedded
   #ifdef UNIT_TEST
   public:
   #endif
+    uint16_t getPosition() const { return position; }
     uint16_t getPositionGet() const
     {
       auto position_get = position >= currentCapacity ?
         (position - currentCapacity) :
-        ((size - 1) - (currentCapacity - position));
+        ((size) - (currentCapacity - position));
 
       return position_get;
     }
 
   public:
-    CircularBuffer<T>(T* bufferToUse, uint16_t size) : size(size)
+    CircularBuffer<T>(T* bufferToUse, uint16_t size) :
+      //array(bufferToUse, size),
+      size(size)
     {
       buffer = bufferToUse;
     }

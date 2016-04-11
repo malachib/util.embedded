@@ -83,14 +83,33 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
     CircularBuffer<uint8_t> buffer(_buffer, 3);
 
     buffer.put(7);
+    REQUIRE(buffer.available() == 1);
+    REQUIRE(buffer.getPosition() == 1);
+    REQUIRE(buffer.getPositionGet() == 0);
     REQUIRE(buffer.get() == 7);
     buffer.put(8);
+    REQUIRE(buffer.available() == 1);
+    REQUIRE(buffer.getPosition() == 2);
+    REQUIRE(buffer.getPositionGet() == 1);
     REQUIRE(buffer.get() == 8);
     buffer.put(9);
+    REQUIRE(buffer.available() == 1);
+    REQUIRE(buffer.getPosition() == 0);
+    REQUIRE(buffer.getPositionGet() == 2);
     REQUIRE(buffer.get() == 9);
     buffer.put(10);
     buffer.put(11);
+    REQUIRE(buffer.available() == 2);
+    REQUIRE(buffer.getPosition() == 2);
     REQUIRE(buffer.get() == 10);
     REQUIRE(buffer.get() == 11);
+    buffer.put(12);
+    REQUIRE(buffer.available() == 1);
+    REQUIRE(buffer.getPosition() == 0);
+    REQUIRE(buffer.get() == 12);
+    buffer.put(13);
+    REQUIRE(buffer.available() == 1);
+    REQUIRE(buffer.getPosition() == 1);
+    REQUIRE(buffer.get() == 13);
   }
 }
