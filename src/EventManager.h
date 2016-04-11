@@ -187,23 +187,31 @@ public:
   void invoke(handle event, void* parameter);
 #endif
 
-  typedef void (&_p_invoke)(const void* pc, void* callback);
+  typedef void (&_p_invoke)(const void* pc, const void* callback);
 
-  // this is a function helper to encapsulate template behavior, so that
-  // we can reuse our loop function elsewhere to hopefully save code space
-  // now what we need to do is to do some code size comparisons
+  // somewhat-safely convert Handle's void* data to the specific
+  // TParameterClass::stub desired for the operation
   template <class TParameterClass>
-  static void __p_invoke(const void* pc, void* callback)
+  static typename TParameterClass::stub castCallback(const void* callback)
   {
-    auto _pc = reinterpret_cast<const TParameterClass*>(pc);
-
     // very fragile code
     // note sure why but stub ends up being a function PTR not reference, even
     // though stubs are explicitly references
     auto safecast = (uint8_t*) callback;
     auto _callback = reinterpret_cast<typename TParameterClass::stub>(*safecast);
 
-    _pc->invoke(*_callback);
+    return *_callback;
+  }
+
+  // this is a function helper to encapsulate template behavior, so that
+  // we can reuse our loop function elsewhere to hopefully save code space
+  // now what we need to do is to do some code size comparisons
+  template <class TParameterClass>
+  static void __p_invoke(const void* pc, const void* callback)
+  {
+    auto _pc = reinterpret_cast<const TParameterClass*>(pc);
+
+    _pc->invoke(castCallback<TParameterClass>(callback));
   }
 
   template <class TParameterClass>
@@ -213,9 +221,7 @@ public:
     {
       const Event* const event = getEvent(h);
 
-      auto callback = reinterpret_cast<typename TParameterClass::stub>(*(event->getCallback()));
-
-      p.invoke(*callback);
+      p.invoke(castCallback<TParameterClass>(event->getDataExp()));
       h = event->getNext();
     }
   }
