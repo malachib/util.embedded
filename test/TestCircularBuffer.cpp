@@ -4,6 +4,21 @@
 
 using namespace util;
 
+class DoubleWrapper
+{
+public:
+  DoubleWrapper() {}
+
+  DoubleWrapper(double val) : val(val) {}
+
+  double val;
+
+  virtual double operator()() const
+  {
+    return val;
+  }
+};
+
 SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
 {
   GIVEN("A buffer of 1024 elements")
@@ -98,9 +113,12 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
     REQUIRE(buffer.getPositionGet() == 2);
     REQUIRE(buffer.get() == 9);
     buffer.put(10);
+    REQUIRE(buffer.getPosition() == 1);
+    REQUIRE(buffer.getPositionGet() == 0);
     buffer.put(11);
     REQUIRE(buffer.available() == 2);
     REQUIRE(buffer.getPosition() == 2);
+    REQUIRE(buffer.getPositionGet() == 0);
     REQUIRE(buffer.get() == 10);
     REQUIRE(buffer.get() == 11);
     buffer.put(12);
@@ -111,5 +129,36 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
     REQUIRE(buffer.available() == 1);
     REQUIRE(buffer.getPosition() == 1);
     REQUIRE(buffer.get() == 13);
+  }
+  GIVEN("A small and complex buffer, wrapping around")
+  {
+    DoubleWrapper _buffer[4];
+    CircularBuffer<DoubleWrapper> buffer(_buffer, 3);
+    DoubleWrapper dw;
+
+    INFO("Item #1");
+    buffer.put(1);
+    REQUIRE(buffer.getPositionGet() == 0);
+    REQUIRE(buffer.get()() == 1);
+    INFO("Item #2");
+    buffer.put(2);
+    REQUIRE(buffer.getPositionGet() == 1);
+    REQUIRE(buffer.get()() == 2);
+    INFO("Item #3");
+    buffer.put(3);
+    REQUIRE(buffer.getPositionGet() == 2);
+    REQUIRE(buffer.get()() == 3);
+    INFO("Item #4");
+    // this put line I think screws up the stack frame, position get shouldn't be 3 after this
+    buffer.put(4);
+    REQUIRE(buffer.getPositionGet() == 0);
+    INFO("Item #4.1");
+    REQUIRE(buffer.get().val == 4);
+    INFO("Item #4.2");
+    REQUIRE(buffer.getPositionGet() == 1);
+    INFO("Item #5");
+    buffer.put(5);
+    INFO("Item #5.1");
+    REQUIRE(buffer.get()() == 5);
   }
 }

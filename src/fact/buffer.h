@@ -38,6 +38,7 @@ namespace FactUtilEmbedded
       T* getData() const { return (T*) getData(); }
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
+      uint16_t getSize() const { return size; }
     };
   }
 
@@ -74,6 +75,7 @@ namespace FactUtilEmbedded
       T* getData() const { return (T*) MemoryContainerBase::getData(); }
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
+      uint16_t getSize() const { return size; }
     };
   }
 
@@ -104,6 +106,8 @@ namespace FactUtilEmbedded
       T* getData() const { return (T*) MemoryContainer<TSize>::getData(); }
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
+      TSize getSize() const
+      { return MemoryContainer<TSize>::getSize() / sizeof(T); }
     };
   }
 
