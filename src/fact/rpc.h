@@ -11,10 +11,131 @@
 #include "lib.h"
 #include "../Console.h"
 
+#include <cstdint>
+#include <typeinfo>
+
 namespace FactUtilEmbedded
 {
   namespace rpc
   {
+
+template <class... TIn>
+class ParameterTuple {};
+
+
+template <class T, class... TIn>
+class ParameterTuple<T, TIn...> : ParameterTuple<TIn...>
+{
+public:
+  void debugPrint() {}
+  
+  T tail;
+
+  void assign(T t, TIn... tin)
+  {
+    tail = t;
+    assign(tin...);
+  }
+};
+
+
+template <size_t, class> struct elem_type_holder;
+
+template <class T, class... Ts>
+struct elem_type_holder<0, ParameterTuple<T, Ts...>> {
+  typedef T type;
+};
+
+
+template <size_t k, class T, class... Ts>
+struct elem_type_holder<k, ParameterTuple<T, Ts...>> {
+  typedef typename elem_type_holder<k - 1, ParameterTuple<Ts...>>::type type;
+};
+
+
+template <size_t k, class... Ts>
+typename std::enable_if<
+    k == 0, typename elem_type_holder<0, ParameterTuple<Ts...>>::type&>::type
+get(ParameterTuple<Ts...>& t) {
+  return t.tail;
+}
+
+template <size_t k, class T, class... Ts>
+typename std::enable_if<
+    k != 0, typename elem_type_holder<k, ParameterTuple<T, Ts...>>::type&>::type
+get(ParameterTuple<T, Ts...>& t) {
+  ParameterTuple<Ts...>& base = t;
+  return get<k - 1>(base);
+}
+
+
+template <class TIn1>
+class ParameterTuple<TIn1>
+{
+public:
+  template <class TOut> using stub_func = TOut (*)(TIn1);
+  //template <class TOut> using stub_method = TOut (TIn1::*)();
+
+  template <class TOut> 
+  TOut invoke(stub_func<TOut> func)
+  {
+    return func(get<0>(*this));
+  }
+
+  /*
+  template <class TOut> 
+  TOut invoke(stub_method<TOut> func)
+  {
+    return ((*(get<0>(*this))).*func)();
+  } */
+};
+
+
+template <class TIn1, class TIn2>
+class ParameterTuple<TIn1, TIn2>
+{
+public:
+  template <class TOut> using stub_func = TOut (*)(TIn1, TIn2);
+  //template <class TOut> using stub_method = TOut (TIn1::*)(TIn2);
+
+  template <class TOut> 
+  TOut invoke(stub_func<TOut> func)
+  {
+    return func(get<0>(*this), get<1>(*this));
+  }
+
+  /*
+  template <class TOut> 
+  TOut invoke(stub_method<TOut> func)
+  {
+    return ((*(get<0>(*this))).*func)(get<1>(*this));
+  } */
+};
+
+
+template <class TIn1, class TIn2, class TIn3>
+class ParameterTuple<TIn1, TIn2, TIn3>
+{
+public:
+  template <class TOut> using stub_func = TOut (*)(TIn1, TIn2, TIn3);
+  //template <class TOut> using stub_method = TOut (TIn1::*)(TIn2, TIn3);
+
+  template <class TOut> 
+  TOut invoke(stub_func<TOut> func)
+  {
+    return func(get<0>(*this), get<1>(*this), get<2>(*this));
+  }
+
+  /*
+  template <class TOut> 
+  TOut invoke(stub_method<TOut> func)
+  {
+    return ((*(get<0>(*this))).*func)(get<1>(*this), get<2>(*this));
+  } */
+};
+
+
+
 class ParameterClass_0
 {
 public:
@@ -25,6 +146,13 @@ public:
   {
     return func();
   }
+
+/*
+  template <class TOut>
+  TOut invoke(TOut (*func)()) const
+  {
+    return func();
+  } */
 
   void debugPrint() const {}
 };
@@ -163,7 +291,6 @@ protected:
   TParameters parameters;
 
 public:
-
   CallHolder(TFunc func) : func(func) {}
 
   virtual void invoke() override
@@ -193,23 +320,44 @@ public:
 
 template <class TParameters, class TOut>
 class CallHolderFunction
-  : public CallHolder<TParameters, typename StubGen<TParameters, TOut>::stub>
+  //: public CallHolder<TParameters, typename StubGen<TParameters, TOut>::stub>
+  : public CallHolder<TParameters, typename TParameters::template stub_func <TOut>>
   //  CallHolderFunction<TParameters, TOut>::stub>
 {
 public:
   //TParameters::stub_func<TOut>* getStuff() { return nullptr; }
-  //typedef typename TParameters::template stub_func <TOut> stub;
-  
-  //stub* getStuff() { return nullptr; }
+  typedef typename TParameters::template stub_func <TOut> stub;
+  //typedef typename StubGen<TParameters, TOut>::stub stub;
+
+  CallHolderFunction(stub func) : CallHolder<TParameters, stub>(func) {}
 };
+
 
 template <class TParameters, class TOut>
 class CallHolderMethod
+  : public CallHolder<TParameters, typename TParameters::template stub_method <TOut>>
 {
 public:
-  //typename TParameters::stub_method<TOut> stub;
+  typedef typename TParameters::template stub_method <TOut> stub;
+
+  CallHolderMethod(stub func) : CallHolder<TParameters, stub>(func) {}
 };
 
+
+/*
+template <class... TIn>
+class CallHolder2 {  };
+
+template <class T, class... TIn>
+class CallHolder2<T, TIn...> : public CallHolder2<TIn...>
+{
+public:
+  typedef ParameterTuple<T, TIn...> ParameterClass;
+
+  //typedef typename ParameterClass::template stub_method <TOut> stub_method;
+  //typedef typename ParameterClass::template stub_func <TOut> stub_func;
+};
+*/
 
 class CallHolderFactory
 {
@@ -227,6 +375,37 @@ public:
     m.parameters.param1 = in1;
     return m;
   }*/
+  
+  //template <class TOut, class... TIn>
+  //static CallHolder
+
+/*
+  template <class TOut, class... TIn>
+  //typename TParameters::template stub_func <TOut> stub
+  static CallHolderFunction<ParameterTuple<TIn...>, TOut>* create2_exp(void* mem, 
+    typename ParameterTuple<TIn...>::template stub_func <TOut> func,
+    //stub func, 
+    TIn... tin)
+  {
+    auto ch = new (mem) CallHolderFunction<ParameterTuple<TIn...>, TOut>(func);
+    ch->assign(tin...);
+    return ch;
+  }*/
+
+
+  template <class TOut, class T, class... TIn>
+  //typename TParameters::template stub_func <TOut> stub
+  static CallHolder<ParameterTuple<T, TIn...>, 
+    typename ParameterTuple<T, TIn...>::template stub_func <TOut>>* create3(void* mem, 
+    typename ParameterTuple<T, TIn...>::template stub_func <TOut> func,
+    //stub func, 
+    T value, TIn... tin)
+  {
+    auto ch = new (mem) CallHolder<ParameterTuple<T, TIn...>, 
+      typename ParameterTuple<T, TIn...>::template stub_func <TOut>>(func);
+    ch->parameters.assign(value, tin...);
+    return ch;
+  }
 
 
   template <class TOut>
@@ -242,11 +421,12 @@ public:
     return *(new (mem) CallHolder<ParameterClass_0, TOut (&)()>(func));
   }
 
+/*
   template <class TOut>
-  static CallHolderFunction<ParameterClass_0, TOut>& createInPlace2(void* mem, TOut (&func)())
+  static CallHolderFunction<ParameterClass_0, TOut>& createInPlace(void* mem, TOut (&func)())
   {
     return *(new (mem) CallHolderFunction<ParameterClass_0, TOut>(func));
-  }
+  }*/
 
   template <class TOut, class TIn1>
   static CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)> create(TOut (&func)(TIn1), TIn1 in1)
@@ -256,7 +436,7 @@ public:
     m.parameters.param1 = in1;
     return m;
   }
-
+/*
   template <class TOut, class TIn1>
   static CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)>& createInPlace(void* mem, TOut (&func)(TIn1), TIn1 in1)
   {
@@ -264,12 +444,12 @@ public:
 
     m->parameters.param1 = in1;
     return *m;
-  }
+  }*/
 
   template <class TOut, class TIn1>
-  static CallHolderFunction<ParameterClass_1<TIn1>, TOut>& createInPlace2(void* mem, TOut (&func)(TIn1), TIn1 in1)
+  static CallHolderFunction<ParameterClass_1<TIn1>, TOut>& createInPlace(void* mem, TOut (&func)(TIn1), TIn1 in1)
   {
-    auto m = new (mem) CallHolder<ParameterClass_1<TIn1>, TOut>(func);
+    auto m = new (mem) CallHolderFunction<ParameterClass_1<TIn1>, TOut>(func);
 
     m->parameters.param1 = in1;
     return *m;

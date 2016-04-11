@@ -58,6 +58,16 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     CallHolderFactory::createInPlace(buffer, test1_ipc).invoke();
     REQUIRE(ipc_test_value == 2);
   }
+  /*
+  WHEN("Doing 0 parameter, in place exp")
+  {
+    char buffer[512];
+    void (&func)() = test1_ipc;
+    
+    CallHolderFactory::createInPlace_exp(buffer, func).invoke();
+    REQUIRE(ipc_test_value == 2);
+  }
+  */
   WHEN("Doing 1 parameter")
   {
     auto m = CallHolderFactory::create(test2_ipc, 32.0F);
@@ -71,16 +81,13 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     m.invoke();
     REQUIRE(ipc_test_value == 29);
   }
-  /*
-   * not working yet
   WHEN("Doing 1 parameter, in place2")
   {
     char buffer[512];
-    auto m = CallHolderFactory::createInPlace2(buffer, test2_ipc, 20.0F);
+    auto m = CallHolderFactory::createInPlace(buffer, test2_ipc, 20.0F);
     m.invoke();
     REQUIRE(ipc_test_value == 20);
   }
-  */
   WHEN("Doing 2 parameter")
   {
     auto m2 = CallHolderFactory::create(test3_ipc, 7.0F, "lucky #7");
@@ -155,9 +162,12 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     }
   }
 
-  GIVEN("")
+  GIVEN("New Template-Pack version")
   {
-
+    char buffer[512];
+    
+    //CallHolderFactory::create3<void, float>(buffer, &test2_ipc, 100.0F);
+    //CallHolderFactory::create2(buffer, &test2_ipc, 100.0F);
   }
 
 }
