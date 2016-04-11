@@ -71,6 +71,16 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
     m.invoke();
     REQUIRE(ipc_test_value == 29);
   }
+  /*
+   * not working yet
+  WHEN("Doing 1 parameter, in place2")
+  {
+    char buffer[512];
+    auto m = CallHolderFactory::createInPlace2(buffer, test2_ipc, 20.0F);
+    m.invoke();
+    REQUIRE(ipc_test_value == 20);
+  }
+  */
   WHEN("Doing 2 parameter")
   {
     auto m2 = CallHolderFactory::create(test3_ipc, 7.0F, "lucky #7");

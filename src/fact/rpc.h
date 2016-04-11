@@ -64,6 +64,9 @@ public:
     cout << F("p1: ") << param1;
     cout.println();
   }
+
+  template <class TOut> using stub_func = TOut (&)(TIn);
+  template <class TOut> using stub_method = TOut (&)(TIn);
 };
 
 template <class TIn1, class TIn2>
@@ -190,14 +193,14 @@ public:
 
 template <class TParameters, class TOut>
 class CallHolderFunction
-  : CallHolder<TParameters, typename StubGen<TParameters, TOut>::stub>
+  : public CallHolder<TParameters, typename StubGen<TParameters, TOut>::stub>
   //  CallHolderFunction<TParameters, TOut>::stub>
 {
 public:
   //TParameters::stub_func<TOut>* getStuff() { return nullptr; }
-  typedef typename TParameters::template stub_func <TOut> stub;
+  //typedef typename TParameters::template stub_func <TOut> stub;
   
-  stub* getStuff() { return nullptr; }
+  //stub* getStuff() { return nullptr; }
 };
 
 template <class TParameters, class TOut>
@@ -239,6 +242,12 @@ public:
     return *(new (mem) CallHolder<ParameterClass_0, TOut (&)()>(func));
   }
 
+  template <class TOut>
+  static CallHolderFunction<ParameterClass_0, TOut>& createInPlace2(void* mem, TOut (&func)())
+  {
+    return *(new (mem) CallHolderFunction<ParameterClass_0, TOut>(func));
+  }
+
   template <class TOut, class TIn1>
   static CallHolder<ParameterClass_1<TIn1>, TOut (&)(TIn1)> create(TOut (&func)(TIn1), TIn1 in1)
   {
@@ -257,12 +266,31 @@ public:
     return *m;
   }
 
+  template <class TOut, class TIn1>
+  static CallHolderFunction<ParameterClass_1<TIn1>, TOut>& createInPlace2(void* mem, TOut (&func)(TIn1), TIn1 in1)
+  {
+    auto m = new (mem) CallHolder<ParameterClass_1<TIn1>, TOut>(func);
+
+    m->parameters.param1 = in1;
+    return *m;
+  }
+
   template <class TOut, class TClass>
   static CallHolder<ParameterClass_1<TClass*>, TOut (TClass::*)()> create(TOut (TClass::*func)(), TClass* in1)
   {
     CallHolder<ParameterClass_1<TClass*>, TOut (TClass::*)()> m(func);
 
     m.parameters.param1 = in1;
+    return m;
+  }
+
+
+  template <class TOut, class TClass>
+  static CallHolder<ParameterClass_1<TClass*>, TOut (TClass::*)()> createInPlace(void* mem, TOut (TClass::*func)(), TClass* in1)
+  {
+    auto m = new (mem) CallHolder<ParameterClass_1<TClass*>, TOut (TClass::*)()>(func);
+
+    m->parameters.param1 = in1;
     return m;
   }
 
