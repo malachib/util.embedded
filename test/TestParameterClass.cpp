@@ -164,10 +164,20 @@ SCENARIO( "Low level parameter class tests", "[parameter-class]" )
 
   GIVEN("New Template-Pack version")
   {
+    tuple<int, int> t(5, 6);
+    ParameterTuple<int, int> pt(5, 6);
+    ParameterTuple<float, const char*> p2(3, "yo");
+    ParameterTuple<float, const char*>::stub fnptr = &test3_ipc;
+    
+    p2.invoke(fnptr);
+    
+    
+    //pt.assign(5, 6);
+    
     char buffer[512];
     
     //CallHolderFactory::create3<void, float>(buffer, &test2_ipc, 100.0F);
-    //CallHolderFactory::create2(buffer, &test2_ipc, 100.0F);
+    //CallHolderFactory::create3(buffer, test2_ipc, 100.0F);
   }
 
 }

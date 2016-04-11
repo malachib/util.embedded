@@ -18,16 +18,26 @@ namespace FactUtilEmbedded
 {
   namespace rpc
   {
+    template <class... Ts> struct tuple {};
 
+    template <class T, class... Ts>
+    struct tuple<T, Ts...> : tuple<Ts...> {
+      tuple(T t, Ts... ts) : tuple<Ts...>(ts...), tail(t) {}
+
+      T tail;
+    };
+    
 template <class... TIn>
-class ParameterTuple {};
+struct ParameterTuple {};
 
 
 template <class T, class... TIn>
-class ParameterTuple<T, TIn...> : ParameterTuple<TIn...>
+struct ParameterTuple<T, TIn...> : ParameterTuple<TIn...>
 {
-public:
-  void debugPrint() {}
+//public:
+  ParameterTuple(T t, TIn... tin) : ParameterTuple<TIn...>(tin...), tail(t) {}
+  
+  //void debugPrint() {}
   
   T tail;
 
@@ -36,7 +46,22 @@ public:
     tail = t;
     assign(tin...);
   }
+
+  void test(int val1, int val2) {}
+  void test(int val1) {}
+
+  // the stub works - cool!
+  typedef void (*stub)(T, TIn...);
+  
+  void invoke(stub func)
+  {
+    // somehow this is doable...
+    
+    //test(std::forward<TIn>()...);
+    //func(tail, std::forward<TIn>()...);
+  }
 };
+
 
 
 template <size_t, class> struct elem_type_holder;
@@ -68,9 +93,9 @@ get(ParameterTuple<T, Ts...>& t) {
   return get<k - 1>(base);
 }
 
-
+#ifdef UNUSED
 template <class TIn1>
-class ParameterTuple<TIn1>
+class ParameterTuple<TIn1> : public ParameterTuple<Tin...>
 {
 public:
   template <class TOut> using stub_func = TOut (*)(TIn1);
@@ -133,7 +158,7 @@ public:
     return ((*(get<0>(*this))).*func)(get<1>(*this), get<2>(*this));
   } */
 };
-
+#endif
 
 
 class ParameterClass_0
@@ -393,17 +418,17 @@ public:
   }*/
 
 
-  template <class TOut, class T, class... TIn>
+  template <class TOut, class... TIn>
   //typename TParameters::template stub_func <TOut> stub
-  static CallHolder<ParameterTuple<T, TIn...>, 
-    typename ParameterTuple<T, TIn...>::template stub_func <TOut>>* create3(void* mem, 
-    typename ParameterTuple<T, TIn...>::template stub_func <TOut> func,
+  static CallHolder<ParameterTuple<TIn...>, 
+    typename ParameterTuple<TIn...>::template stub_func <TOut>>* create3(void* mem, 
+    typename ParameterTuple<TIn...>::template stub_func <TOut> func,
     //stub func, 
-    T value, TIn... tin)
+    TIn... tin)
   {
-    auto ch = new (mem) CallHolder<ParameterTuple<T, TIn...>, 
-      typename ParameterTuple<T, TIn...>::template stub_func <TOut>>(func);
-    ch->parameters.assign(value, tin...);
+    auto ch = new (mem) CallHolder<ParameterTuple<TIn...>, 
+      typename ParameterTuple<TIn...>::template stub_func <TOut>>(func);
+    ch->parameters.assign(tin...);
     return ch;
   }
 
