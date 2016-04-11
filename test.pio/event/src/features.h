@@ -9,7 +9,7 @@
 // depth 1:
 // 4146 - 4114 =  32 code used
 //  211 -  210 =   1 data used
-#define FEATURE_EVENT_ORIGINAL
+//#define FEATURE_EVENT_ORIGINAL
 
 
 // FEATURE_EVENT_VA:
@@ -37,7 +37,7 @@
 // depth 1:
 // 4208 - 4162 =  46 code used
 //  211 -  210 =   1 data used
-//#define FEATURE_EVENT_TEMPLATE2
+#define FEATURE_EVENT_TEMPLATE2
 
 
 #if defined(FEATURE_EVENT_ORIGINAL) || defined(FEATURE_EVENT_VA) || defined(FEATURE_EVENT_TEMPLATE1) || defined(FEATURE_EVENT_TEMPLATE2)

@@ -32,7 +32,7 @@ void HandleManager::init()
 }
 
 
-uint8_t HandleManager::available()
+uint8_t HandleManager::available() const
 {
   uint8_t avail = 0;
 
@@ -40,7 +40,7 @@ uint8_t HandleManager::available()
   // events so often - mainly firing them
   for(uint8_t i = 0; i < HANDLEMANAGER_CAPACITY; i++)
   {
-    Handle& hEval = handles[i];
+    const Handle& hEval = getHandleNative(i);
 
     if(hEval.data == NULL)
       avail++;
@@ -89,29 +89,29 @@ void HandleManager::remove(handle h)
 bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
 {
   Handle* prevNode = NULL;
-  
+
   do
   {
     if(currentNode->getData() == data)
     {
-      // very first currentNode is the match, which means we 
+      // very first currentNode is the match, which means we
       // don't have a prevNode yet - so caller must handle it
       if(prevNode == NULL) return false;
-      
+
       // redirect previoous node's next to startNode's next
       prevNode->next = currentNode->getNext();
       return true;
     }
     prevNode = currentNode;
-    
+
     // TODO: optimize this part
     if(currentNode->getNext() == nullHandle)
       currentNode = NULL;
     else
       currentNode = getHandle(handles, currentNode->getNext());
-      
+
   } while(currentNode);
-  
+
   // undefined state
 #ifdef DEBUG
   cout.println(F("HandleManager::remove "
@@ -121,7 +121,7 @@ bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
   "warning: data to remove not found"));
 #endif
 #endif
-  return true; 
+  return true;
   // false would indicate that first node needs attention, but actually it's a soft error
   // so we return true which instructs the client to take no further action (because it
   // thinks the operation succeeded)
@@ -147,9 +147,9 @@ void EventManager::invoke(HandleManager::handle h, void* parameter
 {
   while(h != nullHandle)
   {
-    Event* event = getEvent(h);
-  
-    
+    const Event* const event = getEvent(h);
+
+
 #ifdef EVENT_FEATURE_VA
     va_list argp_copy;
     // we need to constantly copy argp because callbacks can move its pointer forward
@@ -162,12 +162,12 @@ void EventManager::invoke(HandleManager::handle h, void* parameter
   }
 }
 
-void EventManager::__invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, void* pc)
+void EventManager::__invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, const void* pc)
 {
   while(h != nullHandle)
   {
-    Event* event = getEvent(h);
-    
+    const Event* const event = getEvent(h);
+
     p_invoke(pc, event->getDataExp());
     h = event->getNext();
     //p.
@@ -178,7 +178,7 @@ void EventManager::__invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke
 template<class TIn>
 void EventManager::_invokeExp(HandleManager::handle h, FactUtilEmbedded::rpc::ParameterClass_1 p)
 {
-  
+
 }
 */
 

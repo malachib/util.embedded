@@ -69,8 +69,8 @@ protected:
     void* data;
     handle next;
   public:
-    void* getData() {return data;}
-    handle getNext() {return next;}
+    void* getData() const {return data;}
+    handle getNext() const {return next;}
   };
 
 private:
@@ -115,10 +115,20 @@ protected:
     return &handles[h - 1];
   }
 
+  static const Handle* const getHandleRO(const Handle* const handles, handle h)
+  {
+    return &handles[h - 1];
+  }
+
+  // helper for RO operations
+  const Handle& getHandleNative(uint8_t h) const
+  {
+    return handles[h];
+  }
 public:
   // clears and initializes handle list overall
   void init();
-  uint8_t available();
+  uint8_t available() const;
 
   // initializes a new handle list
   handle init(void* data);
@@ -130,6 +140,10 @@ public:
   // this handle in the list are cleared
   void clear(handle handle);
   Handle* getHandle(handle handle) { return getHandle(handles, handle); }
+  const Handle* const getHandleRO(handle handle) const
+  {
+    return getHandleRO(handles, handle);
+  }
   bool remove(handle startNode, void* data)
   {
     return remove(handles, getHandle(startNode), data);
@@ -150,12 +164,13 @@ class EventManager : public HandleManager
   class Event : Handle
   {
   public:
-    void* getDataExp() { return data; }
-    eventCallback getCallback() { return (eventCallback) data; }
-    handle getNext() { return next; }
+    void* getDataExp() const { return data; }
+    eventCallback getCallback() const { return (eventCallback) data; }
+    handle getNext() const { return next; }
   };
 
-  Event* getEvent(handle event) { return (Event*) getHandle(event); }
+  const Event* const getEvent(handle event) const
+  { return (const Event* const ) getHandleRO(event); }
 
 public:
   /*
@@ -172,15 +187,15 @@ public:
   void invoke(handle event, void* parameter);
 #endif
 
-  typedef void (&_p_invoke)(void* pc, void* callback);
+  typedef void (&_p_invoke)(const void* pc, void* callback);
 
   // this is a function helper to encapsulate template behavior, so that
   // we can reuse our loop function elsewhere to hopefully save code space
   // now what we need to do is to do some code size comparisons
   template <class TParameterClass>
-  static void __p_invoke(void* pc, void* callback)
+  static void __p_invoke(const void* pc, void* callback)
   {
-    auto _pc = reinterpret_cast<TParameterClass*>(pc);
+    auto _pc = reinterpret_cast<const TParameterClass*>(pc);
 
     // very fragile code
     // note sure why but stub ends up being a function PTR not reference, even
@@ -192,11 +207,11 @@ public:
   }
 
   template <class TParameterClass>
-  void _invokeExp(handle h, TParameterClass& p)
+  void _invokeExp(handle h, const TParameterClass& p)
   {
     while(h != nullHandle)
     {
-      Event* event = getEvent(h);
+      const Event* const event = getEvent(h);
 
       auto callback = reinterpret_cast<typename TParameterClass::stub>(*(event->getCallback()));
 
@@ -205,10 +220,10 @@ public:
     }
   }
 
-  void __invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, void* pc);
+  void __invokeExpHelper(HandleManager::handle h, _p_invoke p_invoke, const void* pc);
 
   template <class TParameterClass>
-  void __invokeExp(HandleManager::handle h, TParameterClass& p)
+  void __invokeExp(HandleManager::handle h, const TParameterClass& p)
   {
     _p_invoke p_invoke = __p_invoke<TParameterClass>;
     __invokeExpHelper(h, p_invoke, &p);
@@ -261,11 +276,16 @@ protected:
     HandleBase::remove(&eventManager, data);
   }
 
-  // not used yet
   template <class TParameterClass>
-  void invoke(TParameterClass& p)
+  void invoke(const TParameterClass& p)
   {
     eventManager._invokeExp(HandleBase::handle, p);
+  }
+
+  template <class TParameterClass>
+  void _invokeExp(const TParameterClass& p)
+  {
+    eventManager.__invokeExp(HandleBase::handle, p);
   }
 };
 
@@ -283,16 +303,21 @@ public:
   EventExp1& operator()(TIn1 in1)
   {
     ParameterClass p(in1);
-    eventManager._invokeExp(HandleBase::handle, p);
+    invoke(p);
+    //eventManager._invokeExp(HandleBase::handle, p);
     return *this;
   }
 
   void invokeExp(TIn1 in1)
   {
     ParameterClass p(in1);
-    eventManager.__invokeExp(HandleBase::handle, p);
+    _invokeExp(p);
+    //eventManager.__invokeExp(HandleBase::handle, p);
   }
 };
+
+
+
 
 
 
