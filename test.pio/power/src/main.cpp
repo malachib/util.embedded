@@ -3,6 +3,7 @@
 #include <fact/Menu.h>
 #include <fact/lib.h>
 #include <fact/power.h>
+#include <fact/sleep.h>
 #include <MenuService.h>
 #include <fact/MenuFunction.h>
 #include <Console.h>
@@ -76,7 +77,8 @@ void sleep_4(ESP_VOID)
 #ifdef __AVR_ATmega32U4__
   Power.usb.off();
 #endif
-  Power.sleepWithWatchdog(WDTO_4S);
+  auto wdto = Watchdog::WDTO::fromMS<4000>();
+  Sleep.powerDown(wdto);
 
   // This worked (although no multimeter was used):
   //Watchdog.isr.on();

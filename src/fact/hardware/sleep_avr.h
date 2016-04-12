@@ -9,6 +9,9 @@
 // http://www.nongnu.org/avr-libc/user-manual/group__avr__sleep.html
 namespace FactUtilEmbedded
 {
+  // Sleep offers integration between Watchdog and Power modules,
+  // as well as convenience calls for calling into Power modes
+  // thus the seeming redundancy.
   class SleepControl
   {
   public:
@@ -23,12 +26,14 @@ namespace FactUtilEmbedded
     }
 
     // enters AVR power down state with assistance of Watchdog
-    // to turn things back on
-    void powerDown(uint8_t interval PARAM_BOD_DISABLE)
+    // to turn things back on.  Once sleep is over, watchdog is
+    // disabled
+    void powerDown(const uint8_t wdto PARAM_BOD_DISABLE)
     {
-      Watchdog.isr.on();
-      Watchdog.enable(interval);
+      Watchdog::isr.on();
+      Watchdog::enable(wdto);
       powerDown(PARAM_BOD_CALL_S);
+      Watchdog::disable();
     }
   };
   
