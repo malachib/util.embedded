@@ -30,6 +30,7 @@ namespace FactUtilEmbedded
   WatchdogControl Watchdog;
   WatchdogControl::Control WatchdogControl::isr;
   WatchdogControl::Control WatchdogControl::systemReset;
+  uint8_t WatchdogControl::Prescalar::cachedPrescalar;
   
   uint8_t WatchdogControl::buildPrescalar(const uint8_t wdto)
   {
@@ -59,10 +60,9 @@ namespace FactUtilEmbedded
   #define _WDTCR WDTCSR
   #endif
   
-  void WatchdogControl::enable(const uint8_t wdto)
+  
+  inline void WatchdogControl::enableFromPrescalar(uint8_t wd_control)
   {
-    uint8_t wd_control = buildPrescalar(wdto);
-    
     // enable system reset function, if desired
     if(systemReset()) wd_control |= (1 << WDE);
     
@@ -82,6 +82,20 @@ namespace FactUtilEmbedded
     // Critical section finished, re-enable interrupts.
     sei();
   }
+  
+  void WatchdogControl::enable(const uint8_t wdto)
+  {
+    uint8_t wd_control = buildPrescalar(wdto);
+    
+    enableFromPrescalar(wd_control);
+  }
+  
+#ifndef WATCHDOG_FEATURE_CACHE_SUPPRESS
+  void WatchdogControl::enable()
+  {
+    enableFromPrescalar(Watchdog.prescalar.getCached());
+  } 
+#endif
 }
 
 
