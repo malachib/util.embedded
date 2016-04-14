@@ -5,7 +5,7 @@
 #include "features.h"
 
 #ifdef FEATURE_IPC
-#include <fact/ipc.h>
+#include <fact/rpc.h>
 #endif
 #ifdef FEATURE_CONSOLE
 #include <fact/Menu.h>
@@ -15,6 +15,7 @@
 #include <fact/lib.h>
 
 using namespace util;
+using namespace util::rpc;
 
 
 void testFunc1(int);
@@ -39,7 +40,7 @@ union TEST
 
 void testInvoker()
 {
-  auto f = IPCHelper::create(testFunc1, 3);
+  auto f = CallHolderFactory::create(testFunc1, 3);
   //f.invoke();
   memcpy(_TEST.buffer, &f, sizeof(f));
   //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
@@ -50,7 +51,7 @@ void testInvoker()
 #ifdef FEATURE_IPC2
 void testInvoker2()
 {
-  auto f = IPCHelper::create(testFunc2, 'a');
+  auto f = CallHolderFactory::create(testFunc2, 'a');
   memcpy(&_TEST.buffer, &f, sizeof(f));
   //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
   ((IInvoker*)&_TEST)->invoke();
@@ -61,7 +62,7 @@ void testInvoker2()
 #ifdef FEATURE_IPC3
 void testInvoker3()
 {
-  auto f = IPCHelper::create(testFunc2, 'b');
+  auto f = CallHolderFactory::create(testFunc2, 'b');
   memcpy(&_TEST.buffer, &f, sizeof(f));
   //reinterpret_cast<IInvoker*>(&_TEST.buffer)->invoke();
   ((IInvoker*)&_TEST)->invoke();
@@ -98,11 +99,11 @@ CREATE_MENUFUNCTION(menuDirect, testFunc1, "Directly invoke function");
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial << F("Starting up");
-  Serial << (int) 1; // integer rendering takes us from 4084 to 4490, 406 bytes
+  cout.begin(115200);
+  cout << F("Starting up");
+  cout << (int) 1; // integer rendering takes us from 4084 to 4490, 406 bytes
   //Serial << 'a';   // character rendering already present
-  Serial.println();
+  cout.println();
   
 #ifdef FEATURE_CONSOLE
 #ifdef FEATURE_IPC
