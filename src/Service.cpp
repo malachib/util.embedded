@@ -106,12 +106,21 @@ bool LightweightService::awaitDependency(LightweightService* dependsOn)
   {
     setState(Waiting);
 
-    // TODO: once I have a unified overflow watcher, do timeout logic here (20s)
-    while(dependsOn->getState() == Unstarted ||
-        dependsOn->getState() == Starting ||
-        dependsOn->getState() == Waiting)
+    const auto timeout = 10000;
+    const uint32_t timeout_absolute = millis() + timeout;
+
+    // TODO: Inified overflow watcher.  Old comment, not sure how to
+    // do that..
+    while(dependsOn->getState() == Unstarted
+      || dependsOn->getState() == Starting
+      || dependsOn->getState() == Waiting)
     {
       yield();
+      if(millis() > timeout_absolute)
+      {
+        statusMessage = F("Timeout on dependency");
+        return false;
+      }
     }
 
     if(dependsOn->getState() == Error)
