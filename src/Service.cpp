@@ -167,16 +167,17 @@ void Service::restart(startService1 startFunc)
 
 void Service::start(startService1 startFunc, LightweightService* dependsOn)
 {
-  if(!awaitDependency(dependsOn))
-  {
-    LightweightService::setStatusMessage(NULL);
-    //setState(Error);
-    return;
-  }
-
 #ifdef SERVICE_FEATURE_RETAINED_DEPENDENCY
   this->dependsOn = dependsOn;
 #endif
+
+  if(!awaitDependency(dependsOn))
+  {
+    // awaitDependency fully initializes status message if in error
+    //LightweightService::setStatusMessage(NULL);
+    //setState(Error);
+    return;
+  }
 
   start(startFunc);
 }
