@@ -9,16 +9,16 @@ const char LightweightService::emptyString[] PROGMEM = "";
 
 bool LightweightService::start(initErrorStatus initFunc)
 {
-  state = Starting;
+  setState(Starting);
   statusMessage = initFunc();
   if(statusMessage)
   {
-    state = Error;
+    setState(Error);
     return false;
   }
   else
   {
-    state = Started;
+    setState(Started);
     return true;
   }
 }
@@ -27,15 +27,15 @@ bool LightweightService::start(initErrorStatus initFunc)
 
 bool LightweightService::start(initErrorStatus2 initFunc)
 {
-  state = Starting;
+  setState(Starting);
   if(initFunc(&statusMessage))
   {
-    state = Started;
+    setState(Started);
     return true;
   }
   else
   {
-    state = Error;
+    setState(Error);
     return false;
   }
 }
@@ -68,16 +68,16 @@ bool LightweightService::start(initErrorStatus2 initFunc, LightweightService* de
 
 bool LightweightService::start(initFullStatus initFunc)
 {
-  state = Starting;
+  setState(Starting);
   statusMessage = initFunc(&statusMessage);
   if(statusMessage)
   {
-    state = Error;
+    setState(Error);
     return false;
   }
   else
   {
-    state = Started;
+    setState(Started);
     return true;
   }
 }
@@ -133,9 +133,9 @@ bool LightweightService::awaitDependency(LightweightService* dependsOn)
   return true;
 }
 
-const __FlashStringHelper* LightweightService::getStateString() const
+const __FlashStringHelper* ServiceState::getStateString() const
 {
-  switch(state)
+  switch(getState())
   {
     case Unstarted: return F(SERVICE_STATUS_UNSTARTED);
     case Starting: return F(SERVICE_STATUS_STARTING);
@@ -150,6 +150,15 @@ const __FlashStringHelper* LightweightService::getStateString() const
 
 void Service::restart(startService1 startFunc)
 {
+#ifdef FACT_LIB_STRICT
+  if(startFunc == nullptr)
+  {
+    LightweightService::setStatusMessage(F("NULL start func"));
+    setState(Error);
+    //cout << F("Start func: ") << (uint32_t) startFunc;
+  }
+#endif
+
   LightweightService::setStatusMessage(NULL);
   setState(Starting);
   if(startFunc(*this))
@@ -170,6 +179,9 @@ void Service::start(startService1 startFunc, LightweightService* dependsOn)
 #ifdef SERVICE_FEATURE_RETAINED_DEPENDENCY
   this->dependsOn = dependsOn;
 #endif
+#ifdef SERVICE_FEATURE_RETAINED_STARTFUNC
+  this->startFunc = startFunc;
+#endif
 
   if(!awaitDependency(dependsOn))
   {
@@ -179,7 +191,7 @@ void Service::start(startService1 startFunc, LightweightService* dependsOn)
     return;
   }
 
-  start(startFunc);
+  restart(startFunc);
 }
 
 #ifdef SERVICE_FEATURE_RETAINED_STARTFUNC

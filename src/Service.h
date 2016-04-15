@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "EventManager.h"
 #include "fact/lib.h"
+#include "fact/event.h"
 
 namespace FactUtilEmbedded
 {
@@ -34,10 +35,7 @@ typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
 
 
-// aka lightweight service
-// TODO: consider begin/end paradigm instead of start/stop , since Arduino world prefers that
-// TODO: refactor state machine and make Service into one --
-class LightweightService
+class ServiceState
 {
 protected:
   enum State : uint8_t
@@ -52,11 +50,24 @@ protected:
   void setState(State state) { this->state = state; }
   State getState() const { return state; }
 
+private:
+  State state;
+
+public:
+  const __FlashStringHelper* getStateString() const;
+};
+
+// aka lightweight service
+// TODO: consider begin/end paradigm instead of start/stop , since Arduino world prefers that
+// TODO: refactor state machine and make Service into one --
+class LightweightService : public ServiceState
+{
+protected:
+
   // true = all dependencies satisfied, false = dependency did't initiailze
   bool awaitDependency(LightweightService* dependsOn);
 
 private:
-  State state;
   const __FlashStringHelper* statusMessage = (const __FlashStringHelper*) emptyString;
 
 protected:
@@ -84,7 +95,6 @@ public:
       start(initFunc);
   }
 
-  const __FlashStringHelper* getStateString() const;
   const __FlashStringHelper* getStatusMessage() const
   {
     return statusMessage != NULL ? statusMessage : getStateString();
@@ -172,14 +182,53 @@ public:
   }
 };
 
-class IService
+class ServiceManager;
+
+// TODO: Shouldn't actually be IService but instead just Service
+class IService : public ServiceState, public Named
 {
-  PSTR_Property statusMessage;
+  friend ServiceManager;
+
+  //PSTR_Property statusMessage;
 
 protected:
   virtual void start() = 0;
   virtual void stop() {};
   virtual void pause() {};
+
+  void doStop()
+  {
+    stop();
+    setState(Unstarted);
+  }
+
+  void doStart()
+  {
+    setState(Starting);
+    start();
+    if(getState() != Error)
+      setState(Started);
+  }
+
+public:
+  Event2<IService*, char*> stateUpdated;
+
+  void setState(State state, char* message = nullptr)
+  {
+    ServiceState::setState(state);
+    stateUpdated(this, message);
+  }
+};
+
+class ServiceManager : public IService
+{
+public:
+  void restart(IService& service)
+  {
+    service.setState(Unstarted);
+    service.stop();
+    service.start();
+  }
 };
 
 class RestartableService : public Service
