@@ -76,6 +76,11 @@ HandleManager::handle HandleManager::add(HandleManager::handle h, void* data)
   return lastHandle->next = alloc(data);
 }
 
+// add to list if valid handle, or init list if nullHandle
+HandleManager::handle HandleManager::addOrInit(HandleManager::handle h, void* data)
+{
+  return h == nullHandle ? init(data) : add(h, data);
+}
 
 // need to look thru entire list to build list backwards, so that
 // we can find head node -- OR, pass in head node to begin with

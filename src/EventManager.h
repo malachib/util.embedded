@@ -134,6 +134,8 @@ public:
   handle init(void* data);
   // appends a handle to an existing handle list
   handle add(handle handle, void* data);
+  // appends OR initializes depending on whether it's a null handle
+  handle addOrInit(handle handle, void* data);
   void remove(handle handle);
   // clears this and all subsequent handles in the
   // list.  note does not gauruntee any handles preceding

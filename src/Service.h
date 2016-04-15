@@ -210,6 +210,19 @@ protected:
       setState(Started);
   }
 
+  // FIX: temporarily going to abuse event manager and share
+  // its handle base
+  HandleManager::handle dependsOn = HandleManager::nullHandle;
+
+  void addDependency(IService* service)
+  {
+    //eventManager.addOrInit(dependsOn, service);
+    if(dependsOn == HandleManager::nullHandle)
+      dependsOn = eventManager.init(service);
+    else
+      eventManager.add(dependsOn, service);
+  }
+
 public:
   Event2<IService*, char*> stateUpdated;
 
@@ -225,9 +238,18 @@ class ServiceManager : public IService
 public:
   void restart(IService& service)
   {
-    service.setState(Unstarted);
-    service.stop();
-    service.start();
+    service.doStop();
+    service.doStart();
+  }
+
+  void start(IService& service)
+  {
+    service.doStart();
+  }
+
+  void stop(IService& service)
+  {
+    service.doStop();
   }
 };
 
