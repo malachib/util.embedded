@@ -282,9 +282,38 @@ inline Print& operator <<(Print& p, Service* s)
   return p;
 }
 
+namespace layer1
+{
+  //template <bool (*init)(layer1::Service& svc)>
+  //class Service;
+  
+  template <const __FlashStringHelper* (*init)()>
+  class Service : public ServiceState, public FactUtilEmbedded::Named
+  {
+  public:
+    void start()
+    {
+      setState(Starting);
+      if(init())
+        setState(Started);
+      else
+        setState(Error);
+    }
+    
+    void restart() { start(); }
+  };
+}
+
+namespace layer2
+{
+  
+}
+
 namespace layer5
 {
-  class Service : IService, Named
+  // IService already has Named, but eventually we'd like to 
+  // get away from that
+  class Service : public IService//, public FactUtilEmbedded::Named
   {
   public:
     void doStart();

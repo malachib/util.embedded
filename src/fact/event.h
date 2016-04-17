@@ -109,6 +109,7 @@ namespace FactUtilEmbedded
     {
       ParameterClass p(in1, in2);
       eventManager.invokeType1(handle, p);
+      return *this;
     }
   };
 }
