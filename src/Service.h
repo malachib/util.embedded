@@ -35,6 +35,38 @@ typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
 
 
+template <class TState>
+class ServiceStateBase
+{
+protected:
+  void setState(TState state) { this->state = state; }
+  TState getState() const { return state; }
+
+private:
+  TState state;
+
+public:
+  const __FlashStringHelper* getStateString() const;
+};
+
+template <class TState, class TSubState>
+class ServiceStateSplitBase
+{
+protected:
+  void setState(TState state) { this->state = state; }
+  TState getState() const { return state; }
+
+private:
+  struct
+  {
+    TState state : 4;
+    TSubState subState : 4;
+  };
+
+public:
+  const __FlashStringHelper* getStateString() const;
+};
+
 class ServiceState
 {
 protected:
@@ -284,12 +316,24 @@ inline Print& operator <<(Print& p, Service* s)
 
 namespace layer1
 {
+  // TODO:
+  //   use variadic template to make: static-event-notifier
+
   //template <bool (*init)(layer1::Service& svc)>
   //class Service;
-  
-  template <const __FlashStringHelper* (*init)()>
-  class Service : public ServiceState, public FactUtilEmbedded::Named
+
+  //Event2<IService*, char*> stateUpdated;
+
+  class ServiceBase : public ServiceState, public FactUtilEmbedded::Named
   {
+  public:
+    ServiceBase(const __FlashStringHelper* name) : Named(name) {}
+  };
+
+  template <bool (*init)()>
+  class Service : public ServiceBase
+  {
+  protected:
   public:
     void start()
     {
@@ -299,26 +343,123 @@ namespace layer1
       else
         setState(Error);
     }
-    
+
     void restart() { start(); }
+
+    Service(const char* name) : ServiceBase(name) {}
   };
+
 }
 
 namespace layer2
 {
-  
+  class ServiceBase : public layer1::ServiceBase
+  {
+  private:
+    const __FlashStringHelper* statusMessage = (const __FlashStringHelper*) LightweightService::emptyString;
+
+  //protected:
+  // temporarily public as we build things out (init code needs it public)
+  public:
+    void setStatusMessage(const __FlashStringHelper* statusMessage)
+    {
+      this->statusMessage = statusMessage;
+    }
+
+    const __FlashStringHelper* getStatusMessage() const
+    {
+      return statusMessage != nullptr ? statusMessage : getStateString();
+    }
+
+  public:
+    ServiceBase(const char *name) : layer1::ServiceBase(name) {}
+  };
+
+  template <bool (*init)(ServiceBase& svc)>
+  class Service : public ServiceBase
+  {
+  public:
+    Service(const char* name) : ServiceBase(name) {}
+
+    /*
+    void setStatusMessage(const __FlashStringHelper* statusMessage)
+    {
+      ServiceBase::setStatusMessage(statusMessage);
+    }*/
+
+    void start()
+    {
+      setState(Starting);
+      if(init(*this))
+        setState(Started);
+      else
+        setState(Error);
+    }
+  };
+}
+
+namespace layer3
+{
+  class ServiceBase : public layer2::ServiceBase
+  {
+  public:
+    Event2<ServiceBase*, char*> stateUpdated;
+
+    void setState(State state, char* message = nullptr)
+    {
+      ServiceState::setState(state);
+      stateUpdated(this, message);
+    }
+
+    ServiceBase(const char* name) :
+      layer2::ServiceBase(name) {}
+  };
+
+  class Service : public ServiceBase
+  {
+    typedef bool (*startService)(Service& svc);
+
+  protected:
+    const startService startFunc;
+
+  public:
+    Service(const char* name, startService startFunc) :
+      ServiceBase(name), startFunc(startFunc)
+    {
+    }
+
+    void start()
+    {
+      setState(Starting);
+      if(startFunc(*this))
+        setState(Started);
+      else
+        setState(Error);
+    }
+  };
 }
 
 namespace layer5
 {
-  // IService already has Named, but eventually we'd like to 
-  // get away from that
-  class Service : public IService//, public FactUtilEmbedded::Named
+  // TODO: work out whether start() is the exposed function for the consumer
+  // or whether it's the implementing function for the implementor.  Needs
+  // an associated function, doStart
+  class IService
+  {
+  protected:
+    virtual void start() = 0;
+    virtual void stop() {};
+    virtual void pause() {};
+  };
+
+  class Service : public IService, public layer3::ServiceBase
   {
   public:
     void doStart();
     void doStop();
     void doRestart();
+
+    Service(const char* name) : layer3::ServiceBase(name) {}
   };
 }
 
