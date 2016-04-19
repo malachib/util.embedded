@@ -327,7 +327,12 @@ namespace layer1
   class ServiceBase : public ServiceState, public FactUtilEmbedded::Named
   {
   public:
-    ServiceBase(const __FlashStringHelper* name) : Named(name) {}
+    ServiceBase(const __FlashStringHelper* name) : Named(name)
+    {
+#ifdef FACT_LIB_STRICT
+      setState(Unstarted);
+#endif
+    }
   };
 
   template <bool (*init)()>
