@@ -7,12 +7,13 @@ namespace FactUtilEmbedded
 {
   /* FIX: gets a multiple declaration error in certain situations */
   // NOTE: works fine on atmega328p
-#ifndef ESP8266
+  // NOTE: as of 4/25/16 seems to be working on ESP8266
+//#ifndef ESP8266
   inline void invoke(void (*invokee)(void), IMenu::Parameters p)
   {
     invokee();
   }
-#endif
+//#endif
 
   template <class TIn, class TOut>
   inline TOut invoke(TOut (*invokee)(TIn), IMenu::Parameters p)
