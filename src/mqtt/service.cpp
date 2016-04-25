@@ -58,7 +58,8 @@ bool MQTT_Service::setup(Service& service)//const __FlashStringHelper** status)
         default: service.setStatusMessage(F("Connection failed")); break;
       }
 
-      delay(1000);
+      // mqtt.connect seems to have a built-in delay
+      //delay(1000);
     }
     else
     {
@@ -75,9 +76,9 @@ void MQTT_Service::keepAlive()
 {
   if(!mqtt.ping())
   {
-    setStatusMessage(F("Reconnecting"));
+    setStatusMessage(F("Disconnected"));
     mqtt.disconnect();
-    setup(*this);
+    start(setup);
   }
 }
 #endif
