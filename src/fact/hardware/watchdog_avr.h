@@ -113,6 +113,8 @@ namespace FactUtilEmbedded
     static void reset() { wdt_reset(); }
     static void disable() { wdt_disable(); }
 
+    // did I just rewrite this?
+    // http://www.atmel.com/webdoc/AVRLibcReferenceManual/group__avr__watchdog_1gaf6cfea2a1b61e2530ea0c4ef8fc572b3.html
     static void enable(const uint8_t wdto);
 
 // takes 2 extra code bytes on attiny85, even when dormant...
