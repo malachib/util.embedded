@@ -189,5 +189,19 @@ SCENARIO( "Event/Handle manager tests", "[events]" )
 
       REQUIRE(eventResponder3_counter == 3);
     }
+    GIVEN("Experimental event code II")
+    {
+      EventFiringClass efc;
+      events::Event<> eventExp0;
+      events::Event<EventFiringClass*> eventExp1;
+      events::Event<int, float> eventExp2;
+      events::Event<>::ParameterClass pc;
+
+      eventResponder3_counter = 0;
+      eventExp1 += eventResponder3;
+      eventExp1(&efc);
+
+      REQUIRE(eventResponder3_counter == 1);
+    }
   }
 }
