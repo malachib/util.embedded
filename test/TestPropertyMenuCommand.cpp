@@ -25,11 +25,11 @@ SCENARIO("Property Menu Command test", "[property-menu-command]")
 
     REQUIRE(value == 5);
     
-    PropertyMenu::Item<int> item("item1", &value);
+    menu::Property<int> item("item1", &value);
     layer5::Property<int> prop2(&value);
-    PropertyMenu::ItemRef<int> item2("item2", prop2);
-    PropertyMenu::ItemBase* _items[] = { &item, &item2 };
-    layer3::Array<PropertyMenu::ItemBase*> items(_items, 2);
+    menu::PropertyRef<int> item2("item2", prop2);
+    menu::PropertyBase* _items[] = { &item, &item2 };
+    layer3::Array<menu::PropertyBase*> items(_items, 2);
     
     GetPropertyMenuCommand getter(items);
     SetPropertyMenuCommand setter(items);
@@ -39,6 +39,8 @@ SCENARIO("Property Menu Command test", "[property-menu-command]")
     IMenu::Parameters p_set(parameters_set, 3, nullptr);
     
     setter._handleCommand(p_set.inc());
+    
+    REQUIRE(value == 8);
     
     const char* parameters3[] = { "get", "item1" };
     

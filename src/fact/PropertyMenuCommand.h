@@ -72,10 +72,30 @@ namespace FactUtilEmbedded
     SinglyLinkedList items;
     
   public:
-    class ItemBase : public SinglyLinkedNode, public Named
+
+    
+    virtual void handleCommand(Parameters p) override
+    {
+      if(strcmp_P(*p.parameters, PROPERTYMENUCMD_GET) == 0)
+      {
+        
+      }
+      else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)
+      {
+        
+      }
+    }
+    
+    
+    //void add(ItemBase& item) { items.add(&item); }
+  };
+  
+  namespace menu
+  {
+    class PropertyBase : public SinglyLinkedNode, public Named
     {
     public:
-      ItemBase(const char* name) : Named(name) {}
+      PropertyBase(const char* name) : Named(name) {}
       
       virtual void get(Stream& out) = 0;
       virtual void set(const char* parameter) = 0;
@@ -104,12 +124,12 @@ namespace FactUtilEmbedded
     
     
     template <class T, template <class T2> class TProperty = layer2::Property>
-    class Item : public ItemBase
+    class Property : public PropertyBase
     {
       TProperty<T> property;
       
     public:
-      Item(const char* name, T* const value) : property(value), ItemBase(name) {}
+      Property(const char* name, T* const value) : property(value), PropertyBase(name) {}
       
       virtual void get(Stream& out) override 
       {
@@ -124,14 +144,14 @@ namespace FactUtilEmbedded
     
     
     template <class T>
-    class ItemRef : public ItemBase
+    class PropertyRef : public PropertyBase
     //: public ItemPropBase<layer5::IProperty<T>&>
     {
       layer5::IProperty<T>& property;
       
     public:
-      ItemRef(const char* name, layer5::IProperty<T>& property) : 
-        property(property), ItemBase(name) {}
+      PropertyRef(const char* name, layer5::IProperty<T>& property) : 
+        property(property), PropertyBase(name) {}
       
       virtual void get(Stream& out) override 
       {
@@ -142,31 +162,16 @@ namespace FactUtilEmbedded
       {
         property = fromString<T>(parameter);
       }
-    };
-    
-    virtual void handleCommand(Parameters p) override
-    {
-      if(strcmp_P(*p.parameters, PROPERTYMENUCMD_GET) == 0)
-      {
-        
-      }
-      else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)
-      {
-        
-      }
-    }
-    
-    
-    void add(ItemBase& item) { items.add(&item); }
-  };
+    };    
+  }
   
   class SetPropertyMenuCommand : public MenuCommand
   {
-    layer3::Array<PropertyMenu::ItemBase*>& items;
+    const layer3::Array<menu::PropertyBase*> properties;
 
   public:
-    SetPropertyMenuCommand(layer3::Array<PropertyMenu::ItemBase*>& items) :
-      items(items),
+    SetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
+      properties(_properties),
       MenuCommand(PROPERTYMENUCMD_SET, F("writes a value to property"))
     {}
 
@@ -179,11 +184,11 @@ namespace FactUtilEmbedded
   
   class GetPropertyMenuCommand : public MenuCommand
   {
-    layer3::Array<PropertyMenu::ItemBase*>& items;
+    const layer3::Array<menu::PropertyBase*> properties;
 
   public:
-    GetPropertyMenuCommand(layer3::Array<PropertyMenu::ItemBase*>& items) : 
-      items(items),
+    GetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) : 
+      properties(_properties),
       MenuCommand(PROPERTYMENUCMD_GET, F("reads a value to property"))
     {}
 

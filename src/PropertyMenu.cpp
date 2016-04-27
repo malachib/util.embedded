@@ -24,9 +24,9 @@ namespace FactUtilEmbedded
     {
       // TODO: get a foreach style iterator going for buffers - look at std/boost
       // and copy theirs
-      for(; i < items.getSize(); i++)
+      for(; i < properties.getSize(); i++)
       {
-        auto item = items[i];
+        auto item = properties[i];
         
         cout << F("  ") << item->getName();
         cout.println();
@@ -36,9 +36,9 @@ namespace FactUtilEmbedded
     {
       const char* name = *p.parameters;
       
-      for(; i < items.getSize(); i++)
+      for(; i < properties.getSize(); i++)
       {
-        auto item = items[i];
+        auto item = properties[i];
         const __FlashStringHelper* _itemName = item->getName();
         auto itemName = reinterpret_cast<const char*>(_itemName);
         
@@ -64,9 +64,9 @@ namespace FactUtilEmbedded
       const char* name = p.parameters[0];
       const char* value = p.parameters[1];
       
-      for(; i < items.getSize(); i++)
+      for(; i < properties.getSize(); i++)
       {
-        auto item = items[i];
+        auto item = properties[i];
         const __FlashStringHelper* _itemName = item->getName();
         auto itemName = reinterpret_cast<const char*>(_itemName);
         
