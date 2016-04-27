@@ -9,6 +9,8 @@ namespace FactUtilEmbedded
 {
   extern const char PROPERTYMENUCMD_GET[] PROGMEM;
   extern const char PROPERTYMENUCMD_SET[] PROGMEM;
+  extern const char PROPERTYMENUCMD_GET_DESC[] PROGMEM;
+  extern const char PROPERTYMENUCMD_SET_DESC[] PROGMEM;
 
   // NOTE: trouble with this approach is it doesn't aggregate multiple
   // properties well
@@ -66,44 +68,44 @@ namespace FactUtilEmbedded
   public:
     PropertyMenuCommand(T* const value) : property(value) {}
   };
-  
+
   class PropertyMenu : public MenuCommand
   {
     SinglyLinkedList items;
-    
+
   public:
 
-    
+
     virtual void handleCommand(Parameters p) override
     {
       if(strcmp_P(*p.parameters, PROPERTYMENUCMD_GET) == 0)
       {
-        
+
       }
       else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)
       {
-        
+
       }
     }
-    
-    
+
+
     //void add(ItemBase& item) { items.add(&item); }
   };
-  
+
   namespace menu
   {
     class PropertyBase : public SinglyLinkedNode, public Named
     {
     public:
-      PropertyBase(const char* name) : Named(name) {}
-      
+      PropertyBase(const char* name) : Named((const __FlashStringHelper*) name) {}
+
       virtual void get(Stream& out) = 0;
       virtual void set(const char* parameter) = 0;
     };
-    
+
     // This class exists so we can re-use code between the different layer::Property
     /* To do this we'd have to not just init "property" but also assign it and hope
-       compiler optimizes that nicely.  Until we test to see if the compilers can 
+       compiler optimizes that nicely.  Until we test to see if the compilers can
       handle that well, dup code declaration instead
     template <class TProperty>
     class ItemPropBase : ItemBase
@@ -111,60 +113,60 @@ namespace FactUtilEmbedded
     protected:
       TProperty property;
 
-      virtual void get(Stream& out) override 
+      virtual void get(Stream& out) override
       {
         out.print(property.get());
       }
-      
+
       virtual void set(const char* parameter) override
       {
         property = fromString<T>(parameter);
       }
     }; */
-    
-    
+
+
     template <class T, template <class T2> class TProperty = layer2::Property>
     class Property : public PropertyBase
     {
       TProperty<T> property;
-      
+
     public:
       Property(const char* name, T* const value) : property(value), PropertyBase(name) {}
-      
-      virtual void get(Stream& out) override 
+
+      virtual void get(Stream& out) override
       {
         out.print(property.get());
       }
-      
+
       virtual void set(const char* parameter) override
       {
         property = fromString<T>(parameter);
       }
     };
-    
-    
+
+
     template <class T>
     class PropertyRef : public PropertyBase
     //: public ItemPropBase<layer5::IProperty<T>&>
     {
       layer5::IProperty<T>& property;
-      
+
     public:
-      PropertyRef(const char* name, layer5::IProperty<T>& property) : 
+      PropertyRef(const char* name, layer5::IProperty<T>& property) :
         property(property), PropertyBase(name) {}
-      
-      virtual void get(Stream& out) override 
+
+      virtual void get(Stream& out) override
       {
         out.print(property.get());
       }
-      
+
       virtual void set(const char* parameter) override
       {
         property = fromString<T>(parameter);
       }
-    };    
+    };
   }
-  
+
   class SetPropertyMenuCommand : public MenuCommand
   {
     const layer3::Array<menu::PropertyBase*> properties;
@@ -172,7 +174,7 @@ namespace FactUtilEmbedded
   public:
     SetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
       properties(_properties),
-      MenuCommand(PROPERTYMENUCMD_SET, F("writes a value to property"))
+      MenuCommand(PROPERTYMENUCMD_SET, PROPERTYMENUCMD_SET_DESC)
     {}
 
     virtual void handleCommand(Parameters p) override;
@@ -181,15 +183,15 @@ namespace FactUtilEmbedded
     void _handleCommand(Parameters p) { handleCommand(p); }
 #endif
   };
-  
+
   class GetPropertyMenuCommand : public MenuCommand
   {
     const layer3::Array<menu::PropertyBase*> properties;
 
   public:
-    GetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) : 
+    GetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
       properties(_properties),
-      MenuCommand(PROPERTYMENUCMD_GET, F("reads a value to property"))
+      MenuCommand(PROPERTYMENUCMD_GET, PROPERTYMENUCMD_GET_DESC)
     {}
 
     virtual void handleCommand(Parameters p) override;
@@ -198,7 +200,7 @@ namespace FactUtilEmbedded
     void _handleCommand(Parameters p) { handleCommand(p); }
 #endif
   };
-  
+
   // consider an "aggregate command" IMenu command which can handle
   // more than one command within itself.  Right now, Menu & MenuCommand
   // very much expect MenuCommand to map to exactly one command
