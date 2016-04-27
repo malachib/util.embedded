@@ -131,7 +131,10 @@ namespace FactUtilEmbedded
       TProperty<T> property;
 
     public:
-      Property(const char* name, T* const value) : property(value), PropertyBase(name) {}
+      Property(const char* name, T* const value) :
+        PropertyBase(name),
+        property(value)
+        {}
 
       virtual void get(Stream& out) override
       {
@@ -173,8 +176,8 @@ namespace FactUtilEmbedded
 
   public:
     SetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
-      properties(_properties),
-      MenuCommand(PROPERTYMENUCMD_SET, PROPERTYMENUCMD_SET_DESC)
+      MenuCommand(PROPERTYMENUCMD_SET, PROPERTYMENUCMD_SET_DESC),
+      properties(_properties)
     {}
 
     virtual void handleCommand(Parameters p) override;
@@ -190,8 +193,8 @@ namespace FactUtilEmbedded
 
   public:
     GetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
-      properties(_properties),
-      MenuCommand(PROPERTYMENUCMD_GET, PROPERTYMENUCMD_GET_DESC)
+      MenuCommand(PROPERTYMENUCMD_GET, PROPERTYMENUCMD_GET_DESC),
+      properties(_properties)
     {}
 
     virtual void handleCommand(Parameters p) override;

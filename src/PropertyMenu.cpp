@@ -30,8 +30,8 @@ namespace FactUtilEmbedded
       {
         auto item = properties[i];
 
-        cout << F("  ") << item->getName();
-        cout.println();
+        out << F("  ") << item->getName();
+        out.println();
       }
     }
     else if(p.count == 1)
@@ -46,8 +46,8 @@ namespace FactUtilEmbedded
 
         if(strcmp_P(name, itemName) == 0)
         {
-          item->get(cout);
-          cout.println();
+          item->get(out);
+          out.println();
         }
       }
     }
@@ -57,8 +57,6 @@ namespace FactUtilEmbedded
 
   void SetPropertyMenuCommand::handleCommand(Parameters p)
   {
-    MENU_DECLARE_COUT;
-
     uint8_t i = 0;
 
     if(p.count == 2)
