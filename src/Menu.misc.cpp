@@ -1,14 +1,7 @@
 #include "Console.h"
 #include "fact/Menu.h"
-#include "fact/PropertyMenuCommand.h"
 
 using namespace FactUtilEmbedded;
-
-namespace FactUtilEmbedded
-{
-  const char PROPERTYMENUCMD_GET[] PROGMEM = "get";
-  const char PROPERTYMENUCMD_SET[] PROGMEM = "set";
-}
 
 void MenuGeneric::handleCommand(IMenu::Parameters p)
 {
@@ -68,14 +61,4 @@ void NestedMenuHandler::showPrompt(Console* console)
   {
     out << '>';
   }
-}
-
-namespace FactUtilEmbedded
-{
-#if defined(CONSOLE_FEATURE_ENHANCED_CHARPROCESSOR)
-  bool PropertyMenuCommandBase::processInput(Console* console, char received)
-  {
-    return false;
-  }
-#endif
 }
