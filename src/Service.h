@@ -34,7 +34,6 @@ class Service;
 typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
 
-
 template <class TState>
 class ServiceStateBase
 {
@@ -44,9 +43,6 @@ protected:
 
 private:
   TState state;
-
-public:
-  const __FlashStringHelper* getStateString() const;
 };
 
 template <class TState, class TSubState>
@@ -56,20 +52,40 @@ protected:
   void setState(TState state) { this->state = state; }
   TState getState() const { return state; }
 
+  void setSubState(TSubState state) { this->subState = state; }
+  TSubState getSubState() { return subState; }
+
 private:
   struct
   {
     TState state : 4;
     TSubState subState : 4;
   };
+};
 
-public:
-  const __FlashStringHelper* getStateString() const;
+enum _ServiceState
+{
+  Unstarted = 0,
+  Starting = 1,
+  Started = 2,
+  Error = 3,
+  Waiting = 4, // waiting on not yet started dependency
+
+  // User Defined states - count as Unstarted to service engine
+  Paused = 8,
+  Slept = 10
 };
 
 class ServiceState
+#ifdef SERVICE_FEATURE_SINGLESTATE
+  : public ServiceStateBase<_ServiceState>
+#else
+  : public ServiceStateSplitBase<_ServiceState, uint8_t>
+#endif
 {
 protected:
+  typedef _ServiceState State;
+  /*
   enum State : uint8_t
   {
     Unstarted = 0,
@@ -77,13 +93,13 @@ protected:
     Started = 2,
     Error = 3,
     Waiting = 4 // waiting on not yet started dependency
-  };
+  };*/
 
-  void setState(State state) { this->state = state; }
-  State getState() const { return state; }
+  //void setState(State state) { this->state = state; }
+  //State getState() const { return state; }
 
 private:
-  State state;
+  //State state;
 
 public:
   const __FlashStringHelper* getStateString() const;
@@ -408,7 +424,7 @@ namespace layer3
   class ServiceBase : public layer2::ServiceBase
   {
   public:
-    Event2<ServiceBase*, char*> stateUpdated;
+    events::Event<ServiceBase*, char*> stateUpdated;
 
     void setState(State state, char* message = nullptr)
     {
