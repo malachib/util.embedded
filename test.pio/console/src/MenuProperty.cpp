@@ -9,6 +9,7 @@ using namespace util;
 const char PROP_VAL1_NAME[] PROGMEM = "val1";
 int val1 = 3;
 menu::Property<int> prop1(PROP_VAL1_NAME, &val1);
+//menu::Property<int, layer1::Property> prop1(PROP_VAL1_NAME, 3);
 #if FEATURE_MENUPROPERTY >= 1
 menu::PropertyBase* _properties[] = { &prop1 };
 #if FEATURE_MENUPROPERTY >= 2

@@ -2,9 +2,36 @@
 
 namespace FactUtilEmbedded
 {
+  // layer1 = direct memory to a value, not ptr/ref involved
+  namespace layer1
+  {
+    template <class T>
+    class Property
+    {
+    private:
+      T value;
+
+    public:
+      // FIX: this constructor introduces an inconsistency because
+      // it takes a ref but the other layers take a pointer -
+      // sensible but it makes constructing these generically tricky -
+      // so consider making others take a ref also
+      Property(const T& value) : value(value) {}
+
+      const T& get() const { return value; }
+      void set(const T& _value) { value = _value; }
+
+      operator const T&() const { return get(); }
+      void operator=(const T& _value) { set(_value); }
+    };
+  }
+
   // layer2 = no frills pointer to a type
   namespace layer2
   {
+    // note this differs subtly but importantly from layer1 -
+    // layer1 returns a const T& get and also doesn't switch
+    // back and forth from ref to ptr
     template <class T>
     class Property
     {
