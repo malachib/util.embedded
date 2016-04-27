@@ -22,7 +22,7 @@ namespace FactUtilEmbedded
 #endif
   };
 
-  template <class T, template <class T> class TProperty = layer3::Property>
+  template <class T, template <class T2> class TProperty = layer3::Property>
   class PropertyMenuCommand : public PropertyMenuCommandBase
   {
     TProperty<T> property;
