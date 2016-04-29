@@ -20,6 +20,7 @@ namespace FactUtilEmbedded
     };
 
 
+    // TODO: consider refactoring to size_t
     template <uint16_t size>
     class MemoryContainer : public MemoryContainerBase<size>
     {
@@ -27,18 +28,43 @@ namespace FactUtilEmbedded
 
     public:
       void clear() { memset(data, 0, size); }
-      uint8_t* getData() const { return data; }
+      const uint8_t* getData() const { return data; }
     };
+
+    /*
+    template <class T>
+    struct ArrayBase
+    {
+      typedef T*        iterator;
+      typedef const T*  const_iterator;
+    };*/
 
     template <class T, uint16_t size>
     class Array : public MemoryContainer<size * sizeof(T)>
+      //, public ArrayBase<T>
     {
     public:
+      typedef T*        iterator;
+      typedef const T*  const_iterator;
+
       // FIX: definitely will hit data alignment issues here
-      T* getData() const { return (T*) getData(); }
+      T* getData() const { return (T*) MemoryContainer<size * sizeof(T)>::getData(); }
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
+
+      // NOTE: stl merely uses size(), not getSize()
       uint16_t getSize() const { return size; }
+
+      iterator begin() { return iterator(&getData()[0]); }
+      // lifting this from STL example code
+      // http://www.aoc.nrao.edu/php/tjuerges/ALMA/STL/html-4.1.2/array-source.html
+      iterator end() { return iterator(&getData()[size]); }
+
+      const_iterator begin() const
+      { return const_iterator(&getData()[0]); }
+
+      const_iterator end() const
+      { return const_iterator(&getData()[size]); }
     };
   }
 
@@ -69,6 +95,9 @@ namespace FactUtilEmbedded
     class Array : public MemoryContainer<size * sizeof(T)>
     {
     public:
+      typedef T*        iterator;
+      typedef const T*  const_iterator;
+
       Array(T* const data) : MemoryContainer<size * sizeof(T)>(data) {}
 
       // FIX: definitely will hit data alignment issues here
@@ -76,6 +105,17 @@ namespace FactUtilEmbedded
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
       uint16_t getSize() const { return size; }
+
+      iterator begin() { return iterator(&getData()[0]); }
+      // lifting this from STL example code
+      // http://www.aoc.nrao.edu/php/tjuerges/ALMA/STL/html-4.1.2/array-source.html
+      iterator end() { return iterator(&getData()[size]); }
+
+      const_iterator begin() const
+      { return const_iterator(&getData()[0]); }
+
+      const_iterator end() const
+      { return const_iterator(&getData()[size]); }
     };
   }
 
@@ -99,6 +139,9 @@ namespace FactUtilEmbedded
     class Array : public MemoryContainer<TSize>
     {
     public:
+      typedef T*        iterator;
+      typedef const T*  const_iterator;
+
       Array(T* const data, TSize size) :
         MemoryContainer<TSize>(data, size * sizeof(T)) {}
 
@@ -108,6 +151,17 @@ namespace FactUtilEmbedded
       T& operator[](uint16_t index) const { return getValue(index); }
       TSize getSize() const
       { return MemoryContainer<TSize>::getSize() / sizeof(T); }
+
+      iterator begin() { return iterator(&getData()[0]); }
+      // lifting this from STL example code
+      // http://www.aoc.nrao.edu/php/tjuerges/ALMA/STL/html-4.1.2/array-source.html
+      iterator end() { return iterator(&getData()[getSize()]); }
+
+      const_iterator begin() const
+      { return const_iterator(&getData()[0]); }
+
+      const_iterator end() const
+      { return const_iterator(&getData()[getSize()]); }
     };
   }
 
