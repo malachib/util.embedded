@@ -13,11 +13,10 @@ menu::Property<int> prop1(PROP_VAL1_NAME, &val1);
 #if FEATURE_MENUPROPERTY >= 1
 menu::PropertyBase* _properties[] = { &prop1 };
 #if FEATURE_MENUPROPERTY >= 2
-layer3::Array<menu::PropertyBase*> properties(_properties, 1);
-//layer3::Array<menu::PropertyBase*> properties((menu::PropertyBase*){ &prop1 }, 1);
+//layer3::Array<menu::PropertyBase*> properties(_properties, 1);
 #if FEATURE_MENUPROPERTY >= 3
-SetPropertyMenuCommand setPropertyMenuCommand(properties);
-GetPropertyMenuCommand getPropertyMenuCommand(properties);
+SetPropertyMenuCommand setPropertyMenuCommand(_properties, 1);
+GetPropertyMenuCommand getPropertyMenuCommand(_properties, 1);
 
 //#include <initializer_list>
 

@@ -95,6 +95,16 @@ namespace FactUtilEmbedded
 
   namespace menu
   {
+    // a menu::Property is actually a property wrapper with important
+    // additions:
+    // - singly linked node base
+    // - property name
+    // - layer5-like virtualization
+    // - string (char*/Stream) oriented behavior for outside caller re-use
+    //   via aforementioned virtual methods
+    // as such, "menu::Property" isn't the best name, but the best name
+    // I can think of right now is something like "StringOrientedProperty"
+    // which is way worse.
     class PropertyBase : public SinglyLinkedNode, public Named
     {
     public:
@@ -198,9 +208,14 @@ namespace FactUtilEmbedded
     const layer3::Array<menu::PropertyBase*> properties;
 
   public:
-    SetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
+    SetPropertyMenuCommand(const layer3::Array<menu::PropertyBase*>& _properties) :
       MenuCommand(PROPERTYMENUCMD_SET, PROPERTYMENUCMD_SET_DESC),
       properties(_properties)
+    {}
+
+    SetPropertyMenuCommand(menu::PropertyBase** _properties, uint16_t size) :
+      MenuCommand(PROPERTYMENUCMD_SET, PROPERTYMENUCMD_SET_DESC),
+      properties(_properties, size)
     {}
 
     virtual void handleCommand(Parameters p) override;
@@ -218,6 +233,11 @@ namespace FactUtilEmbedded
     GetPropertyMenuCommand(layer3::Array<menu::PropertyBase*> _properties) :
       MenuCommand(PROPERTYMENUCMD_GET, PROPERTYMENUCMD_GET_DESC),
       properties(_properties)
+    {}
+
+    GetPropertyMenuCommand(menu::PropertyBase** _properties, uint16_t size) :
+      MenuCommand(PROPERTYMENUCMD_GET, PROPERTYMENUCMD_GET_DESC),
+      properties(_properties, size)
     {}
 
     virtual void handleCommand(Parameters p) override;
