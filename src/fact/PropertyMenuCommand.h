@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "features.h"
 #include "MenuCommand.h"
 #include "../properties.h"
 #include "string_convert.h"
@@ -185,7 +186,8 @@ namespace FactUtilEmbedded
         PGM_P validationError = validateString<T>(parameter);
         if(validationError) return validationError;
         // then check for specialized (if any) property-specific validation
-        return property.validate(parameter);
+        auto value = fromString<T>(parameter);
+        return property.validate(value);
       }
 #endif
     };

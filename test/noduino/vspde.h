@@ -97,6 +97,8 @@ public:
 	void println(int, int);
 	void println(unsigned int, int);
 	void println(unsigned long, int);
+	void println(const __FlashStringHelper* s)
+	{ println((const char*) s); }
 	int available();
 	char read();
 	virtual size_t write(const uint8_t *buffer, size_t size) = 0;

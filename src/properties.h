@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Arduino.h> // for the PGM_P ref
+#include "fact/features.h"
+
 namespace FactUtilEmbedded
 {
   // layer1 = direct memory to a value, not ptr/ref involved
