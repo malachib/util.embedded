@@ -6,6 +6,7 @@
 #include <Console.h>
 #include <Service.h>
 
+#include "features.h"
 #include "DummyMenu.h"
 
 void dummyHandler(IMenu::Parameters p);
@@ -22,7 +23,7 @@ void dummyHandler(IMenu::Parameters p)
   menu.testHelp();
 }
 
-
+void setup_menuProperty();
 
 void setup()
 {
@@ -30,6 +31,9 @@ void setup()
   Serial << F("Starting up");
   Serial.println();
 
+#if FEATURE_MENUPROPERTY >= 3
+  setup_menuProperty();
+#endif
   //menu.getHeadMenu();
 }
 
