@@ -76,6 +76,9 @@ namespace FactUtilEmbedded
     public:
       virtual T& get() = 0;
       virtual void set(const T& value) = 0;
+#ifdef PROPERTY_FEATURE_VALIDATE
+      virtual PGM_P validate(const T& value) = 0;
+#endif
 
       operator T&() { return get(); }
       void operator=(const T& value) { set(value); }
@@ -93,6 +96,10 @@ namespace FactUtilEmbedded
       virtual void set(const T& value) override { prop.set(value); }
       // somehow this doesn't carry forward from IProperty, so redefine it here
       void operator=(const T& value) { set(value); }
+
+#ifdef PROPERTY_FEATURE_VALIDATE
+      virtual PGM_P validate(const T& value) override { return nullptr; }
+#endif
     };
   }
 }

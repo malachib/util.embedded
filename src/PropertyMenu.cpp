@@ -57,6 +57,8 @@ namespace FactUtilEmbedded
 
   void SetPropertyMenuCommand::handleCommand(Parameters p)
   {
+    MENU_DECLARE_COUT;
+
     uint8_t i = 0;
 
     if(p.count == 2)
@@ -71,7 +73,21 @@ namespace FactUtilEmbedded
         auto itemName = reinterpret_cast<const char*>(_itemName);
 
         if(strcmp_P(name, itemName) == 0)
+        {
+#ifdef PROPERTY_FEATURE_VALIDATE
+          PGM_P validationError = item->validate(value);
+
+          if(validationError)
+          {
+            out << F("Error setting property ");
+            out.println(_itemName);
+            out.println(reinterpret_cast<const __FlashStringHelper*>(validationError));
+            return;
+          }
+#endif
+
           item->set(value);
+        }
       }
     }
   }

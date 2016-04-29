@@ -101,6 +101,9 @@ namespace FactUtilEmbedded
 
       virtual void get(Stream& out) = 0;
       virtual void set(const char* parameter) = 0;
+#ifdef PROPERTY_FEATURE_VALIDATE
+      virtual PGM_P validate(const char* parameter) { return nullptr; }
+#endif
     };
 
     // This class exists so we can re-use code between the different layer::Property
@@ -145,6 +148,13 @@ namespace FactUtilEmbedded
       {
         property = fromString<T>(parameter);
       }
+
+#ifdef PROPERTY_FEATURE_VALIDATE
+      virtual PGM_P validate(const char* parameter) override
+      {
+        return validateString<T>(parameter);
+      }
+#endif
     };
 
 
@@ -167,6 +177,17 @@ namespace FactUtilEmbedded
       {
         property = fromString<T>(parameter);
       }
+
+#ifdef PROPERTY_FEATURE_VALIDATE
+      virtual PGM_P validate(const char* parameter) override
+      {
+        // first check for type conversion error
+        PGM_P validationError = validateString<T>(parameter);
+        if(validationError) return validationError;
+        // then check for specialized (if any) property-specific validation
+        return property.validate(parameter);
+      }
+#endif
     };
   }
 
