@@ -30,7 +30,7 @@ namespace FactUtilEmbedded
 
     Serial
       //<< F("Current state") << currentState
-      << F(", millis = ") << timingGroup->currentTime
+      //<< F(", millis = ") << timingGroup->currentTime
       << F(", lastAction finish = ") << timingGroup->lastActionTimeFinish;
     //char test[128];
     //int msgSize = sizeof(debugMessage2);
@@ -106,7 +106,7 @@ namespace FactUtilEmbedded
 
     if(handler->ProcessCycle())
     {
-#if DEBUG2
+#ifdef DEBUG2
       Serial << F("SequenceStateMachine::Process state = ") << state;
       Serial.println();
 #endif

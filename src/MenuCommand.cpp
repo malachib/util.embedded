@@ -28,7 +28,7 @@ IMenu* MenuCommand::canHandle(IMenu::Parameters p)
   cout << F("evaluating ") << p.parameters[0] << F(" against name: ") << name;
   cout.println();
 #endif
-#if defined(DEBUG3) && defined(ESP8266)
+#if defined(DEBUG3) && defined(ESP8266) && defined(UNUSED)
   static int __result;
   PGM_P p2 = reinterpret_cast<PGM_P>(name);
   cout << F("ptrs. orig=") << (uint32_t) name << F(" converted: ") << (uint32_t) p2;

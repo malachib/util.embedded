@@ -171,7 +171,7 @@ public:
     return currentState == CycleComplete;
   }
 
-#if DEBUG2
+#ifdef DEBUG2
   bool TESTVAL;
 
   void SetTestVal(bool _val) { TESTVAL = _val; }
