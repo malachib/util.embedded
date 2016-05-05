@@ -23,6 +23,23 @@ bool testServiceStart_layer1()
   return false;
 }
 
+class Service_layer5 : public layer5::Service
+{
+public:
+  Service_layer5() : Service("Test Service") {}
+  
+  virtual void start() override;
+};
+
+
+void Service_layer5::start()
+{
+  setStatusMessage(STATUS_MSG);
+  
+  // for layer5 Services, we assume success.  If there's a failure, call an
+  // explicit setState & setStatusMessage
+}
+
 void statusUpdated(Service* svc)
 {
 #if DEBUG2
@@ -107,8 +124,14 @@ SCENARIO( "Service class tests", "[services]" )
 
     REQUIRE(status == STATUS_MSG);
   }
-  GIVEN("A layer 5 service")
+  GIVEN("A layer5 service")
   {
+    Service_layer5 service;
 
+    service.start();
+
+    std::string status = (const char*) service.getStatusMessage();
+
+    REQUIRE(status == STATUS_MSG);
   }
 }

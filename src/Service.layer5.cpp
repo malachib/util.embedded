@@ -4,8 +4,10 @@ using namespace FactUtilEmbedded::layer5;
 
 void Service::doStart()
 {
-  //setState(Starting);
+  setState(Starting);
   start();
+  if(getState() == Starting)
+    setState(Started);
 }
 
 
