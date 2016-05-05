@@ -2,16 +2,17 @@ namespace layer3
 {
   class ServiceBase : public layer2::ServiceBase
   {
-  public:
-    events::Event<ServiceBase*> stateUpdated;
-    events::Event<ServiceBase*, const char*> statusUpdated;
-
+  protected:
     void setState(State state)
     {
       ServiceState::setState(state);
       stateUpdated(this);
     }
     
+  public:
+    events::Event<ServiceBase*> stateUpdated;
+    events::Event<ServiceBase*, const char*> statusUpdated;
+
     void setStatusMessage(PGM_P msg, const char* extendedMessage = nullptr)
     {
       layer2::ServiceBase::setStatusMessage(msg);
