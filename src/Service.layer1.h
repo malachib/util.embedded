@@ -11,7 +11,7 @@ namespace layer1
   class ServiceBase : public ServiceState, public FactUtilEmbedded::Named
   {
   public:
-    ServiceBase(const __FlashStringHelper* name) : Named(name)
+    ServiceBase(PGM_P name) : Named((const __FlashStringHelper*) name)
     {
 #ifdef FACT_LIB_STRICT
       setState(Unstarted);
@@ -35,7 +35,7 @@ namespace layer1
 
     void restart() { start(); }
 
-    Service(const char* name) : ServiceBase(name) {}
+    Service(PGM_P name) : ServiceBase(name) {}
   };
 
 }

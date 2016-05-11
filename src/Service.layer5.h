@@ -13,7 +13,9 @@ namespace layer5
     virtual void pause() {};
   };
 
-  class Service : public IService, protected layer3::ServiceBase
+  // want base of ServiceBase to be protected for setState,
+  // but (sort of) want it public for event stateUpdated access
+  class Service : public IService, public layer3::ServiceBase
   {
   public:
     void doStart();
@@ -21,12 +23,12 @@ namespace layer5
     void doRestart();
 
     Service(const char* name) : layer3::ServiceBase(name) {}
-    
+
     PGM_P getStatusMessage() const
     {
       // TODO: make sure PGM_P really is a full replacement for FlashStringHelper
       //  and if so, replace flashstringhelper with it throughout Service code
-      return (PGM_P) layer3::ServiceBase::getStatusMessage(); 
+      return (PGM_P) layer3::ServiceBase::getStatusMessage();
     }
   };
 }

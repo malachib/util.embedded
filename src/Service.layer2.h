@@ -19,7 +19,7 @@ namespace layer2
     }
 
   public:
-    ServiceBase(const char *name) : layer1::ServiceBase(name) {}
+    ServiceBase(PGM_P name) : layer1::ServiceBase(name) {}
   };
 
   template <bool (*init)(ServiceBase& svc)>

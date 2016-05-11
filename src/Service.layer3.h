@@ -8,12 +8,12 @@ namespace layer3
       ServiceState::setState(state);
       stateUpdated(this);
     }
-    
+
   public:
     events::Event<ServiceBase*> stateUpdated;
     events::Event<ServiceBase*, const char*> statusUpdated;
 
-    void setStatusMessage(PGM_P msg, const char* extendedMessage = nullptr)
+    void setStatusMessage(const __FlashStringHelper* msg, const char* extendedMessage = nullptr)
     {
       layer2::ServiceBase::setStatusMessage(msg);
       statusUpdated(this, extendedMessage);
@@ -31,7 +31,7 @@ namespace layer3
     const startService startFunc;
 
   public:
-    Service(const char* name, startService startFunc) :
+    Service(PGM_P name, startService startFunc) :
       ServiceBase(name), startFunc(startFunc)
     {
     }

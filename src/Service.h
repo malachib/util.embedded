@@ -103,6 +103,7 @@ private:
 
 public:
   const __FlashStringHelper* getStateString() const;
+  bool isStarted() const { return getState() == Started; }
 };
 
 // aka lightweight service
@@ -151,6 +152,7 @@ public:
   static const char genericError[] PROGMEM;
   static const char emptyString[] PROGMEM;
 
+  // isInitialized is obsolete; call isStarted instead
   bool isInitialized() const { return getState() == Started; }
 };
 

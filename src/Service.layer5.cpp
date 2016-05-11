@@ -6,8 +6,9 @@ void Service::doStart()
 {
   setState(Starting);
   start();
+  // must explicitly state a success
   if(getState() == Starting)
-    setState(Started);
+    setState(Error);
 }
 
 

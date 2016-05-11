@@ -1,0 +1,4 @@
+.pioenvs
+platformio.ini
+
+secrets.h
