@@ -62,7 +62,63 @@ namespace FactUtilEmbedded
       eventManager.invokeType2(HandleBase::handle, p);
     }
   };
+  
+  namespace events
+  {
+    template <class ... Arguments>
+    class Event
+    {
+    };
+    
+    template <>
+    class Event<> : public EventBase
+    {
+    public:
+      typedef FactUtilEmbedded::rpc::ParameterClass_0 ParameterClass;
 
+      Event& operator()()
+      {
+        ParameterClass p;
+        invoke(p);
+        return *this;
+      }
+    };
+    
+    template <class TIn1>
+    class Event<TIn1> : public EventBase
+    {
+    public:
+      typedef FactUtilEmbedded::rpc::ParameterClass_1<TIn1> ParameterClass;
+
+      Event& operator()(TIn1 in1)
+      {
+        ParameterClass p(in1);
+        invoke(p);
+        return *this;
+      }
+
+      void invokeT2(TIn1 in1) const
+      {
+        ParameterClass p(in1);
+        invokeType2(p);
+      }
+      
+    };
+
+    template <class TIn1, class TIn2>
+    class Event<TIn1, TIn2> : public EventBase
+    {
+    public:
+      typedef FactUtilEmbedded::rpc::ParameterClass_2<TIn1, TIn2> ParameterClass;
+
+      Event& operator()(TIn1 in1, TIn2 in2)
+      {
+        ParameterClass p(in1, in2);
+        eventManager.invokeType1(handle, p);
+        return *this;
+      }
+    };
+  }
 
   class Event0 : public EventBase
   {
@@ -109,6 +165,7 @@ namespace FactUtilEmbedded
     {
       ParameterClass p(in1, in2);
       eventManager.invokeType1(handle, p);
+      return *this;
     }
   };
 }

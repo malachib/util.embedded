@@ -12,6 +12,20 @@
 extern const char PROGMEM SVC_WIFI_NAME[];
 extern WiFiClient wifiClient;
 
+namespace FactUtilEmbedded
+{
+  namespace layer2
+  {
+    /*
+    class WiFiService : public Service
+    {
+
+    }*/
+  }
+
+#include "service.layer5.h"
+}
+
 class WiFi_Service : public util::Service
 {
   // not progmem , just regular const char*

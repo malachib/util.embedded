@@ -1,3 +1,5 @@
+// file is obsolete now, just include wifi/service.h
+
 #include <Arduino.h>
 
 #include "service.h"

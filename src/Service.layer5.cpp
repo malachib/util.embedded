@@ -4,8 +4,11 @@ using namespace FactUtilEmbedded::layer5;
 
 void Service::doStart()
 {
-  //setState(Starting);
+  setState(Starting);
   start();
+  // must explicitly state a success
+  if(getState() == Starting)
+    setState(Error);
 }
 
 

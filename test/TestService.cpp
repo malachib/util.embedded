@@ -11,10 +11,33 @@ using namespace util;
 
 int _counter = 0;
 
-bool testServiceStart(Service& svc)
+template <class TService>
+bool _testServiceStart(TService& svc)
 {
   svc.setStatusMessage(STATUS_MSG);
   return true;
+}
+
+bool testServiceStart_layer1()
+{
+  return false;
+}
+
+class Service_layer5 : public layer5::Service
+{
+public:
+  Service_layer5() : Service("Test Service") {}
+  
+  virtual void start() override;
+};
+
+
+void Service_layer5::start()
+{
+  setStatusMessage(STATUS_MSG);
+  
+  // for layer5 Services, we assume success.  If there's a failure, call an
+  // explicit setState & setStatusMessage
 }
 
 void statusUpdated(Service* svc)
@@ -49,7 +72,7 @@ SCENARIO( "Service class tests", "[services]" )
 {
   GIVEN("A regular non-lightweight service")
   {
-    Service service("Test Service", testServiceStart);
+    Service service("Test Service", _testServiceStart);
 
     service.statusUpdated += statusUpdated;
 
@@ -67,5 +90,48 @@ SCENARIO( "Service class tests", "[services]" )
     {
       //
     }
+  }
+  GIVEN("A layer1 service")
+  {
+    layer1::Service<testServiceStart_layer1> service("Test Service");
+
+    std::string state((const char*) service.getStateString());
+
+    REQUIRE(state == SERVICE_STATUS_UNSTARTED);
+
+    service.start();
+
+    state = (const char*) service.getStateString();
+    REQUIRE(state == SERVICE_STATUS_ERROR);
+  }
+  GIVEN("A layer2 service")
+  {
+    layer2::Service<_testServiceStart> service("Test Service");
+
+    service.start();
+
+    std::string status = (const char*) service.getStatusMessage();
+
+    REQUIRE(status == STATUS_MSG);
+  }
+  GIVEN("A layer3 service")
+  {
+    layer3::Service service("Test Service", _testServiceStart);
+
+    service.start();
+
+    std::string status = (const char*) service.getStatusMessage();
+
+    REQUIRE(status == STATUS_MSG);
+  }
+  GIVEN("A layer5 service")
+  {
+    Service_layer5 service;
+
+    service.start();
+
+    std::string status = (const char*) service.getStatusMessage();
+
+    REQUIRE(status == STATUS_MSG);
   }
 }

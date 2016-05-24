@@ -34,10 +34,58 @@ class Service;
 typedef bool (*startService1)(Service& service);
 typedef bool (*startService2);
 
-
-class ServiceState
+template <class TState>
+class ServiceStateBase
 {
 protected:
+  void setState(TState state) { this->state = state; }
+  TState getState() const { return state; }
+
+private:
+  TState state;
+};
+
+template <class TState, class TSubState>
+class ServiceStateSplitBase
+{
+protected:
+  void setState(TState state) { this->state = state; }
+  TState getState() const { return state; }
+
+  void setSubState(TSubState state) { this->subState = state; }
+  TSubState getSubState() { return subState; }
+
+private:
+  struct
+  {
+    TState state : 4;
+    TSubState subState : 4;
+  };
+};
+
+enum _ServiceState
+{
+  Unstarted = 0,
+  Starting = 1,
+  Started = 2,
+  Error = 3,
+  Waiting = 4, // waiting on not yet started dependency
+
+  // User Defined states - count as Unstarted to service engine
+  Paused = 8,
+  Slept = 10
+};
+
+class ServiceState
+#ifdef SERVICE_FEATURE_SINGLESTATE
+  : public ServiceStateBase<_ServiceState>
+#else
+  : public ServiceStateSplitBase<_ServiceState, uint8_t>
+#endif
+{
+protected:
+  typedef _ServiceState State;
+  /*
   enum State : uint8_t
   {
     Unstarted = 0,
@@ -45,16 +93,17 @@ protected:
     Started = 2,
     Error = 3,
     Waiting = 4 // waiting on not yet started dependency
-  };
+  };*/
 
-  void setState(State state) { this->state = state; }
-  State getState() const { return state; }
+  //void setState(State state) { this->state = state; }
+  //State getState() const { return state; }
 
 private:
-  State state;
+  //State state;
 
 public:
   const __FlashStringHelper* getStateString() const;
+  bool isStarted() const { return getState() == Started; }
 };
 
 // aka lightweight service
@@ -103,6 +152,7 @@ public:
   static const char genericError[] PROGMEM;
   static const char emptyString[] PROGMEM;
 
+  // isInitialized is obsolete; call isStarted instead
   bool isInitialized() const { return getState() == Started; }
 };
 
@@ -282,15 +332,10 @@ inline Print& operator <<(Print& p, Service* s)
   return p;
 }
 
-namespace layer5
-{
-  class Service : IService, Named
-  {
-  public:
-    void doStart();
-    void doStop();
-    void doRestart();
-  };
-}
+
+#include "Service.layer1.h"
+#include "Service.layer2.h"
+#include "Service.layer3.h"
+#include "Service.layer5.h"
 
 }

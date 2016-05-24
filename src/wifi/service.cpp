@@ -1,26 +1,36 @@
-#if defined(MQTT_TYPE_WIFI) && defined(ESP8266)
+#if defined(ESP8266)
 
 #include "service.h"
 
-bool WiFi_Service::start(Service& svc)
+namespace FactUtilEmbedded
+{
+namespace layer5
+{
+// this one is progmem
+const char WiFiService::NAME[] PROGMEM = "WiFi";
+
+const char* WiFiService::_WLAN_SSID;
+const char* WiFiService::_WLAN_PASS;
+
+void WiFiService::start()
 {
   uint8_t retries = 10;
 
-  svc.setStatusMessage(F("Connecting"));
+  setStatusMessage(F("Connecting"));
 
   WiFi.begin(_WLAN_SSID, _WLAN_PASS);
-  // TODO: get better status reporting once non-const setStatusMessage
-  // is available
+  // TODO: perform better status reporting
   do
   {
     auto s =  WiFi.status();
     switch(s)
     {
       case WL_CONNECTED:
-        return true;
+        setState(Started);
+        return;
 
       case WL_NO_SSID_AVAIL:
-        svc.setStatusMessage(F("Connecting Failed AP not found"));
+        setStatusMessage(F("Connecting Failed AP not found"));
         break;
 
       // eat these up since this is what we get while connecting, and is
@@ -29,7 +39,7 @@ bool WiFi_Service::start(Service& svc)
         break;
 
       default:
-        svc.setStatusMessage(F("Connecting failed"));
+        setStatusMessage(F("Connecting failed"));
         break;
     }
 
@@ -39,8 +49,7 @@ bool WiFi_Service::start(Service& svc)
     Serial.println(s);
 #endif
   } while(retries--);
-
-  return false;
 }
-
+}
+}
 #endif
