@@ -35,20 +35,20 @@ namespace FactUtilEmbedded
       system_set_sleepmode(sleep_mode);
       system_sleep();
     }*/
-    
+
     struct ClockControl
     {
       GENERIC_CONTROL_STRUCT(Usb2, usb, PM->APBBMASK.bit.USB_);
-      
+
       struct ApbControl
       {
         class ApbItem
         {
           const uint8_t bus;
-          
+
         public:
           ApbItem(const uint8_t bus) : bus(bus) {}
-          
+
           void setDivider(uint8_t p)
           {
             switch(bus)
@@ -65,7 +65,7 @@ namespace FactUtilEmbedded
             static_assert(p < 8, "prescalar must be less than 8");
             setDivider(p);
           }
-          
+
         };
 
         const ApbItem operator[](uint8_t bus) const
@@ -73,13 +73,13 @@ namespace FactUtilEmbedded
           return ApbItem(bus);
         }
       } apb;
-      
+
     };
 
     static ClockControl clock;
-    
+
     // stubs while I understand SAMD better and verify other things are compiling
-    struct UsbControl 
+    struct UsbControl
     {
       // TODO: Pretty sure we have to do the startup./shutdown tricks
       // similar to the AVR
@@ -87,7 +87,7 @@ namespace FactUtilEmbedded
       static void off() { clock.usb.off(); }
     } usb;
 
-    struct AdcControl 
+    struct AdcControl
     {
       void on() {}
       void off() {}
@@ -102,17 +102,17 @@ namespace FactUtilEmbedded
        * when in sleep mode. */
       NVMCTRL->CTRLB.bit.SLEEPPRM = NVMCTRL_CTRLB_SLEEPPRM_DISABLED_Val;
 #endif
-      
+
       // Data Synchronization Barrier
       __DSB();
       // wait for interrupt to wake us up
       __WFI();
     }
-    
+
     // from datasheet:
     // IDLE mode: The CPU is stopped. Optionally, some synchronous clock domains are stopped,
     // depending on the IDLE argument. Regulator operates in normal mode.
-    // 
+    //
     // valid levels are 0-2:
     //
     // 0: CPU clock stopped
@@ -126,22 +126,25 @@ namespace FactUtilEmbedded
       PM->SLEEP.reg = level;
       sleep();
     }
-    
+
     //
-    // In STANDDBY sleep mode, the power manager is frozen and is able to go back to ACTIVE mode upon
+    // In deep sleep mode, the power manager is frozen and is able to go back to ACTIVE mode upon
     // any asynchronous interrupt
-    static void standby()
+    static void deepSleep()
     {
       // enable deepsleep AKA standby mode
       SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
       sleep();
     }
 
+    // STANDBY mode seems to be analagous to deepSleep
+    static void standby() { deepSleep(); }
+
     // non-cpu clocks can temporarily wakeup to then trigger (or not) a wakeup
     // of the CPU itself
     void sleepWalk()
     {
-      
+
     }
 
     template <uint8_t p>

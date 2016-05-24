@@ -34,7 +34,7 @@ ConsoleMenu console(&menu);
 #define ESP_VOID
 #endif
 
-#if not defined(__AVR_ATtiny85__) and not defined(SAMD_SERIES)
+#if !defined(__AVR_ATtiny85__) and !defined(PIN_LED)
 #define PIN_LED 17
 #endif
 
