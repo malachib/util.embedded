@@ -36,6 +36,8 @@ namespace FactUtilEmbedded
       system_sleep();
     }*/
 
+    // refer to section 16.6.2.6 in Atmel-42181-SAM-D21_Datasheet
+    // for clock control description
     struct ClockControl
     {
       GENERIC_CONTROL_STRUCT(Usb2, usb, PM->APBBMASK.bit.USB_);

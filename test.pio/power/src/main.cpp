@@ -68,22 +68,20 @@ void powerdown_usb(ESP_VOID)
 
 void sleep_4(ESP_VOID)
 {
+  static int counter = 0;
+
 #ifdef SAMD_SERIES
   digitalWrite(PIN_LED, HIGH);
   delay(500);
-  /*digitalWrite(PIN_LED, LOW);
-  delay(500);
-  digitalWrite(PIN_LED, HIGH);
-  delay(500);
-  digitalWrite(PIN_LED, LOW); */
+
   Power.usb.off();
   auto wdto = Watchdog::WDTO::fromMS<4096>();
   Watchdog::enable(wdto);
+
   Power.deepSleep();
 
   Power.usb.on();
-  //cout.begin(COUT_BPS);
-  //delay(100);
+
   Watchdog::disable();
 
   digitalWrite(PIN_LED, LOW);
@@ -123,6 +121,10 @@ void sleep_4(ESP_VOID)
   cout.begin(COUT_BPS);
   delay(100);
 #endif
+
+  cout.print("Sleep request# ");
+  cout.print(++counter);
+  cout.println();
 }
 
 CREATE_MENUFUNCTION(menu_powerdown_adc, powerdown_adc, "Power down ADC");
@@ -147,6 +149,12 @@ void setup()
 
 #if SAMD_SERIES
   Watchdog::initialize();
+
+  // FIX: experimentation just to make sure we aren't having some kind of
+  // power issue while testing.  According to docs if we are expecting a
+  // power draw of over 50ua from the pins during sleep, activate this.
+  // I expect we won't actually need this
+  SYSCTRL->VREG.bit.RUNSTDBY = 1;
 #endif
   //Power.usart[0].off();
   //power_timer0_disable();
@@ -155,6 +163,7 @@ void setup()
   menu.add(menu_powerdown_usb);
   menu.add(menu_sleep4);
   //menu.getHeadMenu();
+
 }
 
 
