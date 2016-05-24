@@ -36,7 +36,11 @@ ConsoleMenu console(&menu);
 #endif
 
 #if !defined(__AVR_ATtiny85__) and !defined(PIN_LED)
+#ifdef ARDUINO_SPARKFUN_SAMD
+#define PIN_LED 13
+#else
 #define PIN_LED 17
+#endif
 #endif
 
 #ifdef __AVR_ATtiny85__
@@ -64,7 +68,26 @@ void powerdown_usb(ESP_VOID)
 
 void sleep_4(ESP_VOID)
 {
-#if not defined(ESP8266) and not defined(SAMD_SERIES)
+#ifdef SAMD_SERIES
+  digitalWrite(PIN_LED, HIGH);
+  delay(500);
+  /*digitalWrite(PIN_LED, LOW);
+  delay(500);
+  digitalWrite(PIN_LED, HIGH);
+  delay(500);
+  digitalWrite(PIN_LED, LOW); */
+  Power.usb.off();
+  auto wdto = Watchdog::WDTO::fromMS<4096>();
+  Watchdog::enable(wdto);
+  Power.deepSleep();
+
+  Power.usb.on();
+  //cout.begin(COUT_BPS);
+  //delay(100);
+  Watchdog::disable();
+
+  digitalWrite(PIN_LED, LOW);
+#elif not defined(ESP8266)
 #ifdef PIN_LED
   digitalWrite(PIN_LED, HIGH);
   delay(500);
@@ -120,6 +143,10 @@ void setup()
 #if not defined(ESP8266) and not defined(SAMD_SERIES)
   Power.timer[1].off();
   Power.timer[1].on();
+#endif
+
+#if SAMD_SERIES
+  Watchdog::initialize();
 #endif
   //Power.usart[0].off();
   //power_timer0_disable();

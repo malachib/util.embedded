@@ -7,7 +7,7 @@
 
 namespace FactUtilEmbedded
 {
-  class WatchdogControl
+  class Watchdog
   {
   public:
 #ifdef ASF_ENABLED
@@ -34,7 +34,7 @@ namespace FactUtilEmbedded
   private:
     // TODO: ensure busy wait loop doesn't go for too long, if so, use
     // delay()
-    static void synchronize()
+    inline static void synchronize()
     {
       // Syncronize write to reg written to before calling this
       while (WDT->STATUS.bit.SYNCBUSY);
@@ -95,7 +95,38 @@ namespace FactUtilEmbedded
     };
 
 
-    static void disable()
+    // lifted from adafruit
+    // TODO: figure out if it's safe to do this at static-init time
+    static void initialize()
+    {
+      // Do one-time initialization of the watchdog timer.
+
+      // Setup GCLK for the watchdog using:
+      // - Generic clock generator 2 as the source for the watchdog clock
+      // - Low power 32khz internal oscillator as the source for generic clock
+      //   generator 2.
+      // - Generic clock generator 2 divisor to 32 so it ticks roughly once a
+      //   millisecond.
+
+      // Set generic clock generator 2 divisor to 4 so the clock divisor is 32.
+      // From the datasheet the clock divisor is calculated as:
+      //   2^(divisor register value + 1)
+      // A 32khz clock with a divisor of 32 will then generate a 1ms clock period.
+      GCLK->GENDIV.reg = GCLK_GENDIV_ID(2) | GCLK_GENDIV_DIV(4);
+      // Now enable clock generator 2 using the low power 32khz oscillator and the
+      // clock divisor set above.
+      GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(2) |
+                          GCLK_GENCTRL_GENEN |
+                          GCLK_GENCTRL_SRC_OSCULP32K |
+                          GCLK_GENCTRL_DIVSEL;
+      while (GCLK->STATUS.bit.SYNCBUSY);  // Syncronize write to GENCTRL reg.
+      // Turn on the WDT clock using clock generator 2 as the source.
+      GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID_WDT |
+                          GCLK_CLKCTRL_CLKEN |
+                          GCLK_CLKCTRL_GEN_GCLK2;
+    }
+
+    inline static void disable()
     {
       // Disable the watchdog.
       WDT->CTRL.reg &= ~WDT_CTRL_ENABLE;
@@ -104,7 +135,7 @@ namespace FactUtilEmbedded
 
 
     // raw watchdog enable
-    static void enable()
+    inline static void enable()
     {
       // Enable the watchdog.
       WDT->CTRL.reg |= WDT_CTRL_ENABLE;
@@ -113,8 +144,10 @@ namespace FactUtilEmbedded
 
     static void enable(const WDTO wdto)
     {
+      // Disable watchdog so its registers can be changed
       disable();
 
+      // Set watchdog period
       WDT->CONFIG.reg = WDT_CONFIG_PER(wdto);
       synchronize();
 
