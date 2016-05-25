@@ -102,6 +102,7 @@ namespace FactUtilEmbedded
 #if SAMD_SERIES
       /* Errata: Make sure that the Flash does not power all the way down
        * when in sleep mode. */
+      // SEE: http://atmel.force.com/support/articles/en_US/FAQ/SAMD20-1-IDLE-and-SLEEP-Limitations
       NVMCTRL->CTRLB.bit.SLEEPPRM = NVMCTRL_CTRLB_SLEEPPRM_DISABLED_Val;
 #endif
 
