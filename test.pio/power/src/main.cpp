@@ -66,6 +66,13 @@ void powerdown_usb(ESP_VOID)
 #endif
 }
 
+void show_int_status()
+{
+#if SAMD_SERIES
+  cout << F("Interrupt status: ") << Watchdog::getEarlyWarningStatus();
+#endif
+}
+
 void sleep_4(ESP_VOID)
 {
   static int counter = 0;
@@ -130,6 +137,7 @@ void sleep_4(ESP_VOID)
 CREATE_MENUFUNCTION(menu_powerdown_adc, powerdown_adc, "Power down ADC");
 CREATE_MENUFUNCTION(menu_powerdown_usb, powerdown_usb, "Power down USB");
 CREATE_MENUFUNCTION(menu_sleep4, sleep_4, "Sleep for 4 seconds");
+CREATE_MENUFUNCTION(menu_show_int_status, show_int_status, "Show last WDT interrupt status");
 
 void setup()
 {
@@ -149,6 +157,9 @@ void setup()
 
 #if SAMD_SERIES
   Watchdog::initialize();
+  // docs say that WDT interrupt is used to wake up from sleep [[1]]
+  Watchdog::enableInterrupt();
+  //Watchdog::disableInterrupt();
 
   // FIX: experimentation just to make sure we aren't having some kind of
   // power issue while testing.  According to docs if we are expecting a
@@ -162,6 +173,7 @@ void setup()
   menu.add(menu_powerdown_adc);
   menu.add(menu_powerdown_usb);
   menu.add(menu_sleep4);
+  menu.add(menu_show_int_status);
   //menu.getHeadMenu();
 
 }
@@ -171,3 +183,9 @@ void loop()
 {
   console.handler();
 }
+
+/* 
+ * REFERENCES:
+ *
+ * [[1]] Atmel-42181-SAM-D21_Datasheet.pdf: 18.5.2
+ */

@@ -126,6 +126,12 @@ namespace FactUtilEmbedded
                           GCLK_CLKCTRL_GEN_GCLK2;
     }
 
+
+    inline static bool getEarlyWarningStatus()
+    {
+      return WDT->INTFLAG.bit.EW;
+    }
+
     inline static void disable()
     {
       // Disable the watchdog.
@@ -141,6 +147,30 @@ namespace FactUtilEmbedded
       WDT->CTRL.reg |= WDT_CTRL_ENABLE;
       synchronize();
     }
+    
+    inline static void enableInterrupt()
+    {
+      // Just aping what I see in RTCZero library
+      NVIC_EnableIRQ(WDT_IRQn);
+      NVIC_SetPriority(WDT_IRQn, 0x00);
+    }
+    
+    inline static void disableEarlyWarningInterrupt()
+    {
+      // Disable early warning interrupt.
+      WDT->INTENCLR.reg |= WDT_INTENCLR_EW;
+    }
+    
+    inline static void enableEarlyWarningInterrupt()
+    {
+      // Disable early warning interrupt.
+      WDT->INTENSET.reg |= WDT_INTENSET_EW;
+    }
+    
+    inline static void disableInterrupt()
+    {
+      NVIC_DisableIRQ(WDT_IRQn);
+    }
 
     static void enable(const WDTO wdto)
     {
@@ -152,7 +182,7 @@ namespace FactUtilEmbedded
       synchronize();
 
       // Disable early warning interrupt.
-      WDT->INTENCLR.reg |= WDT_INTENCLR_EW;
+      disableEarlyWarningInterrupt();
 
       enable();
     }
