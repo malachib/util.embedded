@@ -73,6 +73,8 @@ void show_int_status()
 #endif
 }
 
+extern int wdt_handler_called;
+
 void sleep_4(ESP_VOID)
 {
   static int counter = 0;
@@ -81,6 +83,7 @@ void sleep_4(ESP_VOID)
   digitalWrite(PIN_LED, HIGH);
   delay(500);
 
+  // OK, power off the USB cuz the computer will freak out otherwise
   Power.usb.off();
   auto wdto = Watchdog::WDTO::fromMS<4096>();
   Watchdog::enable(wdto);
@@ -131,6 +134,9 @@ void sleep_4(ESP_VOID)
 
   cout.print("Sleep request# ");
   cout.print(++counter);
+  cout.println();
+  
+  cout << F("WDT interrupt called: ") << wdt_handler_called;
   cout.println();
 }
 
