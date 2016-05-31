@@ -20,7 +20,8 @@ namespace FactUtilEmbedded
     {
       static inline bool is_syncing()
       {
-        return GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY;
+        return GCLK->STATUS.bit.SYNCBUSY;
+        //return GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY;
       }
 
       static void synchronize()
@@ -84,10 +85,22 @@ namespace FactUtilEmbedded
       }
 
 
+      template <uint8_t gclk>
+      static inline void enable_generator(const uint32_t GCLK_GENCTRL)
+      {
+        assert_gclk<gclk>();
+
+        GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(gclk) |
+                            GCLK_GENCTRL_GENEN |
+                            GCLK_GENCTRL;
+
+        synchronize();
+      }
+
       // enable a particular generic clock coupled with a peripheral
       // identified by GCLK_CTRLCTRL_ID_xxx
       template <uint8_t gclk>
-      static inline void enable(const uint32_t GCLK_CLKCTRL_ID)
+      static inline void enable_clock(const uint32_t GCLK_CLKCTRL_ID)
       {
         GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID |
                             GCLK_CLKCTRL_CLKEN |

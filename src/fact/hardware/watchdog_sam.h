@@ -133,10 +133,18 @@ namespace FactUtilEmbedded
 
 
     // untested, will replace initialize() once it is tested and working
+    template <uint8_t gclk = 2>
     static void initialize2()
     {
-      GenericClock::set_divisor<2>(4);
-      GenericClock::enable<2>(GCLK_CLKCTRL_ID_WDT);
+      GenericClock::set_divisor<gclk>(4);
+
+      // Now enable clock generator "gclk" using the low power 32khz oscillator and the
+      // clock divisor set above.
+      GenericClock::enable_generator<gclk>(
+        GCLK_GENCTRL_SRC_OSCULP32K |
+        GCLK_GENCTRL_DIVSEL);
+
+      GenericClock::enable_clock<gclk>(GCLK_CLKCTRL_ID_WDT);
     }
 
 
