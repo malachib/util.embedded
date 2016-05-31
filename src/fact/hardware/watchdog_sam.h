@@ -2,11 +2,15 @@
 
 //#include <wdt.h>
 
+#include "../../driver/atmel/sam/gclk.h"
+
 // http://asf.atmel.com/docs/latest/samd20/html/group__asfdoc__sam0__wdt__group.html
 // code totally lifted & adapted from https://github.com/adafruit/Adafruit_SleepyDog
 
 namespace FactUtilEmbedded
 {
+  using namespace atmel::sam;
+
   class Watchdog
   {
   public:
@@ -124,6 +128,15 @@ namespace FactUtilEmbedded
       GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID_WDT |
                           GCLK_CLKCTRL_CLKEN |
                           GCLK_CLKCTRL_GEN_GCLK2;
+
+    }
+
+
+    // untested, will replace initialize() once it is tested and working
+    static void initialize2()
+    {
+      GenericClock::set_divisor<2>(4);
+      GenericClock::enable<2>(GCLK_CLKCTRL_ID_WDT);
     }
 
 
@@ -147,26 +160,26 @@ namespace FactUtilEmbedded
       WDT->CTRL.reg |= WDT_CTRL_ENABLE;
       synchronize();
     }
-    
+
     inline static void enableInterrupt()
     {
       // Just aping what I see in RTCZero library
       NVIC_EnableIRQ(WDT_IRQn);
       NVIC_SetPriority(WDT_IRQn, 0x00);
     }
-    
+
     inline static void disableEarlyWarningInterrupt()
     {
       // Disable early warning interrupt.
       WDT->INTENCLR.reg |= WDT_INTENCLR_EW;
     }
-    
+
     inline static void enableEarlyWarningInterrupt()
     {
       // Disable early warning interrupt.
       WDT->INTENSET.reg |= WDT_INTENSET_EW;
     }
-    
+
     inline static void disableInterrupt()
     {
       NVIC_DisableIRQ(WDT_IRQn);

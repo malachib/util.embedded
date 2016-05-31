@@ -13,6 +13,10 @@
 #include <fact/watchdog.h>
 #endif
 
+#if SAMD_SERIES
+#include <driver/atmel/sam/gclk.h>
+#endif
+
 using namespace util;
 
 
@@ -135,7 +139,7 @@ void sleep_4(ESP_VOID)
   cout.print("Sleep request# ");
   cout.print(++counter);
   cout.println();
-  
+
   cout << F("WDT interrupt called: ") << wdt_handler_called;
   cout.println();
 }
@@ -190,7 +194,7 @@ void loop()
   console.handler();
 }
 
-/* 
+/*
  * REFERENCES:
  *
  * [[1]] Atmel-42181-SAM-D21_Datasheet.pdf: 18.5.2
