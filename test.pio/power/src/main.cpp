@@ -15,6 +15,7 @@
 
 #if SAMD_SERIES
 #include <driver/atmel/sam/gclk.h>
+#include <driver/atmel/sam/tc.h>
 #endif
 
 using namespace util;

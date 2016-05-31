@@ -84,6 +84,11 @@ namespace FactUtilEmbedded
         GCLK->GENDIV.reg = GCLK_GENDIV_ID(gclk) | GCLK_GENDIV_DIV(divisor);
       }
 
+      template <uint8_t channel>
+      static inline void enable_channel()
+      {
+      }
+
 
       template <uint8_t gclk>
       static inline void enable_generator(const uint32_t GCLK_GENCTRL)
