@@ -103,7 +103,7 @@ namespace FactUtilEmbedded
       }
 
       // enable a particular generic clock coupled with a peripheral
-      // identified by GCLK_CTRLCTRL_ID_xxx
+      // identified by GCLK_CLKCTRL_ID_xxx
       template <uint8_t gclk>
       static inline void enable_clock(const uint32_t GCLK_CLKCTRL_ID)
       {

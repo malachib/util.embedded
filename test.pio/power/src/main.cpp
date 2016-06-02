@@ -16,6 +16,7 @@
 #if SAMD_SERIES
 #include <driver/atmel/sam/gclk.h>
 #include <driver/atmel/sam/tc.h>
+#include <driver/atmel/sam/rtc.h>
 #endif
 
 using namespace util;
@@ -141,8 +142,10 @@ void sleep_4(ESP_VOID)
   cout.print(++counter);
   cout.println();
 
+#ifdef SAMD_SERIES
   cout << F("WDT interrupt called: ") << wdt_handler_called;
   cout.println();
+#endif
 }
 
 CREATE_MENUFUNCTION(menu_powerdown_adc, powerdown_adc, "Power down ADC");
@@ -177,6 +180,8 @@ void setup()
   // power draw of over 50ua from the pins during sleep, activate this.
   // I expect we won't actually need this
   SYSCTRL->VREG.bit.RUNSTDBY = 1;
+  
+  atmel::sam::RealTimeClock::begin();
 #endif
   //Power.usart[0].off();
   //power_timer0_disable();
