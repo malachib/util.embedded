@@ -14,8 +14,36 @@ namespace FactUtilEmbedded
   {
     class PowerManager
     {
-      
-    }
+      /*
+      template <uint32_t& TOffset, uint32_t mask>
+      class _EnableDisableMask
+      {
+      public:
+        static void inline enable()
+        {
+          TOffset.reg |= mask;
+        }
+
+        static void inline disable()
+        {
+          TOffset.reg &= ~mask;
+        }
+      };
+
+
+      class __RTC :
+      public _EnableDisableMask<PM->APBAMASK, PM_APBAMASK_RTC> {};*/
+
+      /*
+      class RTC
+      {
+      public:
+        static inline enable()
+        {
+          PM->APBAMASK.reg |= PM_APBAMASK_RTC; // turn on digital interface clock
+        }
+      };*/
+    };
   }
   }
 }
