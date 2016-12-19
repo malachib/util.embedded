@@ -27,7 +27,8 @@ SRC_INCLUDE = $(patsubst $(INCLUDE_LIB)/%.cpp,%,$(_SRC_INCLUDE))
 #	lib.o LinkedList.o Math.o Menu.o MenuService.o Service.o Arduino.o ncursesStream.o \
 #	Tokenizer.o \
 #	main.o
-_OBJS = $(SRC_INCLUDE) Arduino ncursesStream main
+#_OBJS = $(SRC_INCLUDE) Arduino ncursesStream main
+_OBJS = $(SRC_INCLUDE) main
 OBJS = $(patsubst %,$(ODIR)/%.o,$(_OBJS))
 
 $(OUT): $(OBJS)

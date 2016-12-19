@@ -119,11 +119,11 @@ bool HandleManager::remove(Handle* handles, Handle* currentNode, void* data)
 
   // undefined state
 #ifdef DEBUG
-  cout.println(F("HandleManager::remove "
+  cout << F("HandleManager::remove "
 #ifdef MEMORY_OPT_CODE
   "invalid op"));
 #else
-  "warning: data to remove not found"));
+  "warning: data to remove not found");
 #endif
 #endif
   return true;
