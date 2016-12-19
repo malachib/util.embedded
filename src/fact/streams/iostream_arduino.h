@@ -1,0 +1,3 @@
+namespace FactUtilEmbedded { namespace std
+{
+} }
