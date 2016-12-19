@@ -1,0 +1,13 @@
+{
+  "name": "util.embedded",
+  "version": "1.0.0",
+  "build": {
+    "srcFilter": [
+      "+<*.c>",
+      "+<*.cpp>",
+      "+<*.h>",
+      "+<driver/atmel/sam/*.cpp>",
+      "+<fact/hardware/*.cpp>"
+    ]
+  }
+}
