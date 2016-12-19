@@ -1,10 +1,8 @@
-#include <Arduino.h>
-
-#if SAMD_SERIES
-
 #include "rtc.h"
 #include "pm.h"
 #include "gclk.h"
+
+#if SAMD_SERIES
 
 namespace FactUtilEmbedded { namespace atmel { namespace sam
 {

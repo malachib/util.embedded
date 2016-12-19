@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Arduino.h>
+#include "apb.h"
 
 #if SAMD_SERIES == 0
 #error This code intended only for ATSAMD MPU
 #endif
-
-#include "apb.h"
 
 namespace FactUtilEmbedded
 {

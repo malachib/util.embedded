@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Arduino.h>
+#include <stdint.h>
+#include <sam.h>
 
 #if SAMD_SERIES == 0
 #error This code intended only for ATSAMD MPU
