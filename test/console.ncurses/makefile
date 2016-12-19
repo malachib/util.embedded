@@ -13,6 +13,7 @@ INCLUDE_NODUINO = ../noduino
 INC = -I$(INCLUDE) -I$(INCLUDE_LIB) -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
 CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DNCURSES -DCONSOLE_FEATURE_COUT
+#-DCONSOLE_FEATURE_IOSTREAM
 #CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DNCURSES
 CC_DEBUG = -c
 #CC_DEBUG = -g -c
@@ -30,7 +31,7 @@ _OBJS = $(SRC_INCLUDE) Arduino ncursesStream main
 OBJS = $(patsubst %,$(ODIR)/%.o,$(_OBJS))
 
 $(OUT): $(OBJS)
-	$(CC) -lncurses -o $(OUT) $^
+	$(CC) -o $(OUT) $^ -lncurses
 
 # test app
 $(ODIR)/%.o: $(SDIR)/%.cpp
