@@ -3,7 +3,7 @@
 #ifndef _UTIL_MATH_H
 #define _UTIL_MATH_H
 
-#include <Arduino.h>
+#include <stdint.h>
 //#include <functional>
 
 #include "lib.h"
