@@ -1,0 +1,5 @@
+#ifdef FEATURE_IOSTREAM_SHIM
+#include "iostream.h"
+#else
+#warning "Code reached out for iostream but no header is available"
+#endif

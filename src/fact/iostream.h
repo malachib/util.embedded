@@ -16,7 +16,7 @@ typedef uint16_t streamsize;
 
 } }
 
-#if ESP_OPEN_RTOS
+#ifdef ESP_OPEN_RTOS
 #include "streams/iostream_esp8266.h"
 #else
 #warning "Unknown architecture"

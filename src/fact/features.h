@@ -51,3 +51,6 @@
 #define PROPERTY_FEATURE_VALIDATE
 
 #define FACT_LIB_STRICT
+
+#if defined(FEATURE_IOSTREAM_SHIM)
+#endif

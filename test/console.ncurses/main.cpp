@@ -1,4 +1,7 @@
 #include <iostream>
+#include <ncurses.h>
+
+#ifdef UNUSED
 #include <Console.h>
 
 #include <fact/MenuFunction.h>
@@ -54,3 +57,13 @@ int main()
     console.handler();
   }
 }
+#else
+
+using namespace std;
+
+int main()
+{
+    cout << "Hello world" << std::endl;
+    endwin();
+}
+#endif
