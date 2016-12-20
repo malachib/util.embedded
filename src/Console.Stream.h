@@ -1,5 +1,26 @@
 #pragma once
 
+#ifdef FEATURE_IOSTREAM_SHIM
+#include "fact/iostream.h"
+
+typedef FactUtilEmbedded::std::ostream fact_ostream;
+typedef FactUtilEmbedded::std::istream fact_istream;
+
+#elif defined(FEATURE_IOSTREAM)
+#include <iostream>
+
+using namespace std;
+
+typedef std::ostream fact_ostream;
+typedef std::istream fact_istream;
+
+#else
+
+// using Arduino-style streams
+
+typedef Print fact_ostream;
+typedef Stream fact_istream;
+
 #ifdef CONSOLE_STREAM
 #define cout CONSOLE_STREAM
 #define cin CONSOLE_STREAM
@@ -46,8 +67,11 @@ extern DummyStream _dummyStream;
 #define cout _dummyStream
 #endif
 
+#endif // FEATURE_IOSTREAM_SHIM
+
+
 #ifdef CONSOLE_FEATURE_COUT
-#define MENU_DECLARE_COUT Stream& out = p.console->getOut();
+#define MENU_DECLARE_COUT fact_ostream& out = p.console->getOut();
 #else
-#define MENU_DECLARE_COUT Stream& out = cout;
+#define MENU_DECLARE_COUT fact_ostream& out = cout;
 #endif

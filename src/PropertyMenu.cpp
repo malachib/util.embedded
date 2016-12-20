@@ -30,8 +30,7 @@ namespace FactUtilEmbedded
       {
         auto item = properties[i];
 
-        out << F("  ") << item->getName();
-        out.println();
+        out << F("  ") << item->getName() << endl;
       }
     }
     else if(p.count == 1)
@@ -47,7 +46,7 @@ namespace FactUtilEmbedded
         if(strcmp_P(name, itemName) == 0)
         {
           item->get(out);
-          out.println();
+          out << endl;
         }
       }
     }
@@ -80,8 +79,8 @@ namespace FactUtilEmbedded
           if(validationError)
           {
             out << F("Error setting property ");
-            out.println(_itemName);
-            out.println(reinterpret_cast<const __FlashStringHelper*>(validationError));
+            out << _itemName << endl;
+            out << reinterpret_cast<const __FlashStringHelper*>(validationError) << endl;
             return;
           }
 #endif

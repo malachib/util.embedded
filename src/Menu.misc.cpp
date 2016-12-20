@@ -15,22 +15,22 @@ void MenuGeneric::handleCommand(IMenu::Parameters p)
 // TODO: Switch this to PGM_P
 void IMenu::_showKeyValuePair(
 #ifdef CONSOLE_FEATURE_COUT
-  Stream& out,
+  fact_ostream& out,
 #endif
   const __FlashStringHelper* key, uint8_t keyPadding)
 {
 #ifndef CONSOLE_FEATURE_COUT
-  Stream& out = cout;
+  fact_ostream& out = cout;
 #endif
 
   // FIX: some Print classes don't seem to return proper bytes-written
   size_t nameLength = strlen_P((const char*) key);
   //size_t nameLength = cout.print(menu->getName());
-  out.print(key);
+  out << key;
   if(keyPadding > nameLength)
     keyPadding -= nameLength;
 
-  while(keyPadding-- > 0) out.print(' ');
+  while(keyPadding-- > 0) out << ' ';
 }
 
 void NestedMenuHandler::handleCommand(Parameters p)
@@ -48,7 +48,7 @@ void NestedMenuHandler::handleCommand(Parameters p)
 
 void NestedMenuHandler::showPrompt(Console* console)
 {
-  Stream& out = console->getOut();
+  fact_ostream& out = console->getOut();
 
   // TODO: We can turn getName into showLocalPrompt if we want to go even more OOP
   out << getName();

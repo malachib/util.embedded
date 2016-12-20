@@ -38,10 +38,14 @@ typedef unsigned long uint32_t;
 typedef unsigned char byte;
 #endif
 
+// Not going to wrap up Arduino-style Print for Cypress PSOC, you will use
+// iostream or nothing at all
+#if !defined(FEATURE_IOSTREAM) && !defined(FEATURE_IOSTREAM_SHIM)
 // Since CYPRESS_PSOC is largely a non-C++ situation, it doesn't
 // come stock with Print class
 #if !CYPRESS_PSOC
 template<class T> inline Print& operator <<(Print& obj, T arg) { obj.print(arg); return obj; }
+#endif
 #endif
 
 #include "../Handler.h"

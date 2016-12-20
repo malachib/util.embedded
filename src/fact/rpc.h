@@ -61,8 +61,7 @@ public:
 
   void debugPrint() const
   {
-    cout << F("p1: ") << param1;
-    cout.println();
+    cout << F("p1: ") << param1 << endl;
   }
 };
 
@@ -95,8 +94,7 @@ public:
   void debugPrint() const
   {
     ParameterClass_1<TIn1>::debugPrint();
-    cout << F("p2: ") << param2;
-    cout.println();
+    cout << F("p2: ") << param2 << endl;
   }
 
   typedef void (&stub)(TIn1, TIn2);

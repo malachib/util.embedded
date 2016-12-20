@@ -55,7 +55,7 @@ class Console : public IConsole
   uint8_t inputPos = 0;
 protected:
 #ifdef CONSOLE_FEATURE_COUT
-#ifdef CONSOLE_FEATURE_IOSTREAM
+#if defined(FEATURE_IOSTREAM) || defined(FEATURE_IOSTREAM_SHIM)
   ostream& out;
 #else
   Stream& out;
@@ -92,16 +92,12 @@ public:
   void handler();
   //bool handler(char** parameters, int count, PGM_P keyword, void (Console::*func)(void));
 
-#if CONSOLE_FEATURE_IOSTREAM
-    ostream getOut() const { return out; }
-#else
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-  Console(Stream& out) : out(out) {}
+  Console(fact_ostream& out) : out(out) {}
 
-  Stream& getOut() const { return out; }
+  fact_ostream& getOut() const { return out; }
 #else
-  static Stream& getOut() { return cout; }
-#endif
+  static fact_ostream& getOut() { return cout; }
 #endif
 };
 
@@ -128,7 +124,7 @@ protected:
 public:
   ConsoleMenu(IMenu* rootMenu
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-    , Stream& out = cout) : Console(out)
+    , fact_ostream& out = cout) : Console(out)
 #else
     )
 #endif

@@ -46,7 +46,7 @@ namespace FactUtilEmbedded
         cout << property.get();
 
 #ifdef UNIT_TEST
-        cout.println();
+        cout << endl;
 #endif
       }
       else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)
@@ -110,7 +110,7 @@ namespace FactUtilEmbedded
     public:
       PropertyBase(const char* name) : Named((const __FlashStringHelper*) name) {}
 
-      virtual void get(Stream& out) = 0;
+      virtual void get(fact_ostream& out) = 0;
       virtual void set(const char* parameter) = 0;
 #ifdef PROPERTY_FEATURE_VALIDATE
       virtual PGM_P validate(const char* parameter) { return nullptr; }

@@ -64,13 +64,13 @@ namespace FactUtilEmbedded
 
     static void _showKeyValuePair(
 #ifdef CONSOLE_FEATURE_COUT
-      Stream& out,
+      fact_ostream& out,
 #endif
       const __FlashStringHelper* key, uint8_t keyPadding);
 
     template <class T>
     static void showKeyValuePair(
-      Stream& out, const __FlashStringHelper* key, T value, uint8_t keyPadding)
+      fact_ostream& out, const __FlashStringHelper* key, T value, uint8_t keyPadding)
     {
       _showKeyValuePair(
 #ifdef CONSOLE_FEATURE_COUT
@@ -78,7 +78,7 @@ namespace FactUtilEmbedded
 #endif
         key, keyPadding);
 
-      out.print(value);
+      out << value;
     }
   };
 
