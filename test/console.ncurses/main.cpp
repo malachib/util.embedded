@@ -1,29 +1,49 @@
 #include <iostream>
 #include <ncurses.h>
 
-#ifdef UNUSED
+#ifndef UNUSED
 #include <Console.h>
 
 #include <fact/MenuFunction.h>
 
 using namespace util;
 
+char _helper[] = "HELPER";
+const __FlashStringHelper* helper = _helper;
+
+/*
+inline basic_ostream<char,
+      std::__1::char_traits<char> >& operator <<(ostream& out, const __FlashStringHelper* arg) 
+{ out << (const char*)(arg); return out; }
+*/
+
+
+typedef void HELPER;
+
+const HELPER* helper2 = _helper;
+
+inline ostream& operator <<(ostream& out,  const HELPER* arg) 
+{ out << (const char*)(arg); return out; }
+
+/*
+inline ::std::ostream& operator <<(::std::ostream& out,  const __FlashStringHelper* arg) 
+{ out << (const char*)(arg); return out; }
+*/
+
 void test(IMenu::Parameters p)
 {
-  cout << "Hi from test!";
-  cout.println();
+    cout << "Hi helper: "  << helper2;
+  cout << "Hi from test!" << endl;
 }
 
 void test2(const char* input)
 {
-  cout << "I got: " << input;
-  cout.println();
+  cout << "I got: " << input << endl;
 }
 
 void anotherTest(const char* input)
 {
-  cout << "I really got: " << input;
-  cout.println();
+  cout << "I really got: " << input << endl;
 }
 
 MenuGeneric menuGeneric(test);
@@ -46,6 +66,8 @@ ConsoleMenu console(&mainMenu);
 
 int main()
 {
+    cout << "Hi" << endl;
+    
   for(;;)
   {
     /*

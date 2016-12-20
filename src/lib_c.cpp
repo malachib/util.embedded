@@ -53,6 +53,7 @@ void pgm_extract_string(const char* input, char* output)
  */
 
 
+#ifndef NODUINO
 void pgm_extract_bytes(byte* input, bool (*foo)(byte,void*), void* meta = NULL)
 {
   byte result;
@@ -74,6 +75,7 @@ void pgm_extract_bytes(byte* input, Stream* output, bool (*shouldContinue)(byte,
     output->print((char)result);
   } while(shouldContinue(result, meta));
 }
+#endif
 
 #if AVR
 void PgmStream::println(const char* input)

@@ -8,11 +8,38 @@ typedef FactUtilEmbedded::std::istream fact_istream;
 
 #elif defined(FEATURE_IOSTREAM)
 #include <iostream>
+// Needed for __FlashStringHelper*
+#include <vspde.h>
 
 using namespace std;
 
 typedef std::ostream fact_ostream;
 typedef std::istream fact_istream;
+
+// I feel like this is a pretty lousy solution, I want to keep the 'const'
+// but nothing else seems to work
+inline ::std::ostream& operator <<(::std::ostream& out,  __FlashStringHelper* arg) 
+{ out << (const char*)(arg); return out; }
+
+/*
+template<class T> inline ostream& operator<<(ostream& out, const T* arg);
+*/
+/*
+template<class T> inline ostream& operator<<(ostream& out, const T* arg) 
+{ out << (const char*)(arg); return out; } */
+/*
+template<> inline ostream& operator <<(ostream& out, const __FlashStringHelper* arg) 
+{ out << (const char*)(arg); return out; }
+*/
+/*
+inline ::std::basic_ostream& operator <<(ostream& out, const __FlashStringHelper* arg) 
+{ out << (const char*)(arg); return out; }
+*/
+/*
+template<class TStream> inline TStream& operator <<(TStream& out, const __FlashStringHelper* arg) 
+{ 
+    out << (const char*)(arg); return out; 
+}*/
 
 #else
 

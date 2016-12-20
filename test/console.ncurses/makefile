@@ -12,7 +12,7 @@ INCLUDE_LIB = ../../src
 INCLUDE_NODUINO = ../noduino
 INC = -I$(INCLUDE) -I$(INCLUDE_LIB) -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
-CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DNCURSES -DCONSOLE_FEATURE_COUT -DFEATURE_IOSTREAM
+CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DCONSOLE_FEATURE_COUT -DFEATURE_IOSTREAM
 # -DFEATURE_IOSTREAM_SHIM
 #CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DNCURSES
 CC_DEBUG = -c
@@ -28,11 +28,12 @@ SRC_INCLUDE = $(patsubst $(INCLUDE_LIB)/%.cpp,%,$(_SRC_INCLUDE))
 #	Tokenizer.o \
 #	main.o
 #_OBJS = $(SRC_INCLUDE) Arduino ncursesStream main
-_OBJS = $(SRC_INCLUDE) main
+_OBJS = $(SRC_INCLUDE) Arduino main
 OBJS = $(patsubst %,$(ODIR)/%.o,$(_OBJS))
 
 $(OUT): $(OBJS)
-	$(CC) -o $(OUT) $^ -lncurses
+	$(CC) -o $(OUT) $^ 
+	#-lncurses
 
 # test app
 $(ODIR)/%.o: $(SDIR)/%.cpp

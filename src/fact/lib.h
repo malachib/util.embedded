@@ -168,25 +168,25 @@ class DigitalPin : public Pin
 
   void Write(uint8_t signal) const
   {
-#ifndef CYPRESS_PSOC
+#if !defined(CYPRESS_PSOC) && !defined(NODUINO)
     digitalWrite(pinNumber, signal);
 #endif
   }
   void SetHigh() const
   {
-#ifndef CYPRESS_PSOC
+#if !defined(CYPRESS_PSOC) && !defined(NODUINO)
     Write(HIGH);
 #endif
   }
   void SetLow() const
   {
-#ifndef CYPRESS_PSOC
+#if !defined(CYPRESS_PSOC) && !defined(NODUINO)
     Write(LOW);
 #endif
   }
   inline void SetMode(uint8_t mode) const
   {
-#ifndef CYPRESS_PSOC
+#if !defined(CYPRESS_PSOC) && !defined(NODUINO)
     pinMode(pinNumber, mode);
 #endif
   }
