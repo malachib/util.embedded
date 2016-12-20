@@ -7,6 +7,8 @@ extern "C"
     #include <esp8266.h>
     #include <esp/uart.h>
     #include <stdio.h>
+    
+    #include <reent.h>
 }
 
 
@@ -36,6 +38,8 @@ public:
         //return fgetc(stdin);
         // TODO: use more low-level version to avoid overhead & name collision
         return getchar();
+        //char ch;
+        //_read_r(??REENT??, 0, (void*)&ch, 1);
     }
 };
 
