@@ -1,5 +1,6 @@
 #include "fact/lib.h"
 #include "LinkedList.h"
+#include "Console.Stream.h"
 
 namespace FactUtilEmbedded
 {

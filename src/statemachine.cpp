@@ -1,5 +1,6 @@
 //#include "lib.h"
 #include "fact/statemachine.h"
+#include "Console.Stream.h"
 
 //#define DEBUG2
 
@@ -28,7 +29,7 @@ namespace FactUtilEmbedded
 
     debug_thin_current = 0;
 
-    Serial
+    clog
       //<< F("Current state") << currentState
       //<< F(", millis = ") << timingGroup->currentTime
       << F(", lastAction finish = ") << timingGroup->lastActionTimeFinish;
@@ -36,7 +37,7 @@ namespace FactUtilEmbedded
     //int msgSize = sizeof(debugMessage2);
     //sprintf(test, "Current state=%d, millis = %ld, lastAction = %ld, interval=%ld", currentState, currentTime, lastAction, currentActionInterval);
     //Serial.println(test);
-    Serial.println();
+    clog << endl;
 #endif
   }
 
@@ -54,7 +55,7 @@ namespace FactUtilEmbedded
     //sprintf(temp, "StateMachine::Execute ID = %d, new state = %d", ID, newCurrentState);
     // FIX: experimental, sprintf into same buffer seems dangerous
     sprintf(temp, temp, ID, newCurrentState);
-    Serial.println(temp);
+    clog << temp << endl;
 #endif
   }
 
@@ -82,9 +83,9 @@ namespace FactUtilEmbedded
 
       default:
 #ifdef DEBUG
-        Serial << F("ToggleStateMachine::Process unknown state = ");
-        Serial << currentState;
-        Serial.println();
+        clog << F("ToggleStateMachine::Process unknown state = ");
+        clog << currentState;
+        clog << endl;
 #endif
         return 255;
     }
@@ -107,8 +108,8 @@ namespace FactUtilEmbedded
     if(handler->ProcessCycle())
     {
 #ifdef DEBUG2
-      Serial << F("SequenceStateMachine::Process state = ") << state;
-      Serial.println();
+      clog << F("SequenceStateMachine::Process state = ") << state;
+      clog << endl;
 #endif
       if(++state >= stateUpperBound)
         state = -1;
@@ -143,9 +144,9 @@ namespace FactUtilEmbedded
 
       default:
 #ifdef DEBUG
-        Serial << F("IntervalStateMachine::Process unknown state = ");
-        Serial << currentState;
-        Serial.println();
+        clog << F("IntervalStateMachine::Process unknown state = ");
+        clog << currentState;
+        clog << endl;
 #endif
         return 255;
 
@@ -186,9 +187,9 @@ namespace FactUtilEmbedded
 
         default:
   #ifdef DEBUG
-          Serial << F("IntervalStateMachine2::Process unknown state = ");
-          Serial << currentState;
-          Serial.println();
+          clog << F("IntervalStateMachine2::Process unknown state = ");
+          clog << currentState;
+          clog << endl;
   #endif
           return 255;
     }

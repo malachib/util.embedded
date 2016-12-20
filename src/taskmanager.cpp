@@ -1,5 +1,6 @@
 
 #include "taskmanager.h"
+#include "Console.Stream.h"
 
 namespace FactUtilEmbedded
 {
@@ -37,21 +38,21 @@ namespace FactUtilEmbedded
       {
           SinglyLinkedNode* justAfter = justBefore.getNext();
 
-          Serial << F("justBefore.getNext() is NULL = ") << (justAfter == NULL);
-          Serial.println();
+          clog << F("justBefore.getNext() is NULL = ") << (justAfter == NULL);
+          clog << endl;
       }
       else
       {
-          Serial << F("justBefore is NULL = true");
-          Serial.println();
+          clog << F("justBefore is NULL = true");
+          clog << endl;
       }
 #endif
 
     listScheduled.insertBetween(&justBefore, justBefore.getNext(), &scheduled);
 
 #ifdef DEBUG
-    Serial << F("Now have: ") << listScheduled.count() << F(" scheduled, before had: ") << beforeCount;
-    Serial.println();
+    clog << F("Now have: ") << listScheduled.count() << F(" scheduled, before had: ") << beforeCount;
+    clog << endl;
 #endif
   }
 
@@ -76,7 +77,7 @@ namespace FactUtilEmbedded
 #endif
     #if X_DEBUG
     Serial << F("Got scheduled: ");
-    Serial.println();
+    clog << endl;
     #endif
 
     //return;
@@ -89,9 +90,9 @@ namespace FactUtilEmbedded
       IScheduledAbsolute* scheduledNext = (IScheduledAbsolute*) scheduled->getNext();
 
 #ifdef DEBUG
-      Serial << F("Woke up: ") << timingGroup.GetCurrentTime();
-      Serial << F(" / loop counter = ") << ++loopCounter;
-      Serial.println();
+      clog << F("Woke up: ") << timingGroup.GetCurrentTime();
+      clog << F(" / loop counter = ") << ++loopCounter;
+      clog << endl;
 #endif
       // then do our stuff
       scheduled->execute();
@@ -117,7 +118,7 @@ namespace FactUtilEmbedded
   {
       IScheduled* scheduled = (IScheduled*)listScheduled.getHead();
 
-      Serial << F("--- schedule manager --- \r\n");
+      clog << F("--- schedule manager --- \r\n");
 
       while (scheduled != NULL)
       {
@@ -236,8 +237,8 @@ namespace FactUtilEmbedded
 #ifdef DEBUG
   void IScheduledAbsolute::printDebug()
   {
-    Serial << F("IScheduledAbsolute: wakeup time = ") << absoluteWakeupTime;
-    Serial.println();
+    clog << F("IScheduledAbsolute: wakeup time = ") << absoluteWakeupTime;
+    clog << endl;
   }
 #endif
 }
