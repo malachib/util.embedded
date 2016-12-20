@@ -18,7 +18,7 @@ typedef std::istream fact_istream;
 
 // I feel like this is a pretty lousy solution, I want to keep the 'const'
 // but nothing else seems to work
-inline ::std::ostream& operator <<(::std::ostream& out,  __FlashStringHelper* arg) 
+inline ::std::ostream& operator <<(::std::ostream& out, const __FlashStringHelper* arg) 
 { out << (const char*)(arg); return out; }
 
 /*

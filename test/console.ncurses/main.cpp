@@ -8,8 +8,8 @@
 
 using namespace util;
 
-char _helper[] = "HELPER";
-const __FlashStringHelper* helper = _helper;
+//char _helper[] = "HELPER";
+//const __FlashStringHelper* helper = _helper;
 
 /*
 inline basic_ostream<char,
@@ -18,9 +18,10 @@ inline basic_ostream<char,
 */
 
 
-typedef void HELPER;
+class HELPER;
+#define F2(string_literal) (reinterpret_cast<const HELPER *>(PSTR(string_literal)))
 
-const HELPER* helper2 = _helper;
+const HELPER* helper2 = F2("Hi");
 
 inline ostream& operator <<(ostream& out,  const HELPER* arg) 
 { out << (const char*)(arg); return out; }
