@@ -22,14 +22,17 @@ typedef Print fact_ostream;
 typedef Stream fact_istream;
 
 #ifdef CONSOLE_STREAM
+#define clog CONSOLE_STREAM
 #define cout CONSOLE_STREAM
 #define cin CONSOLE_STREAM
 #else
 // temporary until we fully enable this inside Console class itself
 #ifdef SAML_SERIES
+#define clog SerialUSB
 #define cout SerialUSB
 #define cin SerialUSB
 #elif not defined(__AVR_ATtiny85__)
+#define clog Serial
 #define cout Serial
 #define cin Serial
 #endif

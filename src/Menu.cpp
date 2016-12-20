@@ -18,7 +18,7 @@ using namespace FactUtilEmbedded;
 MenuCommand* Menu::canHandle(Parameters p)
 {
 #ifdef DEBUG2
-  cout.println("Menu::canHandle entry");
+  clog << "Menu::canHandle entry";
 #endif
 
   return MenuEnumerator::canHandle(p);
@@ -29,13 +29,13 @@ void Menu::handleCommand(Parameters p)
   MENU_DECLARE_COUT;
 
 #ifdef DEBUG2
-  cout.println("Menu::handle command");
+  clog << "Menu::handle command";
 #endif
 
   MenuCommand* menu = canHandle(p);
 
 #ifdef DEBUG2
-  cout.println("Menu::handle command 2");
+  clog << "Menu::handle command 2";
 #endif
 
   if(menu != NULL)
@@ -46,9 +46,9 @@ void Menu::handleCommand(Parameters p)
   }
   else
   {
-    out.println();
+    out << endl;
     out << F(ERROR_UNRECOGNIZED_COMMAND) << *p.parameters;
-    out.println();
+    out << endl;
   }
 }
 
@@ -61,11 +61,11 @@ void Menu::showHelp(Parameters p)
   {
     SinglyLinkedNode* node = getHeadMenu();
 
-    out.println();
+    out << endl;
 
 #ifndef MEMORY_OPT_CODE
     out << F("Fact util v") << F(FACT_UTIL_EMBEDDED_VERSION);
-    out.println();
+    out << endl;
 
     if(node == NULL)
     {
@@ -77,8 +77,8 @@ void Menu::showHelp(Parameters p)
 
     out << F(INFO_AVAILABLE_COMMAND);
 
-    out.println();
-    out.println();
+    out << endl;
+    out << endl;
 
 #ifdef DEBUG
     uint8_t counter = 0;
@@ -113,11 +113,11 @@ void Menu::showHelp(Parameters p)
       const __FlashStringHelper* description = menu->getDescription();
 
 #ifdef DEBUG
-      if(name == NULL) { cout.println(F("Name=NULL")); continue; }
-      if(description == NULL) { cout.println(F("Desc=NULL")); continue; }
+      if(name == NULL) { clog << F("Name=NULL"); continue; }
+      if(description == NULL) { clog << F("Desc=NULL"); continue; }
 #endif
       showKeyValuePair(out, name, description, width);
-      out.println();
+      out << endl;
 
 #ifdef DEBUG
       counter++;
@@ -125,9 +125,9 @@ void Menu::showHelp(Parameters p)
     }
 
 #ifdef DEBUG
-    out.println();
-    out << counter << F(" item(s) shown");
-    out.println();
+    clog << endl;
+    clog << counter << F(" item(s) shown");
+    clog << endl;
 #endif
   }
 }
@@ -137,7 +137,7 @@ void Menu::showHelp(Parameters p)
 #if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
 bool Menu::processInput(Console* console, char received)
 {
-  Stream& out = console->getOut();
+  fact_ostream& out = console->getOut();
 
   // look for tab character
   if(received == 9)
@@ -196,7 +196,7 @@ bool Menu::processInput(Console* console, char received)
     {
       layer1::LinkedListIterator<MenuBase> i = getIterator();
 
-      out.println();
+      out << endl;
 
       for(; i; i++)
       {
@@ -207,7 +207,7 @@ bool Menu::processInput(Console* console, char received)
           out << commandName << ' ';
       }
 
-      out.println();
+      out << endl;
       console->showPrompt();
       out << console->getInputLine();
     }

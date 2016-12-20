@@ -99,7 +99,7 @@ bool LightweightService::start(initFullStatus initFunc, LightweightService* depe
 bool LightweightService::awaitDependency(LightweightService* dependsOn)
 {
 #ifdef DEBUG
-  cout.println(F("awaitDependency"));
+  clog << F("awaitDependency") << endl;
 #endif
 
   if(dependsOn)

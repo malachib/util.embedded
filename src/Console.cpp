@@ -17,11 +17,13 @@ using namespace FactUtilEmbedded;
 #define CONSOLE_BEHAVIOR_MAX_PARAMETER 8
 #endif
 
+#if !defined(FEATURE_IOSTREAM) && !defined(FEATURE_IOSTREAM_SHIM)
 #ifndef CONSOLE_FEATURE_COUT
 #ifndef cin
 #define in cout
 #else
 #define in cin
+#endif
 #endif
 #endif
 
@@ -35,10 +37,18 @@ DummyStream _dummyStream;
 // a -D switch
 void Console::handler()
 {
+#if defined(FEATURE_IOSTREAM) || defined(FEATURE_IOSTREAM_SHIM)
+  while(!in.eof())
+#else
   while(in.available() > 0)
+#endif
   {
-    Stream& out = getOut();
+    fact_ostream& out = getOut();
+#if defined(FEATURE_IOSTREAM) || defined(FEATURE_IOSTREAM_SHIM)
+    char received = in.get();
+#else
     char received = in.read();
+#endif
 
     if(processInput(received))
     {
@@ -47,7 +57,7 @@ void Console::handler()
     else
     if(received == '\n' || received == 13)
     {
-      out.println();
+        out << endl;
 
       int paramCounter = 0;
       const char* parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
@@ -62,7 +72,7 @@ void Console::handler()
       }
 
 #ifdef DEBUG2
-      cout << F("Submitting command: ") << inputLine << F("\n");
+      clog << F("Submitting command: ") << inputLine << F("\n");
 #endif
 
       parameters[0] = inputLine;
@@ -73,7 +83,7 @@ void Console::handler()
         {
           inputLine[i] = 0;
 #ifdef DEBUG2
-          cout << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
+          clog << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
 #endif
           paramCounter++;
           // FIX: preload code is kludgey, replace with something better (wastes one slot)
@@ -87,16 +97,16 @@ void Console::handler()
 
 
 #ifdef DEBUG2
-      cout.println("handle command 0");
+      clog.println("handle command 0");
 #endif
 
       handleCommand(Parameters(parameters, paramCounter + 1, this));
 
 #ifdef DEBUG2
-      cout.println("handle command 1");
+      clog.println("handle command 1");
 #endif
 
-      out.println();
+      out << endl;
 
       showPrompt();
 
@@ -108,10 +118,9 @@ void Console::handler()
       if(inputPos == CONSOLE_INPUTLINE_MAX - 1)
       {
 #ifdef DEBUG
-        cout << F("Max len");
-#else
-        out << (char)7; // old ASCII beep
+        clog << F("Max len");
 #endif
+        out << (char)7; // old ASCII beep
         return;
       }
 #endif

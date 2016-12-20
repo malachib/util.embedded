@@ -27,7 +27,7 @@ void ConsoleMenu::handleCommand(Parameters p)
 
 void ConsoleMenu::showPrompt()
 {
-  Stream& out = getOut();
+  fact_ostream& out = getOut();
 
   for(int i = 0; i < breadCrumbPos; i++)
   {

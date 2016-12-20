@@ -121,7 +121,7 @@ void SinglyLinkedList::add(SinglyLinkedNode* node)
   #ifdef DEBUG
     if(node->getNext() != NULL)
     {
-      Serial << F("\r\nWarning: brand new node->next != NULL.  Forcing to NULL");
+      clog << F("\r\nWarning: brand new node->next != NULL.  Forcing to NULL");
       node->next = NULL;
     }
   #endif
@@ -173,7 +173,7 @@ void SinglyLinkedListWithTail::add(SinglyLinkedNode* node)
 #ifdef DEBUG
   if(node->getNext() != NULL)
   {
-    Serial << F("\r\nWarning: brand new node->next != NULL");
+    clog << F("\r\nWarning: brand new node->next != NULL");
   }
 #endif
 }

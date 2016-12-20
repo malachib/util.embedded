@@ -150,9 +150,9 @@ namespace FactUtilEmbedded
         property(value)
         {}
 
-      virtual void get(Stream& out) override
+      virtual void get(fact_ostream& out) override
       {
-        out.print(property.get());
+        out << property.get();
       }
 
       virtual void set(const char* parameter) override
@@ -179,9 +179,9 @@ namespace FactUtilEmbedded
       PropertyRef(const char* name, layer5::IProperty<T>& property) :
         property(property), PropertyBase(name) {}
 
-      virtual void get(Stream& out) override
+      virtual void get(fact_ostream& out) override
       {
-        out.print(property.get());
+        out << property.get();
       }
 
       virtual void set(const char* parameter) override
