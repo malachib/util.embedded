@@ -21,3 +21,14 @@ typedef uint16_t streamsize;
 #else
 #warning "Unknown architecture"
 #endif
+
+namespace FactUtilEmbedded { namespace std
+{
+
+extern ostream cout;
+extern istream cin;
+extern ostream& clog;
+extern ostream& cerr;
+
+
+} }
