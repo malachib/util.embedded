@@ -16,8 +16,6 @@ inline FactUtilEmbedded::std::basic_ostream<char>& operator <<(
 // Needed for __FlashStringHelper*
 #include <vspde.h>
 
-using namespace std;
-
 typedef std::ostream fact_ostream;
 typedef std::istream fact_istream;
 

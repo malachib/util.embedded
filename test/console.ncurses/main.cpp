@@ -7,34 +7,11 @@
 #include <fact/MenuFunction.h>
 
 using namespace util;
-
-//char _helper[] = "HELPER";
-//const __FlashStringHelper* helper = _helper;
-
-/*
-inline basic_ostream<char,
-      std::__1::char_traits<char> >& operator <<(ostream& out, const __FlashStringHelper* arg) 
-{ out << (const char*)(arg); return out; }
-*/
-
-
-class HELPER;
-#define F2(string_literal) (reinterpret_cast<const HELPER *>(PSTR(string_literal)))
-
-const HELPER* helper2 = F2("Hi");
-
-inline ostream& operator <<(ostream& out,  const HELPER* arg) 
-{ out << (const char*)(arg); return out; }
-
-/*
-inline ::std::ostream& operator <<(::std::ostream& out,  const __FlashStringHelper* arg) 
-{ out << (const char*)(arg); return out; }
-*/
+using namespace std;
 
 void test(IMenu::Parameters p)
 {
-    cout << "Hi helper: "  << helper2;
-  cout << "Hi from test!" << endl;
+    cout << "Hi from test!" << endl;
 }
 
 void test2(const char* input)
@@ -68,7 +45,7 @@ ConsoleMenu console(&mainMenu);
 int main()
 {
     cout << "Hi" << endl;
-    
+
   for(;;)
   {
     /*

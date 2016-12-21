@@ -55,19 +55,11 @@ class Console : public IConsole
   uint8_t inputPos = 0;
 protected:
 #ifdef CONSOLE_FEATURE_COUT
-#if defined(FEATURE_IOSTREAM) || defined(FEATURE_IOSTREAM_SHIM)
-  ostream& out;
-#else
-  Stream& out;
-#endif
+  fact_ostream& out;
 #ifndef CONSOLE_FEATURE_CIN
 #define in cin
 #else
-#ifdef CONSOLE_FEATURE_IOSTREAM
-    istream& in;
-#else
-    Stream& in;
-#endif
+    fact_istream& in;
 #endif
 #endif
 public:
@@ -124,7 +116,12 @@ protected:
 public:
   ConsoleMenu(IMenu* rootMenu
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-    , fact_ostream& out = cout) : Console(out)
+    , fact_ostream& out =
+#ifdef FEATURE_IOS
+    std::
+#endif
+    cout
+    ) : Console(out)
 #else
     )
 #endif

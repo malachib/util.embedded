@@ -2,7 +2,11 @@
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
+#ifdef FEATURE_IOSTREAM_SHIM
 using namespace FactUtilEmbedded::std;
+#else
+using namespace std;
+#endif
 
 // This is when we do string arithmatic/reference already-existing F() strings
 #define FLASHSTRING(str) (reinterpret_cast<const __FlashStringHelper *>(str))

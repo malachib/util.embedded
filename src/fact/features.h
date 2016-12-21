@@ -52,5 +52,9 @@
 
 #define FACT_LIB_STRICT
 
-#if defined(FEATURE_IOSTREAM_SHIM)
+#if defined(FEATURE_IOSTREAM_SHIM) || defined(FEATURE_IOSTREAM)
+// TODO: rename this, or repair it, it is ambiguous with FEATURE_IOSTREAM
+// in short, it exists to notify code to use std::cout - otherwise, a macro'd
+// cout -> Serial might be in use
+#define FEATURE_IOS
 #endif

@@ -18,7 +18,7 @@ using namespace FactUtilEmbedded;
 #endif
 
 #if defined(FEATURE_IOSTREAM)
-using std;
+using namespace std;
 #ifndef CONSOLE_FEATURE_CIN
 #define in cin
 #endif
