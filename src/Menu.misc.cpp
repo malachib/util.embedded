@@ -2,8 +2,10 @@
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
-#if FEATURE_IOSTREAM_SHIM
+#if defined(FEATURE_IOSTREAM_SHIM)
 using namespace FactUtilEmbedded::std;
+#elif defined(FEATURE_IOSTREAM)
+using namespace std;
 #endif
 
 void MenuGeneric::handleCommand(IMenu::Parameters p)

@@ -24,8 +24,8 @@ struct DummyMenu2 : public MenuGeneric
     char* buffer2 = new char[128];
     sprintf(buffer, "Menu%d", counter);
     sprintf(buffer2, "Menu desc %d", counter++);
-    setName(buffer);
-    setDescription(buffer2);
+    setName((const __FlashStringHelper*)buffer);
+    setDescription((const __FlashStringHelper*)buffer2);
   }
 
   ~DummyMenu2()

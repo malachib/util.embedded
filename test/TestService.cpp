@@ -4,17 +4,19 @@
 #include <cstdarg>
 
 #include "Service.h"
+#include <fact/iostream_arduino.h>
 
 using namespace util;
 
-#define STATUS_MSG "Coming along"
+char STATUS_MSG[] = "Coming along";
+//#define STATUS_MSG "Coming along"
 
 int _counter = 0;
 
 template <class TService>
 bool _testServiceStart(TService& svc)
 {
-  svc.setStatusMessage(STATUS_MSG);
+  svc.setStatusMessage((const __FlashStringHelper*)STATUS_MSG);
   return true;
 }
 
@@ -27,15 +29,15 @@ class Service_layer5 : public layer5::Service
 {
 public:
   Service_layer5() : Service("Test Service") {}
-  
+
   virtual void start() override;
 };
 
 
 void Service_layer5::start()
 {
-  setStatusMessage(STATUS_MSG);
-  
+  setStatusMessage((const __FlashStringHelper*)STATUS_MSG);
+
   // for layer5 Services, we assume success.  If there's a failure, call an
   // explicit setState & setStatusMessage
 }

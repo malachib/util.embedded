@@ -245,7 +245,7 @@ SCENARIO( "GNSS synthetic tests", "[gnss]" )
   }
   GIVEN("A GPS input of: " INPUT_BUFFER2)
   {
-    char *p = strstr(inputBuffer2, F("SINF"));
+    char *p = strstr(inputBuffer2, (const char*) F("SINF"));
 
     REQUIRE(p);
 

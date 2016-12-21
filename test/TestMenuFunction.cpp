@@ -1,6 +1,7 @@
 #include "catch.hpp"
 
-#include <Arduino.h>
+//#include <Arduino.h>
+#include <fact/c_types.h>
 #include <fact/MenuFunction.h>
 
 using namespace util;

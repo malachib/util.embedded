@@ -1,12 +1,14 @@
 #include "catch.hpp"
 
-#include "Arduino.h"
+//#include "Arduino.h"
 
+#include <iostream>
 
 #include <Console.h>
 #include <fact/Menu.h>
 
 using namespace util;
+using namespace std;
 
 void dummyHandler(IMenu::Parameters p) {}
 
@@ -96,7 +98,7 @@ SCENARIO( "Virtual/strcmp_P glitch check", "[glitch1]" )
 
   GIVEN("Synthetic test")
   {
-    test2.name = "Hi";
+    test2.name = F("Hi");
     test2.canHandle(p);
   }
 

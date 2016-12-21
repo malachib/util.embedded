@@ -1,3 +1,7 @@
+// TODO: Clean this up, we shouldn't rely on c_types to also yank in noduino stuff
+// probably bring back the <Arduino.h> includes for things that REALLY use those datatypes
+// and make it map to nodoino.h when relevant
+
 #pragma once
 
 #ifdef NODUINO

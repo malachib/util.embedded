@@ -1,6 +1,5 @@
 #include "catch.hpp"
 
-#include <Arduino.h>
 #include "driver/gnss.h"
 
 #define FACT_VE defined(DRIVER_FEATURE_VTABLE)

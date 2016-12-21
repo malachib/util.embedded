@@ -1,3 +1,7 @@
+// temporarily disabled since we are moving away from Stream-shimming and
+// into iostream-shimming
+#ifdef DISABLED
+
 #include "catch.hpp"
 
 #include <Arduino.h>
@@ -18,3 +22,4 @@ SCENARIO( "IOStream tests", "[iostream]" )
     Serial.print('\r');
   }
 }
+#endif
