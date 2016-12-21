@@ -52,7 +52,7 @@ namespace FactUtilEmbedded
         __cout << property.get();
 
 #ifdef UNIT_TEST
-        __cout << endl;
+        __cout << "\r\n";
 #endif
       }
       else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)

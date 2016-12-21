@@ -3,6 +3,7 @@
 
 namespace FactUtilEmbedded
 {
+    using namespace std;
 
 const char LightweightService::genericError[] PROGMEM = "Init failure";
 const char LightweightService::emptyString[] PROGMEM = "";

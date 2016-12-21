@@ -1,13 +1,6 @@
 #pragma once
 
-// TODO: add a 2nd parameter, since the sender/this pointer can be weak by itself
-// TODO: make wrappers so that this pointer is passed automatically
-#include <stdint.h>
-// FIX: NODUINO is clunky check to ensure we grab our own uint8_t & friends
-// however really we should try to grab it from stdint.h
-#ifdef NODUINO
-#include "fact/lib.h"
-#endif
+#include "fact/c_types.h"
 #include "fact/features.h"
 #include "fact/rpc.h"
 

@@ -1,6 +1,8 @@
 #include "EventManager.h"
 #include "Console.Stream.h"
 
+using namespace std;
+
 EventManager eventManager;
 
 /*

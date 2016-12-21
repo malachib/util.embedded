@@ -6,6 +6,8 @@
 
 namespace FactUtilEmbedded
 {
+    using namespace std;
+
 #ifdef DEBUG
   int StateMachineBase::idSeed = 0;
   const PROGMEM char dbgPostProcess[] = "StateMachine::Execute ID = %d, new state = %d";

@@ -4,6 +4,8 @@
 
 namespace FactUtilEmbedded
 {
+    using namespace std;
+    
 void SinglyLinkedList::insertAtBeginning(SinglyLinkedNode* node)
 {
   if(head != NULL)

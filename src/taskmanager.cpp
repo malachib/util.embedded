@@ -4,6 +4,8 @@
 
 namespace FactUtilEmbedded
 {
+    using namespace std;
+
   void TaskManager::sleep(ITask& task)
   {
   }
@@ -194,7 +196,7 @@ namespace FactUtilEmbedded
   {
     listScheduled.add(&scheduled);
   }
-  
+
   void ScheduleManager::remove(IScheduled& scheduled)
   {
     listScheduled.remove(&scheduled);

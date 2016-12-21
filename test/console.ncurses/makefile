@@ -12,7 +12,7 @@ INCLUDE_LIB = ../../src
 INCLUDE_NODUINO = ../noduino
 INC = -I$(INCLUDE) -I$(INCLUDE_LIB) -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
-CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DCONSOLE_FEATURE_COUT -DFEATURE_IOSTREAM
+CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DCONSOLE_FEATURE_COUT -DFEATURE_IOSTREAM -DNODUINO
 # -DFEATURE_IOSTREAM_SHIM
 #CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DNCURSES
 CC_DEBUG = -c
@@ -32,7 +32,7 @@ _OBJS = $(SRC_INCLUDE) Arduino main
 OBJS = $(patsubst %,$(ODIR)/%.o,$(_OBJS))
 
 $(OUT): $(OBJS)
-	$(CC) -o $(OUT) $^ 
+	$(CC) -o $(OUT) $^
 	#-lncurses
 
 # test app
