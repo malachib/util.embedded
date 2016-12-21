@@ -9,7 +9,7 @@ extern "C"
     #include <esp8266.h>
     #include <esp/uart.h>
     #include <stdio.h>
-    
+
     #include <reent.h>
 }
 
@@ -45,10 +45,11 @@ public:
     }
 };
 
-class ostream
+
+class ostream : public basic_ostream<char>
 {
 public:
-    ostream& write(char* s, streamsize n)
+    __ostream_type& write(const char* s, streamsize n) override
     {
         /*
          NOT working, so slumming it with a repeated put call
@@ -64,7 +65,7 @@ public:
         return *this;
     }
 
-    ostream& put(char ch)
+    __ostream_type& put(char ch) override
     {
         putchar(ch);
         //write(&ch, 1);
