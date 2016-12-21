@@ -4,6 +4,7 @@
 #include "compatibility.h"
 // because of cout references in this .h file
 #include "../Console.Stream.h"
+#include "lib.h"
 
 namespace FactUtilEmbedded
 {

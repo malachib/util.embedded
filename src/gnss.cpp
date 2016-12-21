@@ -1,4 +1,4 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "driver/gnss.h"
 
 namespace driver

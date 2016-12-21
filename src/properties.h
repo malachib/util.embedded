@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Arduino.h> // for the PGM_P ref
+//#include <Arduino.h> // for the PGM_P ref
+#include "fact/lib.h"
 #include "fact/features.h"
 
 namespace FactUtilEmbedded

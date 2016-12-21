@@ -1,7 +1,7 @@
 #pragma once
 
 #include "power_base.h"
-#include <Arduino.h>
+#include "../c_types.h"
 //#include "gpio.h"
 
 extern "C"

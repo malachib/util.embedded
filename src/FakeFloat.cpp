@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "fact/c_types.h"
 #include "FakeFloat.h"
 
 void FakeFloat::parse(char* source, uint8_t prec, char delimiter)

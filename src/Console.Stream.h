@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fact/c_types.h"
+
 #ifdef FEATURE_IOSTREAM_SHIM
 #include "fact/iostream.h"
 

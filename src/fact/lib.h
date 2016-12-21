@@ -8,8 +8,12 @@
 #define DEBUG 1
 #endif
 
+#include "c_types.h"
+/*
 
-
+#ifdef NODUINO
+#include "noduino.h"
+#else
 #if (!CYPRESS_PSOC)
 #ifndef Arduino_h
 #include <Arduino.h>
@@ -20,7 +24,7 @@
 // Only for Cypress PSoC
 #define NODUINO 1
 #endif
-
+#endif
 
 #ifdef NODUINO
 #include <stdint.h>
@@ -37,6 +41,7 @@ typedef unsigned long uint32_t;
 #ifndef byte
 typedef unsigned char byte;
 #endif
+*/
 
 // Not going to wrap up Arduino-style Print for Cypress PSOC, you will use
 // iostream or nothing at all

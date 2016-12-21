@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "../c_types.h"
 
 #if SAM_SERIES
 #include "power_sam.h"

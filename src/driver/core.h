@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../fact/features.h"
+#include "../fact/c_types.h"
 #include <stdarg.h>
 
 #define FACT_VE defined(DRIVER_FEATURE_VTABLE)

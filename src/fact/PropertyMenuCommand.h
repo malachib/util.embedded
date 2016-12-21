@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "features.h"
 #include "MenuCommand.h"
 #include "../properties.h"

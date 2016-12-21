@@ -1,4 +1,5 @@
-#include <Arduino.h>
+#include "../c_types.h"
+
 
 //#ifdef UNUSED
 #if SAMD_SERIES

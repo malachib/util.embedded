@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "Tokenizer.h"
 
 bool Tokenizer::isDelimiter(char input)

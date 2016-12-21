@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "EventManager.h"
 #include "fact/lib.h"
 #include "fact/event.h"
@@ -308,26 +308,26 @@ class RestartableService : public Service
 
 };
 
-inline Print& operator <<(Print& p, LightweightService& arg)
+inline fact_ostream& operator <<(fact_ostream& p, LightweightService& arg)
 {
-  p.print(arg.getStateString());
+  p << arg.getStateString();
   if(arg.getStatusMessage() != NULL)
   {
-    p.print(F(": "));
-    p.print(arg.getStatusMessage());
+    p << F(": ");
+    p << arg.getStatusMessage();
   }
   return p;
 }
 
 // adding const makes this ambiguous, unfortunately; yet if we remove
 // the function altogether, it won't find the LightweightServices& flavor
-inline Print& operator <<(Print& p, Service* s)
+inline fact_ostream& operator <<(fact_ostream& p, Service* s)
 {
-  p.print(s->getStateString());
+  p << s->getStateString();
   if(s->getStatusMessage() != NULL)
   {
-    p.print(F(": "));
-    p.print(s->getStatusMessage());
+    p << F(": ");
+    p << s->getStatusMessage();
   }
   return p;
 }

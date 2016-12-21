@@ -1,4 +1,5 @@
-#include <Arduino.h>
+//#include <Arduino.h>
+#include "fact/c_types.h"
 #include "fact/string_convert.h"
 #include <ctype.h>
 
