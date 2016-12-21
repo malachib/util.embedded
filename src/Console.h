@@ -97,7 +97,7 @@ public:
 
   fact_ostream& getOut() const { return out; }
 #else
-  static fact_ostream& getOut() { return cout; }
+  static fact_ostream& getOut() { return std::cout; }
 #endif
 };
 

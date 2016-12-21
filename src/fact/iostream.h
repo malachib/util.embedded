@@ -1,3 +1,5 @@
+#pragma once
+
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
 // implementation.  Also can and should serve as a wrapper class around Stream implementations
 // found in libs like Arduino & mbed OS
@@ -29,6 +31,7 @@ extern ostream cout;
 extern istream cin;
 extern ostream& clog;
 extern ostream& cerr;
+
 
 
 } }
