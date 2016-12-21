@@ -126,7 +126,7 @@ void Menu::showHelp(Parameters p)
 
 #ifdef DEBUG
     clog << endl;
-    clog << counter << F(" item(s) shown");
+    clog << (uint16_t)counter << F(" item(s) shown");
     clog << endl;
 #endif
   }
