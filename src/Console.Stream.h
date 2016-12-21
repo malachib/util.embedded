@@ -24,27 +24,20 @@ typedef std::istream fact_istream;
 inline ::std::ostream& operator <<(::std::ostream& out, const __FlashStringHelper* arg)
 { out << (const char*)(arg); return out; }
 
-/*
-template<class T> inline ostream& operator<<(ostream& out, const T* arg);
-*/
-/*
-template<class T> inline ostream& operator<<(ostream& out, const T* arg)
-{ out << (const char*)(arg); return out; } */
-/*
-template<> inline ostream& operator <<(ostream& out, const __FlashStringHelper* arg)
-{ out << (const char*)(arg); return out; }
-*/
-/*
-inline ::std::basic_ostream& operator <<(ostream& out, const __FlashStringHelper* arg)
-{ out << (const char*)(arg); return out; }
-*/
-/*
-template<class TStream> inline TStream& operator <<(TStream& out, const __FlashStringHelper* arg)
-{
-    out << (const char*)(arg); return out;
-}*/
 
 #else
+
+inline Print& operator<<(Print& out, Print& (*__pf)(Print&))
+{
+    return __pf(out);
+}
+
+inline Print& endl(Print& out)
+{
+    out.println();
+    return out;
+}
+
 
 // using Arduino-style streams
 
@@ -106,5 +99,11 @@ extern DummyStream _dummyStream;
 #ifdef CONSOLE_FEATURE_COUT
 #define MENU_DECLARE_COUT fact_ostream& out = p.console->getOut();
 #else
+#if FEATURE_IOSTREAM_SHIM
 #define MENU_DECLARE_COUT fact_ostream& out = FactUtilEmbedded::std::cout;
+#elif defined(FEATURE_IOSTREAM)
+#define MENU_DECLARE_COUT fact_ostream& out = std::cout;
+#else
+#define MENU_DECLARE_COUT fact_ostream& out = cout;
+#endif
 #endif

@@ -8,6 +8,12 @@
 
 namespace FactUtilEmbedded
 {
+#ifdef FEATURE_IOS
+#define __cout std::cout
+#else
+#define __cout cout
+#endif
+
   extern const char PROPERTYMENUCMD_GET[] PROGMEM;
   extern const char PROPERTYMENUCMD_SET[] PROGMEM;
   extern const char PROPERTYMENUCMD_GET_DESC[] PROGMEM;
@@ -40,13 +46,13 @@ namespace FactUtilEmbedded
       if(strcmp_P(*p.parameters, PROPERTYMENUCMD_GET) == 0)
       {
 #ifdef UNIT_TEST
-        std::cout << "\r\nDISPLAY THIS: ";
+        __cout << "\r\nDISPLAY THIS: ";
 #endif
         // TODO: use p.console if available
-        std::cout << property.get();
+        __cout << property.get();
 
 #ifdef UNIT_TEST
-        std::cout << endl;
+        __cout << endl;
 #endif
       }
       else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)
@@ -251,4 +257,6 @@ namespace FactUtilEmbedded
   // more than one command within itself.  Right now, Menu & MenuCommand
   // very much expect MenuCommand to map to exactly one command
   //class GetSetPropertyMenuCommand
+
+  #undef __cout
 }

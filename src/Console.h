@@ -16,6 +16,12 @@
 #define CONSOLE_FEATURE_COUT_ONLY
 #endif
 
+#ifdef FEATURE_IOS
+#define __cout std::cout
+#else
+#define __cout cout
+#endif
+
 namespace FactUtilEmbedded
 {
 
@@ -89,7 +95,7 @@ public:
 
   fact_ostream& getOut() const { return out; }
 #else
-  static fact_ostream& getOut() { return std::cout; }
+  static fact_ostream& getOut() { return __cout; }
 #endif
 };
 
@@ -116,12 +122,7 @@ protected:
 public:
   ConsoleMenu(IMenu* rootMenu
 #ifdef CONSOLE_FEATURE_COUT_ONLY
-    , fact_ostream& out =
-#ifdef FEATURE_IOS
-    std::
-#endif
-    cout
-    ) : Console(out)
+    , fact_ostream& out = __cout) : Console(out)
 #else
     )
 #endif
@@ -136,3 +137,4 @@ public:
 
 
 }
+#undef __cout

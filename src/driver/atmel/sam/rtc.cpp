@@ -1,3 +1,19 @@
+// FIX: Todo, need a hardware-narrower which can reduce down the likely
+// DEFINES into a sensible set that we can ifdef on.  I.E. something like:
+/*
+#include <platforms.h>
+
+#ifdef VENDOR_ATMEL
+...
+#ifdef ARCH_SAMD
+...
+#elif defined(ARCH_AVR)
+#endif
+#elif defined(VENDOR_ESPRESSIF)
+#endif
+ */
+#ifdef __SAMD21G18A__
+
 #include "rtc.h"
 #include "pm.h"
 #include "gclk.h"
@@ -16,4 +32,5 @@ namespace FactUtilEmbedded { namespace atmel { namespace sam
 
 }}}
 
+#endif
 #endif

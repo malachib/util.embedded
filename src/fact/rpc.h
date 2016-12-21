@@ -16,7 +16,7 @@ namespace FactUtilEmbedded
   namespace rpc
   {
       using namespace std;
-      
+
 class ParameterClass_0
 {
 public:
