@@ -2,6 +2,7 @@
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
+using namespace FactUtilEmbedded::std;
 
 // This is when we do string arithmatic/reference already-existing F() strings
 #define FLASHSTRING(str) (reinterpret_cast<const __FlashStringHelper *>(str))

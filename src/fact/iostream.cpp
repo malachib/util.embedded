@@ -13,6 +13,8 @@ extern "C"
 #else
 #endif
 
+#include "iostream.h"
+
 namespace FactUtilEmbedded { namespace std
 {
 

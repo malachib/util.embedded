@@ -19,7 +19,7 @@ extern "C"
 namespace FactUtilEmbedded { namespace std
 {
 
-class istream
+class istream : public basic_istream<char>
 {
 public:
     istream& read(char* s, streamsize n)
@@ -43,6 +43,8 @@ public:
         //char ch;
         //_read_r(??REENT??, 0, (void*)&ch, 1);
     }
+
+    bool eof() { return false; }
 };
 
 

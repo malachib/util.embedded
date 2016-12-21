@@ -4,6 +4,8 @@
 
 namespace FactUtilEmbedded
 {
+    using namespace std;
+
   const char PROPERTYMENUCMD_GET[] PROGMEM = "get";
   const char PROPERTYMENUCMD_SET[] PROGMEM = "set";
   const char PROPERTYMENUCMD_GET_DESC[] PROGMEM = "reads a value from property";

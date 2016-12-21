@@ -17,15 +17,26 @@ using namespace FactUtilEmbedded;
 #define CONSOLE_BEHAVIOR_MAX_PARAMETER 8
 #endif
 
-#if !defined(FEATURE_IOSTREAM) && !defined(FEATURE_IOSTREAM_SHIM)
+#if defined(FEATURE_IOSTREAM)
+using std;
+#ifndef CONSOLE_FEATURE_CIN
+#define in cin
+#endif
+#elif defined(FEATURE_IOSTREAM_SHIM)
+using namespace FactUtilEmbedded::std;
+#ifndef CONSOLE_FEATURE_CIN
+#define in cin
+#endif
+#else
 #ifndef CONSOLE_FEATURE_COUT
-#ifndef cin
+#ifndef CONSOLE_FEATURE_CIN
 #define in cout
 #else
 #define in cin
 #endif
 #endif
 #endif
+
 
 #ifdef USE_DUMMY_STREAM
 DummyStream _dummyStream;

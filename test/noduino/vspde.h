@@ -8,7 +8,9 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#ifndef ESP_OPEN_RTOS
 #pragma warning(disable : 4996)
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>

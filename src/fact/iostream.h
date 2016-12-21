@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef FEATURE_IOSTREAM_SHIM
+#error "Only include this for iostream shim compatibility"
+#endif
+
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
 // implementation.  Also can and should serve as a wrapper class around Stream implementations
 // found in libs like Arduino & mbed OS
@@ -18,6 +22,13 @@ typedef uint16_t streamoff;
 typedef uint16_t streamsize;
 
 //typedef basic_ostream __ostream_type;
+
+template<class TChar>
+class basic_istream
+{
+public:
+    virtual bool eof() = 0;
+};
 
 template<class TChar>
 class basic_ostream
@@ -46,6 +57,26 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, const char* ar
 {
     return out.write(arg, strlen(arg));
 }
+
+inline basic_ostream<char>& operator <<(basic_ostream<char>& out, char ch)
+{
+    return out.put(ch);
+}
+
+
+inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value)
+{
+    char buffer[10];
+
+#if ESP_OPEN_RTOS
+    __itoa(value, buffer, 10);
+#else
+    itoa(value, buffer, 10);
+#endif
+
+    return out << buffer;
+}
+
 
 inline basic_ostream<char>& endl(basic_ostream<char>& __os)
 { return __os.put('\n'); }

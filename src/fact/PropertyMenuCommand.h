@@ -40,13 +40,13 @@ namespace FactUtilEmbedded
       if(strcmp_P(*p.parameters, PROPERTYMENUCMD_GET) == 0)
       {
 #ifdef UNIT_TEST
-        cout << "\r\nDISPLAY THIS: ";
+        std::cout << "\r\nDISPLAY THIS: ";
 #endif
         // TODO: use p.console if available
-        cout << property.get();
+        std::cout << property.get();
 
 #ifdef UNIT_TEST
-        cout << endl;
+        std::cout << endl;
 #endif
       }
       else if(strcmp_P(*p.parameters, PROPERTYMENUCMD_SET) == 0)

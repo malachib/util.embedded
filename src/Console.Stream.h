@@ -3,8 +3,13 @@
 #ifdef FEATURE_IOSTREAM_SHIM
 #include "fact/iostream.h"
 
+// TODO: put fact_ostream in the proper namespace - it's in NONE right now!
 typedef FactUtilEmbedded::std::ostream fact_ostream;
 typedef FactUtilEmbedded::std::istream fact_istream;
+
+inline FactUtilEmbedded::std::basic_ostream<char>& operator <<(
+    FactUtilEmbedded::std::basic_ostream<char>& out, const __FlashStringHelper* arg)
+{ out << (const char*)(arg); return out; }
 
 #elif defined(FEATURE_IOSTREAM)
 #include <iostream>
@@ -18,27 +23,27 @@ typedef std::istream fact_istream;
 
 // I feel like this is a pretty lousy solution, I want to keep the 'const'
 // but nothing else seems to work
-inline ::std::ostream& operator <<(::std::ostream& out, const __FlashStringHelper* arg) 
+inline ::std::ostream& operator <<(::std::ostream& out, const __FlashStringHelper* arg)
 { out << (const char*)(arg); return out; }
 
 /*
 template<class T> inline ostream& operator<<(ostream& out, const T* arg);
 */
 /*
-template<class T> inline ostream& operator<<(ostream& out, const T* arg) 
+template<class T> inline ostream& operator<<(ostream& out, const T* arg)
 { out << (const char*)(arg); return out; } */
 /*
-template<> inline ostream& operator <<(ostream& out, const __FlashStringHelper* arg) 
+template<> inline ostream& operator <<(ostream& out, const __FlashStringHelper* arg)
 { out << (const char*)(arg); return out; }
 */
 /*
-inline ::std::basic_ostream& operator <<(ostream& out, const __FlashStringHelper* arg) 
+inline ::std::basic_ostream& operator <<(ostream& out, const __FlashStringHelper* arg)
 { out << (const char*)(arg); return out; }
 */
 /*
-template<class TStream> inline TStream& operator <<(TStream& out, const __FlashStringHelper* arg) 
-{ 
-    out << (const char*)(arg); return out; 
+template<class TStream> inline TStream& operator <<(TStream& out, const __FlashStringHelper* arg)
+{
+    out << (const char*)(arg); return out;
 }*/
 
 #else
@@ -103,5 +108,5 @@ extern DummyStream _dummyStream;
 #ifdef CONSOLE_FEATURE_COUT
 #define MENU_DECLARE_COUT fact_ostream& out = p.console->getOut();
 #else
-#define MENU_DECLARE_COUT fact_ostream& out = cout;
+#define MENU_DECLARE_COUT fact_ostream& out = FactUtilEmbedded::std::cout;
 #endif

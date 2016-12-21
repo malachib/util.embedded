@@ -1,8 +1,11 @@
 #include <Arduino.h>
 #include "fact/Menu.h"
 
+
 namespace FactUtilEmbedded
 {
+    using namespace std;
+
   void renderParameterError(uint8_t expectedParameterCount, uint8_t count)
   {
     cout << endl;
