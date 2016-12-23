@@ -23,15 +23,33 @@ typedef uint16_t streamsize;
 
 //typedef basic_ostream __ostream_type;
 
+class ios_base
+{
+public:
+    typedef uint8_t fmtflags;
+
+    static constexpr fmtflags dec = 1;
+    static constexpr fmtflags hex = 2;
+    static constexpr fmtflags basefield = dec | hex;
+
+private:
+    fmtflags fmtfl;
+
+public:
+    fmtflags flags() const { return fmtfl; }
+    fmtflags flags(fmtflags fmtfl)
+    { return this->fmtfl = fmtfl; }
+};
+
 template<class TChar>
-class basic_istream
+class basic_istream : public ios_base
 {
 public:
     virtual bool eof() = 0;
 };
 
 template<class TChar>
-class basic_ostream
+class basic_ostream : public ios_base
 {
 public:
     typedef basic_ostream<TChar> __ostream_type;
@@ -69,7 +87,7 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
     char buffer[10];
 
 #if ESP_OPEN_RTOS
-    __itoa(value, buffer, 10);
+    __utoa(value, buffer, 10);
 #else
     itoa(value, buffer, 10);
 #endif
@@ -78,9 +96,36 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
 }
 
 
+inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
+{
+    printf("%lx", (unsigned long)addr);
+    return out;
+}
+
+
+inline basic_ostream<char>& operator<<(basic_ostream<char>& out, int value)
+{
+    char buf[10];
+
+    return out << __itoa(value, buf, 10);
+}
+
+
 inline basic_ostream<char>& endl(basic_ostream<char>& __os)
 { return __os.put('\n'); }
 
+
+inline basic_ostream<char>& dec(basic_ostream<char>& __os)
+{
+    __os.flags((__os.flags() & ~ios_base::basefield) | ios_base::dec);
+    return __os;
+}
+
+inline basic_ostream<char>& hex(basic_ostream<char>& __os)
+{
+    __os.flags((__os.flags() & ~ios_base::basefield) | ios_base::hex);
+    return __os;
+}
 
 } }
 
