@@ -95,11 +95,18 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
     return out << buffer;
 }
 
-
 inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 {
-    printf("%lx", (unsigned long)addr);
-    return out;
+    // TODO: determine word size and optimize this code
+    // right now will crash for 64-bit arch
+    char buffer[10];
+
+#if ESP_OPEN_RTOS
+    __utoa((uint32_t)addr, buffer, 16);
+#else
+    utoa((uint32_t)addr, buffer, 16);
+#endif
+    return out << buffer;
 }
 
 
@@ -176,5 +183,20 @@ extern istream cin;
 extern ostream& clog;
 extern ostream& cerr;
 
+// FIX: Not a great location for this, but has to live somewhere for now
+// based on C++ assert() macro specification, but a little wimpier
+#ifndef ASSERT
+#ifdef DEBUG
+//#define ASSERT(condition) if(!(condition)) { cerr << "Failure: " << __FILE__ << __LINE__ << __func__ << endl; }
+#define ASSERT(condition, message) \
+{   \
+    bool evaluated = condition; \
+    if(!evaluated) { cerr << __func__ << ": " << message << endl; } \
+}
+#else
+//#define ASSERT(condition)
+#define ASSERT(condition, message)
+#endif
+#endif
 
 } }
