@@ -26,7 +26,8 @@
 #define _SFR_IO8(io_addr) ((io_addr))
 //#include "C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\iomxx0_1.h"
 
-#define boolean bool
+typedef bool boolean;
+//#define boolean bool
 #define byte char
 
 // From "c:\program files\arduino\hardware\cores\arduino\print.h"
