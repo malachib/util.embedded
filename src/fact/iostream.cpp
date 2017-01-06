@@ -1,4 +1,5 @@
-#ifdef FEATURE_IOSTREAM_SHIM
+// FIX: Needs attention, this will break non-shim POSIX compilation
+#if defined(FEATURE_IOSTREAM_SHIM) || defined(__POSIX__)
 #ifdef ESP_OPEN_RTOS
 extern "C"
 {

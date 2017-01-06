@@ -1,25 +1,26 @@
-// temporarily disabled since we are moving away from Stream-shimming and
-// into iostream-shimming
-#ifdef DISABLED
-
 #include "catch.hpp"
 
-#include <Arduino.h>
+// Specifically testing iostream SHIM, not platform-native iostream
+//#define __POSIX__
+#define FEATURE_IOSTREAM_SHIM
+
+#include <fact/iostream.h>
+
+using namespace FactUtilEmbedded::std;
 
 SCENARIO( "IOStream tests", "[iostream]" )
 {
   WHEN("Printing a normal string")
   {
-    Serial.print(".");
+      cout << "iostream testing";
   }
+  /*
   WHEN("Printing a __FlashStringHelper")
   {
-    Serial.print(F("."));
-  }
+      cout << F(".");
+  }*/
   WHEN("Printing raw characters")
   {
-    Serial.print('\n');
-    Serial.print('\r');
+      cout << '\n' << '\r';
   }
 }
-#endif

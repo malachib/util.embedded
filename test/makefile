@@ -12,16 +12,18 @@ INCLUDE_NODUINO = noduino
 INC = -I$(INCLUDE) -I$(INCLUDE_LIB)
 # -I$(INCLUDE_NODUINO)
 LIB = -L$(ODIR)
-CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DEVENT_FEATURE_VA -DNODUINO -DFEATURE_IOSTREAM
+CFLAGS = --std=gnu++11 -g -DUNIT_TEST -DEVENT_FEATURE_VA -DNODUINO -DFEATURE_IOSTREAM -D__POSIX__
 CC_DEBUG = -c
 #CC_DEBUG = -g -c
 
 _SRC_INCLUDE = $(wildcard $(INCLUDE_LIB)/*.cpp)
 SRC_INCLUDE = $(patsubst $(INCLUDE_LIB)/%.cpp,%,$(_SRC_INCLUDE))
+SRC_FACT_FILES = $(wildcard $(INCLUDE_LIB)/fact/*.cpp)
+SRC_FACT_TARGETS = $(patsubst $(INCLUDE_LIB)/fact/%.cpp,%,$(SRC_FACT_FILES))
 TEST_CPP_FILES = $(wildcard $(SDIR)/*.cpp)
 TEST_OBJ_TARGETS = $(patsubst $(SDIR)/%.cpp,%,$(TEST_CPP_FILES))
 
-_OBJS = $(SRC_INCLUDE) $(TEST_OBJ_TARGETS) Arduino
+_OBJS = $(SRC_INCLUDE) $(TEST_OBJ_TARGETS) $(SRC_FACT_TARGETS) Arduino
 OBJS = $(patsubst %,$(ODIR)/%.o,$(_OBJS))
 
 $(OUT): $(OBJS)
@@ -37,6 +39,10 @@ $(ODIR)/%.o: $(INCLUDE)/%.cpp
 
 # util.embedded lib
 $(ODIR)/%.o: $(INCLUDE_LIB)/%.cpp
+	$(CC) $(DEFINE) -I$(INCLUDE_NODUINO) $(CC_DEBUG) $< $(CFLAGS) -o $@
+
+# util.embedded fact lib
+$(ODIR)/%.o: $(INCLUDE_LIB)/fact/%.cpp
 	$(CC) $(DEFINE) -I$(INCLUDE_NODUINO) $(CC_DEBUG) $< $(CFLAGS) -o $@
 
 # noduino pseudo-lib

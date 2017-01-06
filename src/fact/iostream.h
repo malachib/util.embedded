@@ -1,7 +1,16 @@
 #pragma once
 
+// FIX: __POSIX__ flag here is right now allowing us to brute-force this into posix mode
+// very bad use, name should be FORCE_SHIM or similar
+#ifndef __POSIX__
 #ifndef FEATURE_IOSTREAM_SHIM
 #error "Only include this for iostream shim compatibility"
+#endif
+#endif
+
+#ifdef ESP_OPEN_RTOS
+#else
+#define USING_SPRINTF
 #endif
 
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
@@ -10,9 +19,14 @@
 
 extern "C"
 {
-  #include <stdint.h>
-  #include <stdlib.h>
-  #include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef USING_SPRINTF
+#include <stdio.h>
+#endif
+
 }
 
 namespace FactUtilEmbedded { namespace std
@@ -55,7 +69,7 @@ public:
     typedef basic_ostream<TChar> __ostream_type;
 
     virtual __ostream_type& write(const TChar* s, streamsize n) = 0;
-    virtual __ostream_type& put(TChar ch);
+    virtual __ostream_type& put(TChar ch) = 0;
 
     //friend basic_ostream& operator<<(basic_ostream& (*__pf)(basic_ostream&));
 
@@ -89,7 +103,7 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
 #if ESP_OPEN_RTOS
     __utoa(value, buffer, 10);
 #else
-    itoa(value, buffer, 10);
+    snprintf(buffer, sizeof(buffer), "%u", value);
 #endif
 
     return out << buffer;
@@ -104,7 +118,7 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 #if ESP_OPEN_RTOS
     __utoa((uint32_t)addr, buffer, 16);
 #else
-    utoa((uint32_t)addr, buffer, 16);
+    snprintf(buffer, sizeof(buffer), "%x", (uintptr_t)addr);
 #endif
     return out << buffer;
 }
@@ -112,9 +126,15 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 
 inline basic_ostream<char>& operator<<(basic_ostream<char>& out, int value)
 {
-    char buf[10];
+    char buffer[10];
 
-    return out << __itoa(value, buf, 10);
+#if ESP_OPEN_RTOS
+    __itoa(value, buffer, 10);
+#else
+    snprintf(buffer, sizeof(buffer), "%d", value);
+#endif
+
+    return out << buffer;
 }
 
 
@@ -138,6 +158,8 @@ inline basic_ostream<char>& hex(basic_ostream<char>& __os)
 
 #ifdef ESP_OPEN_RTOS
 #include "streams/iostream_esp8266.h"
+#elif defined(__POSIX__)
+#include "streams/iostream_posix.h"
 #else
 #warning "Unknown architecture"
 #endif
