@@ -1,3 +1,5 @@
+#pragma once
+
 // shim library to simulate presence of C++ standard libs
 
 namespace FactUtilEmbedded
