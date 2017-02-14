@@ -215,6 +215,8 @@ inline basic_ostream<char>& hex(basic_ostream<char>& __os)
 #include "streams/iostream_esp8266.h"
 #elif defined(__POSIX__)
 #include "streams/iostream_posix.h"
+#elif defined(__MBED__)
+#include "streams/iostream_mbed.h"
 #else
 #warning "Unknown architecture"
 #endif

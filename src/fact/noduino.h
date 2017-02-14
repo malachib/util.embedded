@@ -9,7 +9,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#ifndef ESP_OPEN_RTOS
+#if !defined(ESP_OPEN_RTOS) && !defined(__MBED__)
 #pragma warning(disable : 4996)
 #endif
 
