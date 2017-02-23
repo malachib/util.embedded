@@ -256,7 +256,7 @@ public:
   };
 
   Element elements[bufferSize];
-  CircularBuffer<Element> queue;
+  layer3::CircularBuffer<Element> queue;
 
 public:
   CallQueue() : queue(elements, bufferSize) {}

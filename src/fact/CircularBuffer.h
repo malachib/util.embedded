@@ -163,6 +163,8 @@ protected:
       //position_get = 0;
     }
 
+      const TArray& getUnderlyingArray() const { return array; }
+
     void debugPrint() const
     {
 #if defined(ARDUINO) && defined(DEBUG)
@@ -188,13 +190,6 @@ namespace layer1
         // set the values to 0 (presumably you'll be using a static one which
         // starts as 0 already)
         CircularBuffer() {}
-
-        void zero()
-        {
-            uint8_t* buffer = this->getData();
-            uint16_t count = size;
-            while(count--) *buffer++ = 0;
-        }
     };
 }
 
