@@ -19,10 +19,10 @@ namespace FactUtilEmbedded
   };
 
   // TODO: make position/size etc templated also to support a byte-version of this
-  template <class T>
-  class CircularBuffer : public CircularBufferBase<T>
+  template <class TArray, class T>
+  class CircularBufferBase2 : public CircularBufferBase<T>
   {
-    layer3::Array<T, uint16_t> array;
+    TArray array;
 
     //T* buffer;
     // position of where next put will occur
@@ -54,9 +54,13 @@ namespace FactUtilEmbedded
       return position_get;
     }
 
+protected:
+    // for derived classes which don't need to initialize underlying array
+    CircularBufferBase2() {}
+
   public:
-    CircularBuffer<T>(T* bufferToUse, uint16_t size) :
-      array(bufferToUse, size) //,
+    CircularBufferBase2(const TArray& array) :
+      array(array) //,
       //size(size)
     {
       //buffer = bufferToUse;
@@ -172,4 +176,59 @@ namespace FactUtilEmbedded
   #endif
     }
   };
+
+namespace layer1
+{
+    template <class T, uint16_t size>
+    class CircularBuffer : public CircularBufferBase2<layer1::Array<T, size>, T>
+    {
+    public:
+        // layer1 version array is pre-allocated.  Be careful using
+        // this constructor though, because this doesn't explicitly
+        // set the values to 0 (presumably you'll be using a static one which
+        // starts as 0 already)
+        CircularBuffer() {}
+
+        void zero()
+        {
+            uint8_t* buffer = this->getData();
+            uint16_t count = size;
+            while(count--) *buffer++ = 0;
+        }
+    };
+}
+
+namespace layer2
+{
+    template <class T, uint16_t size>
+    class CircularBuffer : public CircularBufferBase2<layer2::Array<T, size>, T>
+    {
+        typedef layer2::Array<T, size> array_t;
+
+    public:
+        // layer1 version array is pre-allocated.  Be careful using
+        // this constructor though, because this doesn't explicitly
+        // set the values to 0 (presumably you'll be using a static one which
+        // starts as 0 already)
+        CircularBuffer(T* bufferToUse) :
+          CircularBufferBase2<array_t, T>(array_t(bufferToUse))
+              {}
+    };
+}
+
+namespace layer3
+{
+  template <class T>
+  class CircularBuffer : public CircularBufferBase2<layer3::Array<T, uint16_t>, T>
+  {
+      typedef layer3::Array<T, uint16_t> array_t;
+
+  public:
+      CircularBuffer(T* bufferToUse, uint16_t size) :
+        CircularBufferBase2<array_t, T>(array_t(bufferToUse, size))
+            {}
+
+  };
+}
+
 }

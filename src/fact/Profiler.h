@@ -13,14 +13,14 @@ namespace FactUtilEmbedded
     uint8_t frequency; // how often to actually record the interval, so that we can stretch profiling further over time without upping profileCount
     uint8_t frequencyCounter; // how far in we are to frequency
     //CircularBuffer<uint32_t> circularBuffer((uint32_t*)NULL, 10);
-    CircularBuffer<uint16_t> buffer;
+    layer3::CircularBuffer<uint16_t> buffer;
     void (*spikeObserver)(Profiler&);
     bool spikeObserverLatch = false;
 
     uint16_t max, min;
 
     uint16_t _maxs[5];
-    CircularBuffer<uint16_t> maxs;
+    layer3::CircularBuffer<uint16_t> maxs;
 
   public:
     Profiler() :
@@ -55,7 +55,7 @@ namespace FactUtilEmbedded
       return value;
     }
 
-    CircularBuffer<uint16_t>& getMaxs() { return maxs; }
+    layer3::CircularBuffer<uint16_t>& getMaxs() { return maxs; }
 
     uint16_t getMin() { return min; }
     uint16_t getMax() { return max; }

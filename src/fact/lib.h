@@ -302,7 +302,7 @@ void pgm_extract_bytes(byte* input, bool (*foo)(byte,void*));
 template <class T>
 class ObserverMessenger : public IObserver
 {
-  CircularBuffer<T> messages;
+  layer3::CircularBuffer<T> messages;
 protected:
   virtual T getMessage(IObservable* observable) = 0;
 public:

@@ -24,7 +24,7 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
   GIVEN("A buffer of 1024 elements")
   {
     uint16_t _buffer[1024];
-    CircularBuffer<uint16_t> buffer(_buffer, 1024);
+    layer3::CircularBuffer<uint16_t> buffer(_buffer, 1024);
 
     WHEN("Inserting")
     {
@@ -51,7 +51,7 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
   GIVEN("A buffer of 4 elements")
   {
     char _buffer[4];
-    CircularBuffer<char> buffer(_buffer, 4);
+    layer3::CircularBuffer<char> buffer(_buffer, 4);
 
     WHEN("Inserting")
     {
@@ -78,7 +78,7 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
   GIVEN("A more complex but small buffer")
   {
     long _buffer[4];
-    CircularBuffer<long> buffer(_buffer, 4);
+    layer3::CircularBuffer<long> buffer(_buffer, 4);
     WHEN("Inserting and retrieving")
     {
       buffer.put(7);
@@ -95,7 +95,7 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
   GIVEN("A very small buffer, wrapping around")
   {
     uint8_t _buffer[3];
-    CircularBuffer<uint8_t> buffer(_buffer, 3);
+    layer3::CircularBuffer<uint8_t> buffer(_buffer, 3);
 
     buffer.put(7);
     REQUIRE(buffer.available() == 1);
@@ -133,7 +133,7 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
   GIVEN("A small and complex buffer, wrapping around")
   {
     DoubleWrapper _buffer[4];
-    CircularBuffer<DoubleWrapper> buffer(_buffer, 3);
+    layer3::CircularBuffer<DoubleWrapper> buffer(_buffer, 3);
     DoubleWrapper dw;
 
     INFO("Item #1");
@@ -160,5 +160,59 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
     buffer.put(5);
     INFO("Item #5.1");
     REQUIRE(buffer.get()() == 5);
+  }
+  GIVEN("A layer1 CircularBuffer")
+  {
+      layer1::CircularBuffer<uint16_t, 32> buffer;
+
+      WHEN("Inserting")
+      {
+        INFO("Inserting 123");
+        buffer.put(123);
+        INFO("Inserting 456");
+        buffer.put(456);
+        REQUIRE(buffer.available() == 2);
+      }
+
+      WHEN("Pulling back out")
+      {
+        INFO("Inserting 123");
+        buffer.put(123);
+        INFO("Inserting 456");
+        buffer.put(456);
+        REQUIRE(buffer.available() == 2);
+        auto value = buffer.get();
+        REQUIRE(value == 123);
+        value = buffer.get();
+        REQUIRE(value == 456);
+      }
+  }
+  GIVEN("A layer2 CircularBuffer")
+  {
+      uint16_t buf[32];
+      layer2::CircularBuffer<uint16_t, 32> buffer(buf);
+
+
+      WHEN("Inserting")
+      {
+        INFO("Inserting 123");
+        buffer.put(123);
+        INFO("Inserting 456");
+        buffer.put(456);
+        REQUIRE(buffer.available() == 2);
+      }
+
+      WHEN("Pulling back out")
+      {
+        INFO("Inserting 123");
+        buffer.put(123);
+        INFO("Inserting 456");
+        buffer.put(456);
+        REQUIRE(buffer.available() == 2);
+        auto value = buffer.get();
+        REQUIRE(value == 123);
+        value = buffer.get();
+        REQUIRE(value == 456);
+      }
   }
 }
