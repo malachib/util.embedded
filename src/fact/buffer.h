@@ -167,6 +167,9 @@ namespace FactUtilEmbedded
 
   namespace layer5
   {
+      // TODO: consider moving the IMemoryContainer and IArray outside of layer 5
+      // since it's so implicit as to be almost explicit that they are a layer 5
+      // only scenario
     template <class TSize = uint16_t>
     class IMemoryContainer
     {

@@ -192,7 +192,6 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
       uint16_t buf[32];
       layer2::CircularBuffer<uint16_t, 32> buffer(buf);
 
-
       WHEN("Inserting")
       {
         INFO("Inserting 123");
@@ -215,4 +214,33 @@ SCENARIO( "Circular Buffer tests", "[circular-buffer]" )
         REQUIRE(value == 456);
       }
   }
+  /* 
+   * Not ready yet - don't have fully virtualized code (haven't needed it so far)
+  GIVEN("A layer5 CircularBuffer")
+  {
+      uint16_t buf[32];
+      layer5::CircularBuffer<uint16_t> buffer(buf, 32);
+
+      WHEN("Inserting")
+      {
+        INFO("Inserting 123");
+        buffer.put(123);
+        INFO("Inserting 456");
+        buffer.put(456);
+        REQUIRE(buffer.available() == 2);
+      }
+
+      WHEN("Pulling back out")
+      {
+        INFO("Inserting 123");
+        buffer.put(123);
+        INFO("Inserting 456");
+        buffer.put(456);
+        REQUIRE(buffer.available() == 2);
+        auto value = buffer.get();
+        REQUIRE(value == 123);
+        value = buffer.get();
+        REQUIRE(value == 456);
+      }
+  }*/
 }

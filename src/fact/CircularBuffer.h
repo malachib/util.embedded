@@ -20,7 +20,7 @@ namespace FactUtilEmbedded
 
   // TODO: make position/size etc templated also to support a byte-version of this
   template <class TArray, class T>
-  class CircularBufferBase2 : public CircularBufferBase<T>
+  class CircularBuffer : public CircularBufferBase<T>
   {
     TArray array;
 
@@ -56,10 +56,10 @@ namespace FactUtilEmbedded
 
 protected:
     // for derived classes which don't need to initialize underlying array
-    CircularBufferBase2() {}
+    CircularBuffer() {}
 
   public:
-    CircularBufferBase2(const TArray& array) :
+    CircularBuffer(const TArray& array) :
       array(array) //,
       //size(size)
     {
@@ -180,7 +180,7 @@ protected:
 namespace layer1
 {
     template <class T, uint16_t size>
-    class CircularBuffer : public CircularBufferBase2<layer1::Array<T, size>, T>
+    class CircularBuffer : public FactUtilEmbedded::CircularBuffer<layer1::Array<T, size>, T>
     {
     public:
         // layer1 version array is pre-allocated.  Be careful using
@@ -201,7 +201,7 @@ namespace layer1
 namespace layer2
 {
     template <class T, uint16_t size>
-    class CircularBuffer : public CircularBufferBase2<layer2::Array<T, size>, T>
+    class CircularBuffer : public FactUtilEmbedded::CircularBuffer<layer2::Array<T, size>, T>
     {
         typedef layer2::Array<T, size> array_t;
 
@@ -211,7 +211,7 @@ namespace layer2
         // set the values to 0 (presumably you'll be using a static one which
         // starts as 0 already)
         CircularBuffer(T* bufferToUse) :
-          CircularBufferBase2<array_t, T>(array_t(bufferToUse))
+          FactUtilEmbedded::CircularBuffer<array_t, T>(array_t(bufferToUse))
               {}
     };
 }
@@ -219,16 +219,43 @@ namespace layer2
 namespace layer3
 {
   template <class T>
-  class CircularBuffer : public CircularBufferBase2<layer3::Array<T, uint16_t>, T>
+  class CircularBuffer : public FactUtilEmbedded::CircularBuffer<layer3::Array<T, uint16_t>, T>
   {
       typedef layer3::Array<T, uint16_t> array_t;
 
   public:
       CircularBuffer(T* bufferToUse, uint16_t size) :
-        CircularBufferBase2<array_t, T>(array_t(bufferToUse, size))
+        FactUtilEmbedded::CircularBuffer<array_t, T>(array_t(bufferToUse, size))
             {}
 
   };
 }
 
+namespace layer5
+{
+    template <class T>
+    class ICircularBuffer
+    {
+        virtual void put(const T& value) = 0;
+        virtual const T& peek() const = 0;
+        virtual const T& get() = 0;
+    };
+
+  template <class T>
+  class CircularBuffer :
+    public FactUtilEmbedded::CircularBuffer<layer5::IArray<T, uint16_t>&, T>,
+    public ICircularBuffer<T>
+  {
+      typedef layer5::IArray<T, uint16_t>& array_t;
+
+  public:
+      /*
+      CircularBuffer(T* bufferToUse, uint16_t size) :
+        FactUtilEmbedded::CircularBuffer<array_t, T>(array_t(bufferToUse, size))
+            {} */
+        CircularBuffer(array_t array) :
+        FactUtilEmbedded::CircularBuffer<array_t, T>(array)
+        {}
+  };
+}
 }
