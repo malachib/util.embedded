@@ -5,6 +5,8 @@
 
 #ifdef NODUINO
 #include "fact/lib.h"
+#else
+#include <stdint.h>
 #endif
 
 
@@ -99,7 +101,7 @@ public:
   template <class T>
   bool parseTokenDestructive(T id,
     bool (*callback)(T id, char* buffer, void* context),
-    void* context = NULL)
+    void* context = nullptr)
   {
     // grab token, append \0 and auto-advance
     char* token = parseTokenDestructive();
