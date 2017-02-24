@@ -16,6 +16,8 @@ namespace FactUtilEmbedded
     {
     protected:
     public:
+        typedef uint16_t size_t;
+
       static uint16_t getSize() { return size; }
     };
 
@@ -86,6 +88,8 @@ namespace FactUtilEmbedded
       public layer2::MemoryContainerBase
     {
     public:
+        typedef uint16_t size_t;
+
       MemoryContainer(void* const data) : layer2::MemoryContainerBase(data) {}
 
       void clear() { memset(getData(), 0, size); }
