@@ -44,6 +44,8 @@ typedef int16_t int_type;
 template <class TChar> struct char_traits;
 template <> struct char_traits<char>
 {
+    typedef char char_type;
+
     static int_type to_int_type(char ch) { return ch; }
     static int_type eof() { return -1; }
 };

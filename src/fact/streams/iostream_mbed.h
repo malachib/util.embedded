@@ -64,6 +64,14 @@ public:
 
         return *this;
     }
+
+    /*
+    __ostream_type& flush()
+    {
+        // I think the pio flavor of mbed doesn't have this yet
+        getFile().sync();
+        return *this;
+    } */
 };
 
 } }
