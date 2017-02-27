@@ -43,10 +43,12 @@ public:
 
 class ostream : public basic_ostream<char>
 {
-    Stream* output;
-    FileLike& getFile() { return *output; }
+    Stream& output;
+    FileLike& getFile() const { return output; }
 
 public:
+    ostream(Stream& o) : output(o) {}
+
     __ostream_type& write(const char* s, streamsize n) override
     {
         FileLike& file = getFile();
@@ -58,7 +60,7 @@ public:
 
     __ostream_type& put(char ch) override
     {
-        output->putc(ch);
+        output.putc(ch);
 
         return *this;
     }
