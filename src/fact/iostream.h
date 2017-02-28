@@ -102,6 +102,13 @@ public:
     static constexpr fmtflags dec = 1;
     static constexpr fmtflags hex = 2;
     static constexpr fmtflags basefield = dec | hex;
+    
+    typedef uint8_t openmode;
+    
+    static constexpr openmode app = 0x01;
+    static constexpr openmode binary = 0x02;
+    static constexpr openmode in = 0x04;
+    static constexpr openmode out = 0x08;
 
 private:
     fmtflags fmtfl;

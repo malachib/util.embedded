@@ -43,12 +43,17 @@ public:
 
 class ostream : public basic_ostream<char>
 {
+    openmode _openmode;
     Stream& output;
     FileLike& getFile() const { return output; }
 
 public:
-    ostream(Stream& o) : output(o) {}
+    ostream(Stream& o, openmode _openmode = openmode::binary) : output(o)
+    {
+        this->_openmode = _openmode | openmode::out;
+    }
 
+    // TODO: make non-binary '\r' handler here also
     __ostream_type& write(const char* s, streamsize n) override
     {
         FileLike& file = getFile();
@@ -60,6 +65,9 @@ public:
 
     __ostream_type& put(char ch) override
     {
+        if(_openmode & openmode::binary == 0 && ch == '\n')
+            output.putc('\r');
+            
         output.putc(ch);
 
         return *this;
