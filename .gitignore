@@ -2,3 +2,10 @@ obj
 test/test
 test/console/test
 *.gch
+
+#ignore Mac junk
+.DS_Store
+
+# ignore Qt Creator stuff
+*.user
+build/
