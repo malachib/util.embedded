@@ -50,12 +50,33 @@ template <> struct char_traits<char>
     static int_type eof() { return -1; }
 };
 
+
 template<class TChar, class Traits = char_traits<TChar>>
-class basic_streambuf
+class basic_streambuf_base
+{
+protected:
+    typedef TChar char_type;
+};
+
+namespace experimental 
+{
+template<class TChar, class TStream, TStream& stream, class Traits = char_traits<TChar>>
+class basic_streambuf_embedded : public basic_streambuf_base<TChar, Traits>
 {
     typedef TChar char_type;
 
 protected:
+    streamsize xsputn(const char_type* s, streamsize count);
+    streamsize xsgetn(char_type* s, streamsize count);
+};
+}
+
+template<class TChar, class Traits = char_traits<TChar>>
+class basic_streambuf
+{
+protected:
+    typedef TChar char_type;
+
     virtual streamsize xsputn(const char_type* s, streamsize count) = 0;
     virtual streamsize xsgetn(char_type* s, streamsize count) = 0;
 
@@ -151,6 +172,23 @@ public:
         return __pf(*this);
     }*/
 };
+
+namespace experimental
+{
+// embedded flavor you can't reassign rdbuf.  It gets assigned once as a global
+// via TStream& stream and that's all you get.  In theory, this could all optimize
+// all instance variables away from basic_ostream_embedded & basic_streambuf_embedded
+template<class TChar, class TStream, TStream& stream>
+class basic_ostream_embedded
+{
+    typedef basic_streambuf_embedded<TChar, TStream, stream> __basic_streambuf_type;
+    __basic_streambuf_type _rdbuf;
+    
+public:
+    __basic_streambuf_type* rdbuf() const { return &_rdbuf; }
+};
+}
+
 
 inline basic_ostream<char>& operator <<(basic_ostream<char>& out, const char* arg)
 {

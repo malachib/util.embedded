@@ -17,6 +17,26 @@ namespace FactUtilEmbedded { namespace std
 {
 using namespace mbed;
 
+class streambuf_mbed_stream : public streambuf
+{
+    FileLike& stream;
+    
+public:
+    streambuf_mbed_stream(FileLike& stream) : stream(stream) {}
+
+    virtual streamsize xsputn(const char_type* s, streamsize count)
+    {
+        stream.write(s, count);
+        return count;
+    }
+    
+    virtual streamsize xsgetn(char_type* s, streamsize count)
+    {
+        stream.read(s, count);
+        return count;
+    }
+};
+
 class istream : public basic_istream<char>
 {
     Stream* input;
