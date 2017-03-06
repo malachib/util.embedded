@@ -40,17 +40,24 @@ public:
     bool eof() { return false; }
 };
 
-
 class ostream : public basic_ostream<char>
 {
-    openmode _openmode;
+protected:
+    const openmode _openmode;
+    
+    ostream(openmode _openmode) : _openmode(_openmode) {}
+};
+
+class ostream_mbed_stream : public ostream
+{
     Stream& output;
     FileLike& getFile() const { return output; }
 
 public:
-    ostream(Stream& o, openmode _openmode = _openmode_null) : output(o)
+    ostream_mbed_stream(Stream& o, openmode _openmode = _openmode_null) 
+        : ostream(_openmode | out), output(o)
     {
-        this->_openmode = _openmode | out;
+        //this->_openmode = _openmode | out;
     }
 
     // TODO: make non-binary '\r' handler here also

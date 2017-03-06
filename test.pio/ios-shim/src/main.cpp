@@ -7,7 +7,8 @@ Serial pc(USBTX, USBRX);
 
 namespace FactUtilEmbedded { namespace std {
 
-ostream cout(pc);
+ostream_mbed_stream _cout(pc);
+ostream& cout = _cout;
 ostream& clog = cout;
 
 }}

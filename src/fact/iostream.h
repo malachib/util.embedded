@@ -269,8 +269,14 @@ __ostream_type& operator<<(__ostream_type& (*__pf)(__ostream_type&))
     return __pf(*this);
 }*/
 
+#ifdef __MBED__
+// MBED OS doesn't really have unified streams, so we dispatch a bit for our ostream
+extern ostream& cout;
+extern istream& cin;
+#else
 extern ostream cout;
 extern istream cin;
+#endif
 extern ostream& clog;
 extern ostream& cerr;
 
