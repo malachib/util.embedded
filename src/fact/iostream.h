@@ -18,7 +18,7 @@
 #include "Stream.h"
 #endif
 
-//#define FEATURE_IOS_STREAMBUF_FULL
+#define FEATURE_IOS_STREAMBUF_FULL
 
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
 // implementation.  Also can and should serve as a wrapper class around Stream implementations
@@ -78,6 +78,8 @@ protected:
     streamsize xsgetn(char_type* s, streamsize count);
     
 public:
+    typedef TStream stream_t;
+    
     basic_streambuf_embedded(TStream& stream) : stream(stream) {}
 };
 }
@@ -123,13 +125,18 @@ public:
 };
 #else
 #if defined(__MBED__)
+// FIX: Can't do this just yet, because this counts (apparently) as
+// a specialization of basic_streambuf_embedded and collides with iostream_mbed version
+// *or* perhaps this counts as an instantiation of the particular specialization 
+// but the particular specialization itself has yet to be defined 
 template<class TChar, class Traits = char_traits<TChar>>
 class basic_streambuf : 
-    public experimental::basic_streambuf_embedded<TChar, mbed::Stream, Traits>
+    public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>
 {
-    typedef experimental::basic_streambuf_embedded<TChar, mbed::Stream, Traits> base_t;
+    typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits> base_t;
 public:
-    typedef mbed::Stream stream_t;
+    typedef mbed::FileLike stream_t;
+    //typedef typename base_t::stream_t stream_t;
     
     basic_streambuf(stream_t& stream) : base_t(stream) {}
 };
