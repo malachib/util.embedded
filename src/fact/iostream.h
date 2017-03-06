@@ -113,6 +113,9 @@ public:
 private:
     fmtflags fmtfl;
 
+protected:
+    static constexpr openmode _openmode_null = 0; // proprietary, default of 'text'
+
 public:
     fmtflags flags() const { return fmtfl; }
     fmtflags flags(fmtflags fmtfl)
