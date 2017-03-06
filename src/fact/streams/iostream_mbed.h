@@ -17,6 +17,7 @@ namespace FactUtilEmbedded { namespace std
 {
 using namespace mbed;
 
+#ifdef FEATURE_IOS_STREAMBUF_FULL
 class streambuf_mbed_stream : public streambuf
 {
     FileLike& stream;
@@ -36,6 +37,33 @@ public:
         return count;
     }
 };
+#endif
+
+namespace experimental
+{
+template<>
+class basic_streambuf_embedded<char, FileLike> : basic_streambuf_base<char>
+{
+protected:
+    //typedef char char_type;
+    FileLike& stream;
+
+public:
+    basic_streambuf_embedded(FileLike& stream) : stream(stream) {}
+
+    streamsize xsputn(const char_type* s, streamsize count)
+    {
+        stream.write(s, count);
+        return count;
+    }
+    
+    streamsize xsgetn(char_type* s, streamsize count)
+    {
+        stream.read(s, count);
+        return count;
+    }
+};
+}
 
 class istream : public basic_istream<char>
 {
@@ -63,12 +91,18 @@ public:
 
 class ostream : public basic_ostream<char>
 {
+    typedef basic_ostream<char> base_t;
+    
     openmode _openmode;
     Stream& output;
     FileLike& getFile() const { return output; }
 
 public:
-    ostream(Stream& o, openmode _openmode = _openmode_null) : output(o)
+    ostream(Stream& o, openmode _openmode = _openmode_null) : 
+#ifndef FEATURE_IOS_STREAMBUF_FULL
+        base_t(o),
+#endif
+        output(o)
     {
         this->_openmode = _openmode | out;
     }

@@ -13,6 +13,13 @@
 #define USING_SPRINTF
 #endif
 
+#ifdef ESP_OPEN_RTOS
+#elif defined(__MBED__)
+#include "Stream.h"
+#endif
+
+//#define FEATURE_IOS_STREAMBUF_FULL
+
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
 // implementation.  Also can and should serve as a wrapper class around Stream implementations
 // found in libs like Arduino & mbed OS
@@ -60,17 +67,22 @@ protected:
 
 namespace experimental 
 {
-template<class TChar, class TStream, TStream& stream, class Traits = char_traits<TChar>>
+template<class TChar, class TStream, class Traits = char_traits<TChar>>
 class basic_streambuf_embedded : public basic_streambuf_base<TChar, Traits>
 {
-    typedef TChar char_type;
-
 protected:
+    typedef TChar char_type;
+    TStream& stream;
+    
     streamsize xsputn(const char_type* s, streamsize count);
     streamsize xsgetn(char_type* s, streamsize count);
+    
+public:
+    basic_streambuf_embedded(TStream& stream) : stream(stream) {}
 };
 }
 
+#ifdef FEATURE_IOS_STREAMBUF_FULL
 template<class TChar, class Traits = char_traits<TChar>>
 class basic_streambuf
 {
@@ -109,7 +121,22 @@ public:
         return success ? Traits::to_int_type(ch) : Traits::eof();
     }
 };
-
+#else
+#if defined(__MBED__)
+template<class TChar, class Traits = char_traits<TChar>>
+class basic_streambuf : 
+    public experimental::basic_streambuf_embedded<TChar, mbed::Stream, Traits>
+{
+    typedef experimental::basic_streambuf_embedded<TChar, mbed::Stream, Traits> base_t;
+public:
+    typedef mbed::Stream stream_t;
+    
+    basic_streambuf(stream_t& stream) : base_t(stream) {}
+};
+#else
+#error "FEATURE_IOS_STREAMBUF_FULL required for this architecture"
+#endif
+#endif
 
 typedef basic_streambuf<char> streambuf;
 
@@ -143,16 +170,41 @@ public:
     { return this->fmtfl = fmtfl; }
 };
 
+
+template<class TChar, class Traits = char_traits<TChar>>
+class basic_ios : public ios_base
+{
+public:
+    typedef basic_streambuf<TChar, Traits> basic_streambuf_t;
+
+protected:
+#ifdef FEATURE_IOS_STREAMBUF_FULL
+    basic_streambuf_t* _rdbuf;
+    
+    basic_streambuf_t* rdbuf() const { return _rdbuf; }
+#else
+    basic_streambuf_t _rdbuf;
+    
+    basic_streambuf_t* rdbuf() const { return &_rdbuf; }
+    
+    typedef typename basic_streambuf_t::stream_t stream_t;
+
+    basic_ios(stream_t& stream) : _rdbuf(stream) {}
+#endif
+};
+
 template<class TChar>
-class basic_istream : public ios_base
+class basic_istream : public basic_ios<TChar>
 {
 public:
     virtual bool eof() = 0;
 };
 
 template<class TChar>
-class basic_ostream : public ios_base
+class basic_ostream : public basic_ios<TChar>
 {
+    typedef basic_ios<TChar> base_t;
+    
 public:
     typedef basic_ostream<TChar> __ostream_type;
 
@@ -171,6 +223,12 @@ public:
     {
         return __pf(*this);
     }*/
+
+#ifndef FEATURE_IOS_STREAMBUF_FULL
+    typedef typename base_t::stream_t stream_t;
+
+    basic_ostream(stream_t& stream) : base_t(stream) {}
+#endif
 };
 
 namespace experimental
@@ -178,10 +236,10 @@ namespace experimental
 // embedded flavor you can't reassign rdbuf.  It gets assigned once as a global
 // via TStream& stream and that's all you get.  In theory, this could all optimize
 // all instance variables away from basic_ostream_embedded & basic_streambuf_embedded
-template<class TChar, class TStream, TStream& stream>
+template<class TChar, class TStream>
 class basic_ostream_embedded
 {
-    typedef basic_streambuf_embedded<TChar, TStream, stream> __basic_streambuf_type;
+    typedef basic_streambuf_embedded<TChar, TStream> __basic_streambuf_type;
     __basic_streambuf_type _rdbuf;
     
 public:
