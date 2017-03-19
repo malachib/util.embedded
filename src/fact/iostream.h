@@ -165,8 +165,16 @@ public:
     static constexpr openmode in = 0x04;
     static constexpr openmode out = 0x08;
 
+    typedef uint8_t iostate;
+
+    static constexpr iostate goodbit = 0x00;
+    static constexpr iostate badbit = 0x01;
+    static constexpr iostate failbit = 0x02;
+    static constexpr iostate eofbit = 0x04;
+
 private:
     fmtflags fmtfl;
+    iostate _iostate;
 
 protected:
     static constexpr openmode _openmode_null = 0; // proprietary, default of 'text'
@@ -175,6 +183,13 @@ public:
     fmtflags flags() const { return fmtfl; }
     fmtflags flags(fmtflags fmtfl)
     { return this->fmtfl = fmtfl; }
+
+    iostate rdstate() const { return _iostate; }
+
+    bool good() const { return rdstate() == goodbit; }
+    bool bad() const { return rdstate() & badbit; }
+    bool fail() const { return rdstate() & failbit || rdstate() & badbit; }
+    bool eof() const { return rdstate() & eofbit; }
 };
 
 
@@ -199,6 +214,10 @@ protected:
     basic_ios(stream_t& stream) : _rdbuf(stream) {}
 #endif
 };
+
+
+typedef basic_ios<char> ios;
+
 
 template<class TChar>
 class basic_istream : public basic_ios<TChar>
