@@ -9,3 +9,8 @@ test/console/test
 # ignore Qt Creator stuff
 *.user
 build/
+
+# CLion metafiles
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+
