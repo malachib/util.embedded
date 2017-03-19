@@ -307,7 +307,10 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 #if ESP_OPEN_RTOS
     __utoa((uint32_t)addr, buffer, 16);
 #else
-    snprintf(buffer, sizeof(buffer), "%x", (uintptr_t)addr);
+    if(sizeof(uintptr_t) == 4)
+        snprintf(buffer, sizeof(buffer), "%x", (uintptr_t)addr);
+    else
+        snprintf(buffer, sizeof(buffer), "%lx", (uintptr_t)addr);
 #endif
     return out << buffer;
 }
