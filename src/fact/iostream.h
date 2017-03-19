@@ -113,6 +113,7 @@ public:
         return xsgetn(s, count);
     }
 
+    // TODO: *possibly* implement underflow, if I like it...
     // Don't think I made this one quite right...
     int_type sbumpc()
     {
@@ -227,8 +228,28 @@ typedef basic_ios<char> ios;
 template<class TChar>
 class basic_istream : public basic_ios<TChar>
 {
+    typedef basic_ios<TChar> base_t;
+
 public:
+    typedef basic_istream<TChar> __istream_type;
+
     virtual bool eof() = 0;
+
+    int get()
+    {
+        this->rdbuf()->sbumpc();
+    }
+
+    __istream_type& read(TChar* s, streamsize n)
+    {
+        // TODO: optimization point.  We want to do something
+        // so that we don't inline this (and other read/write operations like it)
+        // all over the place
+        if(this->rdbuf()->sgetn(s, n) != n)
+            setstate(base_t::eofbit);
+
+        return *this;
+    }
 };
 
 template<class TChar>
