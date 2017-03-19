@@ -185,6 +185,11 @@ public:
     { return this->fmtfl = fmtfl; }
 
     iostate rdstate() const { return _iostate; }
+    void clear(iostate state = goodbit) { _iostate == state; }
+    void setstate(iostate state)
+    {
+        _iostate |= state;
+    }
 
     bool good() const { return rdstate() == goodbit; }
     bool bad() const { return rdstate() & badbit; }
@@ -236,6 +241,22 @@ public:
 
     virtual __ostream_type& write(const TChar* s, streamsize n) = 0;
     virtual __ostream_type& put(TChar ch) = 0;
+
+    // When the time comes, these will replace the old virtual ones
+    __ostream_type& write_new(const TChar* s, streamsize n)
+    {
+        this->rdbuf()->sputn(s, n);
+        return *this;
+    }
+
+
+    __ostream_type& put_new(TChar ch)
+    {
+        if(this->rdbuf()->sputc(ch) == char_traits<TChar>::eof())
+            setstate(base_t::eofbit);
+
+        return *this;
+    }
 
     //friend basic_ostream& operator<<(basic_ostream& (*__pf)(basic_ostream&));
 
