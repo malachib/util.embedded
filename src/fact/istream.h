@@ -82,6 +82,12 @@ public:
         return *this;
     }
 
+
+    int_type peek()
+    {
+        return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+    }
+
 #ifndef FEATURE_IOS_STREAMBUF_FULL
     typedef typename base_t::stream_t stream_t;
 

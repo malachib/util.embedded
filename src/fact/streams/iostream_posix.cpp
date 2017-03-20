@@ -20,18 +20,23 @@ streamsize basic_streambuf_embedded<char, TEST_STREAM_T>::
 }
 
 template<>
-int basic_streambuf_embedded<char, TEST_STREAM_T>::
-    sputc(char ch)
+int basic_streambuf_embedded<char, TEST_STREAM_T>::sputc(char ch)
 {
     return fputc(ch, &this->stream);
 }
 
 
 template<>
-int basic_streambuf_embedded<char, TEST_STREAM_T>::
-    sbumpc()
+int basic_streambuf_embedded<char, TEST_STREAM_T>::sbumpc()
 {
     return fgetc(&this->stream);
+}
+
+template<>
+int basic_streambuf_embedded<char, TEST_STREAM_T>::sgetc()
+{
+    int c = fgetc(&this->stream);
+    ungetc(c, &this->stream);
 }
 
 } } }
