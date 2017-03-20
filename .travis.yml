@@ -1,5 +1,4 @@
-# sudo required cuz we gotta upgrade cmake
-sudo: required
+sudo: false
 dist: trusty
 
 language: cpp
