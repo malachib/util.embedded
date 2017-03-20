@@ -1,6 +1,6 @@
 # sudo required cuz we gotta upgrade cmake
 sudo: required
-#dist: trusty
+dist: trusty
 
 language: cpp
 compiler:
@@ -12,7 +12,7 @@ notifications:
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 # lifted from https://github.com/elemental/Elemental/blob/master/.travis.yml
-- curl https://cmake.org/files/v3.6/cmake-3.6.1-Linux-x86_64.tar.gz | sudo tar -x -z --strip-components 1 -C /usr
+# - curl https://cmake.org/files/v3.6/cmake-3.6.1-Linux-x86_64.tar.gz | sudo tar -x -z --strip-components 1 -C /usr
 addons:
   apt:
     sources:
@@ -21,22 +21,24 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
+# hopefully this magically gets us a newer cmake as per http://stackoverflow.com/questions/41916656/how-to-use-travis-ci-to-build-modern-c-using-modern-cmake
+    - cmake
     
 cache:
-  bundler: true
+  #bundler: true
   # not sure if we need to explicitly cache usr, specifically want to cache our cmake
-  directories:
-      - /usr
+  #directories:
+#      - /usr
 
 before_install:
 - echo $LANG
+- cmake --version
 
 # https://gist.github.com/petrbel/c3bf7e0f59c22a52f534 interesting submodule magic
 
 before_script:
 - cd test
-- mkdir build
-- cd build
+- mkdir build && cd build
 - cmake ..
 
 script:
