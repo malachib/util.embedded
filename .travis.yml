@@ -21,15 +21,7 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
-# hopefully this magically gets us a newer cmake as per http://stackoverflow.com/questions/41916656/how-to-use-travis-ci-to-build-modern-c-using-modern-cmake
-    - cmake
     
-cache:
-  #bundler: true
-  # not sure if we need to explicitly cache usr, specifically want to cache our cmake
-  #directories:
-#      - /usr
-
 before_install:
 - echo $LANG
 - cmake --version

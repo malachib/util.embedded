@@ -13,12 +13,20 @@ Overview
 Comprises reusable low-level functionality for use in your embedded and/or
 cross-platform endeavors.
 
-Code is Arduino and PlatformIO friendly
+Code is Arduino, POSIX and mbed OS friendly.  Experimental support for ESP-OPEN-RTOS.
+Plays nice with PlatformIO
 
 * Debug console: Menuing system for serial port (or other stream) control code to run diagnostics and acquire status
     * Telnet capable (coming soon)
 * Linked lists, single and doubly linked
 * Circular buffer
+* C++ iostream shims; use istream/ostream etc. without all the bloat
+
+Experimental:
+-------------
+
+Following code has worked to varying degrees but has not been tested for a while:
+
 * C#-like event code
 * Cross-thread RPC mechanism (if using an external threading tool)
 * Service objects facilitating start, stop and status querying
@@ -34,7 +42,7 @@ Code is Arduino and PlatformIO friendly
         * pin change interrupts
     * SAM
         * sleep (coming soon)
-
+        
 Data/Memory code size
 ---------------------
 
@@ -59,26 +67,34 @@ its appetite:
 Other preprocessor defines
 --------------------------
 
-(coming soon)
+* FEATURE_IOSTREAM_SHIM (experimental): enables lightweight istream/ostream code 
 
-
-Code paradigm:
+## Code paradigm:
 
 * layer 1: barest-metal, tends to be templates; buffer pointers avoided
 * layer 2: low-level.  buffer pointers often used.  size fields are templatized constants
 * layer 3: low-level.  buffer pointers and size fields used
-* layer 4: reserved
-* layer 5: mid-level.  virtual functions allowed
+* layer 4: mid-level.  buffers inline (pointers avoided).  virtual functions allowed
+  * layer 4 is currently experimental and subject to change definition.
+* layer 5: mid-level.  buffer pointers used.  virtual functions allowed
 
 Hardware Compatibility
 ----------------------
 
 Tested and works on the following:
 
-Device               | Features
--------------------- | --------
-ATmega328P           |
-ESP8266 12E          |
-ATtiny85             |
-ATSAMD21G            |
-x86                  |
+Device               | Framework               | Features
+-------------------- | ----------------------- | --------
+ATmega328P           | Arduino                 |
+ESP8266 12E          | Arduino / ESP-OPEN-RTOS |
+ATtiny85             | Arduino                 |
+ATSAMD21G            | Arduino                 |
+STM32F401RE          | mbed OS                 |
+x86                  | POSIX                   |
+
+Notes
+-----
+
+Remember, istream/ostream are (arguably) by design blocking I/O.  There is a lot of
+discussion about this on the internet.  So far I have done nothing to adjust or enhance
+the FEATURE_IOSTREAM_SHIM to be async.
