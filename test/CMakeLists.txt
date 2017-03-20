@@ -24,7 +24,7 @@ INCLUDE_DIRECTORIES("../ext/Catch/include")
 INCLUDE_DIRECTORIES("../src")
 
 file(GLOB_RECURSE util_embedded_source "../src/*.cpp"
-    "../src/*.h" "../src/*.hpp"
+    "../src/*.h" "../src/*.hpp" "../src/fact/iostream"
     )
 # this line in above glob doesnt seem to make a difference for linking
 #"../src/fact/*.h" "../src/menu/*.h"

@@ -511,6 +511,8 @@ inline basic_istream<char>& operator >>(basic_istream<char>& in, short& value)
 #include "streams/iostream_posix.h"
 #elif defined(__MBED__)
 #include "streams/iostream_mbed.h"
+#elif defined(ARDUINO)
+#include "streams/iostream_arduino.h"
 #else
 #warning "Unknown architecture"
 #endif
