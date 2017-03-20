@@ -12,22 +12,18 @@ extern "C"
 namespace FactUtilEmbedded { namespace std
 {
 
-class istream : public basic_istream<char>
-{
-public:
-#ifndef FEATURE_IOS_STREAMBUF_FULL
-    istream(_IO_FILE& file) : basic_istream<char>(file) {}
-#endif
-
-    bool eof() { return false; }
-};
+typedef basic_istream<char> istream;
 
 
 class ostream : public basic_ostream<char>
 {
+    typedef basic_ostream<char> base_t;
+    //typedef typename base_t::basic_streambuf_t basic_streambuf_t;
+    //typedef basic_streambuf_t::stream_t stream_t;
+
 public:
 #ifndef FEATURE_IOS_STREAMBUF_FULL
-    ostream(_IO_FILE& file) : basic_ostream<char>(file) {}
+    ostream(stream_t& file) : base_t(file) {}
 #endif
 
     __ostream_type& write(const char* s, streamsize n) override

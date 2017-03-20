@@ -31,7 +31,7 @@ extern "C"
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef USING_SPRINTF
+#if defined(USING_SPRINTF) || defined(__POSIX__)
 #include <stdio.h>
 #endif
 
@@ -200,7 +200,7 @@ public:
     { return this->fmtfl = fmtfl; }
 
     iostate rdstate() const { return _iostate; }
-    void clear(iostate state = goodbit) { _iostate == state; }
+    void clear(iostate state = goodbit) { _iostate = state; }
     void setstate(iostate state)
     {
         _iostate |= state;
@@ -251,11 +251,9 @@ class basic_istream :
 public:
     typedef basic_istream<TChar> __istream_type;
 
-    virtual bool eof() = 0;
-
     int get()
     {
-        this->rdbuf()->sbumpc();
+        return this->rdbuf()->sbumpc();
     }
 
     __istream_type& read(TChar* s, streamsize n)

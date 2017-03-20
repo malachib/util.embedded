@@ -22,8 +22,8 @@ INCLUDE_DIRECTORIES("../ext/Catch/include")
 
 INCLUDE_DIRECTORIES("../src")
 
-file(GLOB util_embedded_source "../src/*.cpp"
-    "../src/*.h"
+file(GLOB_RECURSE util_embedded_source "../src/*.cpp"
+    "../src/*.h" "../src/*.hpp"
     )
 # this line in above glob doesnt seem to make a difference for linking
 #"../src/fact/*.h" "../src/menu/*.h"
@@ -39,4 +39,4 @@ LIST(REMOVE_ITEM source_main "${PROJECT_SOURCE_DIR}/noduino/ncursesStream.cpp")
 ADD_EXECUTABLE(${PROJECT_NAME} ${source_main})
 
 # following line doesn't seem to make a difference for linking
-#TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${util_embedded_lib})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} util_embedded_lib)

@@ -11,16 +11,20 @@
 
 //namespace experimental {
 
+typedef ::FILE TEST_STREAM_T;
+//typedef ::_IO_FILE TEST_STREAM_T;
+
 template<class TChar, class Traits = char_traits <TChar>>
-class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, ::_IO_FILE, Traits>
+class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, Traits>
 {
 protected:
-    typedef experimental::basic_streambuf_embedded<TChar, ::_IO_FILE, Traits> base_t;
+    typedef experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, Traits> base_t;
 
 public:
     typedef TChar char_type;
+    typedef TEST_STREAM_T stream_t;
 
-    basic_streambuf(_IO_FILE &stream) : base_t(stream)
+    basic_streambuf(TEST_STREAM_T &stream) : base_t(stream)
     {}
 
     streamsize xsputn(const char_type *s, streamsize count)
