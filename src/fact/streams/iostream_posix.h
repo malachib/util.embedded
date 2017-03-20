@@ -12,30 +12,6 @@ extern "C"
 namespace FactUtilEmbedded { namespace std
 {
 
-namespace experimental
-{
-template<>
-class basic_streambuf_embedded<char, _IO_FILE> : public basic_streambuf_base<char>
-{
-protected:
-    //typedef char char_type;
-    _IO_FILE& stream;
-
-public:
-    basic_streambuf_embedded(_IO_FILE& stream) : stream(stream) {}
-
-    streamsize xsputn(const char_type* s, streamsize count)
-    {
-        return fwrite(s, sizeof(char), count, &stream);
-    }
-
-    streamsize xsgetn(char_type* s, streamsize count)
-    {
-        return fread(s, sizeof(char), count, &stream);
-    }
-};
-}
-
 class istream : public basic_istream<char>
 {
 public:

@@ -18,7 +18,7 @@
 #include "Stream.h"
 #endif
 
-#define FEATURE_IOS_STREAMBUF_FULL
+//#define FEATURE_IOS_STREAMBUF_FULL
 //#define FEATURE_IOS_IOSTREAM
 
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
@@ -143,6 +143,8 @@ public:
     basic_streambuf(stream_t& stream) : base_t(stream) {}
 };
 #elif defined(__POSIX__)
+#include "streams/iostream_posix_streambuf.h"
+/*
 template<class TChar, class Traits = char_traits<TChar>>
 class basic_streambuf :
     public experimental::basic_streambuf_embedded<TChar, ::_IO_FILE, Traits>
@@ -153,13 +155,11 @@ public:
     //typedef typename base_t::stream_t stream_t;
 
     basic_streambuf(stream_t& stream) : base_t(stream) {}
-};
+}; */
 #else
 #error "FEATURE_IOS_STREAMBUF_FULL required for this architecture"
 #endif
 #endif
-
-typedef basic_streambuf<char> streambuf;
 
 //typedef basic_ostream __ostream_type;
 
@@ -449,6 +449,8 @@ inline basic_ostream<char>& hex(basic_ostream<char>& __os)
 
 namespace FactUtilEmbedded { namespace std
 {
+typedef basic_streambuf<char> streambuf;
+
 
 // Shamelessly lifted from GCC4.8.5
 /**
