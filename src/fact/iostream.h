@@ -19,6 +19,7 @@
 #endif
 
 #define FEATURE_IOS_STREAMBUF_FULL
+//#define FEATURE_IOS_IOSTREAM
 
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
 // implementation.  Also can and should serve as a wrapper class around Stream implementations
@@ -225,8 +226,12 @@ protected:
 typedef basic_ios<char> ios;
 
 
-template<class TChar>
-class basic_istream : public basic_ios<TChar>
+template<class TChar, class traits = char_traits<TChar>>
+class basic_istream :
+#ifdef FEATURE_IOS_STREAMBUF_FULL
+        virtual
+#endif
+        public basic_ios<TChar, traits>
 {
     typedef basic_ios<TChar> base_t;
 
@@ -252,8 +257,12 @@ public:
     }
 };
 
-template<class TChar>
-class basic_ostream : public basic_ios<TChar>
+template<class TChar, class traits = char_traits<TChar>>
+class basic_ostream :
+#ifdef FEATURE_IOS_STREAMBUF_FULL
+        virtual
+#endif
+        public basic_ios<TChar, traits>
 {
     typedef basic_ios<TChar> base_t;
     
@@ -298,6 +307,26 @@ public:
     basic_ostream(stream_t& stream) : base_t(stream) {}
 #endif
 };
+
+#ifdef FEATURE_IOS_STREAMBUF_FULL
+template <class TChar, class traits = char_traits<TChar>>
+class basic_iostream :
+        public basic_ostream<TChar, traits>,
+        public basic_istream<TChar, traits>
+{
+
+};
+#else
+// don't use virtual inheretence and instead manually redefine basic_istream behaviors
+// creates some visual code slop, but ends up compiling smaller (and maybe faster)
+template <class TChar, class traits = char_traits<TChar>>
+class basic_iostream :
+        public basic_ostream<TChar, traits>
+{
+
+};
+#endif
+
 
 namespace experimental
 {
