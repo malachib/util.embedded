@@ -19,8 +19,13 @@ extern "C"
 namespace FactUtilEmbedded { namespace std
 {
 
+#ifdef FEATURE_IOS_STREAMBUF_FULL
 ostream cout;
 istream cin;
+#else
+ostream cout(*stdout);
+istream cin(*stdin);
+#endif
 ostream& clog = cout;
 ostream& cerr = cout;
 

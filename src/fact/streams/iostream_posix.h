@@ -12,30 +12,36 @@ extern "C"
 namespace FactUtilEmbedded { namespace std
 {
 
+namespace experimental
+{
+template<>
+class basic_streambuf_embedded<char, _IO_FILE> : public basic_streambuf_base<char>
+{
+protected:
+    //typedef char char_type;
+    _IO_FILE& stream;
+
+public:
+    basic_streambuf_embedded(_IO_FILE& stream) : stream(stream) {}
+
+    streamsize xsputn(const char_type* s, streamsize count)
+    {
+        return fwrite(s, sizeof(char), count, &stream);
+    }
+
+    streamsize xsgetn(char_type* s, streamsize count)
+    {
+        return fread(s, sizeof(char), count, &stream);
+    }
+};
+}
+
 class istream : public basic_istream<char>
 {
 public:
-    istream& read(char* s, streamsize n)
-    {
-        //lwip_read(0, (void*)s, n);
-        // TODO: switch away from posix mode one, name collision is just
-        // waiting for us
-        ::read(0, (void*)s, n);
-        return *this;
-    }
-
-    int get()
-    {
-        //char ch;
-        //fread(0, (void*)&ch, 1);
-
-        //return -1;
-        //return fgetc(stdin);
-        // TODO: use more low-level version to avoid overhead & name collision
-        return getchar();
-        //char ch;
-        //_read_r(??REENT??, 0, (void*)&ch, 1);
-    }
+#ifndef FEATURE_IOS_STREAMBUF_FULL
+    istream(_IO_FILE& file) : basic_istream<char>(file) {}
+#endif
 
     bool eof() { return false; }
 };
@@ -44,6 +50,10 @@ public:
 class ostream : public basic_ostream<char>
 {
 public:
+#ifndef FEATURE_IOS_STREAMBUF_FULL
+    ostream(_IO_FILE& file) : basic_ostream<char>(file) {}
+#endif
+
     __ostream_type& write(const char* s, streamsize n) override
     {
         /*

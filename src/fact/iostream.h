@@ -142,6 +142,18 @@ public:
     
     basic_streambuf(stream_t& stream) : base_t(stream) {}
 };
+#elif defined(__POSIX__)
+template<class TChar, class Traits = char_traits<TChar>>
+class basic_streambuf :
+    public experimental::basic_streambuf_embedded<TChar, ::_IO_FILE, Traits>
+{
+    typedef experimental::basic_streambuf_embedded<TChar, ::_IO_FILE, Traits> base_t;
+public:
+    typedef ::_IO_FILE stream_t;
+    //typedef typename base_t::stream_t stream_t;
+
+    basic_streambuf(stream_t& stream) : base_t(stream) {}
+};
 #else
 #error "FEATURE_IOS_STREAMBUF_FULL required for this architecture"
 #endif
@@ -255,6 +267,12 @@ public:
 
         return *this;
     }
+
+#ifndef FEATURE_IOS_STREAMBUF_FULL
+    typedef typename base_t::stream_t stream_t;
+
+    basic_istream(stream_t& stream) : base_t(stream) {}
+#endif
 };
 
 template<class TChar, class traits = char_traits<TChar>>
