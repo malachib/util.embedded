@@ -138,6 +138,7 @@ public:
 // a specialization of basic_streambuf_embedded and collides with iostream_mbed version
 // *or* perhaps this counts as an instantiation of the particular specialization 
 // but the particular specialization itself has yet to be defined 
+/*
 template<class TChar, class Traits = char_traits<TChar>>
 class basic_streambuf : 
     public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>
@@ -148,7 +149,7 @@ public:
     //typedef typename base_t::stream_t stream_t;
     
     basic_streambuf(stream_t& stream) : base_t(stream) {}
-};
+}; */
 #include "streams/iostream_mbed_streambuf.h"
 #elif defined(__POSIX__)
 #include "streams/iostream_posix_streambuf.h"

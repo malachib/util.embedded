@@ -4,7 +4,7 @@
 #include "c_types.h"
 
 #ifdef FEATURE_IOSTREAM_SHIM
-#include "fact/iostream.h"
+#include "iostream.h"
 
 // TODO: put fact_ostream in the proper namespace - it's in NONE right now!
 typedef FactUtilEmbedded::std::ostream fact_ostream;

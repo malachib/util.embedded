@@ -1,6 +1,7 @@
-// not needed anymore, everything is wrapped up in streambuf
-#ifdef UNUSED
 #pragma once
+
+// not needed anymore, everything is wrapped up in streambuf
+#ifdef __UNUSED
 
 //#include "mbed.h"
 

@@ -1,5 +1,5 @@
 #include "mbed.h"
-#include <fact/iostream>
+#include <fact/iostream.h>
 
 using namespace FactUtilEmbedded::std;
 

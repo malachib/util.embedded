@@ -6,12 +6,12 @@
 // should never be manually included, only auto-included from ../iostream.h
 // TODO: change this to use FileHandle once more tested
 
-template<class TChar, class Traits = char_traits <TChar>>
-class basic_streambuf : experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>
+template<class TChar, class Traits = char_traits<TChar>>
+class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>
 {
 protected:
     typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits> base_t;
-    //typedef char char_type;
+    typedef TChar char_type;
 
     streamsize xsputn(const char_type* s, streamsize count)
     {
@@ -26,7 +26,7 @@ protected:
     }
 
 public:
-    basic_streambuf(FileLike& stream) : base_t(stream) {}
+    basic_streambuf(mbed::FileLike& stream) : base_t(stream) {}
 
     int_type sputc(char_type ch)
     {
@@ -51,13 +51,6 @@ public:
         bool success = xsgetn(&ch, sizeof(ch)) == sizeof(ch);
 
         return success ? Traits::to_int_type(ch) : Traits::eof();
-    }
-
-    // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html
-    // acts like many sbumpc calls
-    streamsize sgetn(char_type* s, streamsize count)
-    {
-        return xsgetn(s, count);
     }
 
     streamsize sputn(const char_type* s, streamsize count)
