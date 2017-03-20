@@ -3,7 +3,7 @@
 #include "fact/c_types.h"
 #include "fact/iostream_arduino.h"
 
-#if !defined(FEATURE_IOS)
+#if defined(ARDUINO)
 inline Print& operator<<(Print& out, Print& (*__pf)(Print&))
 {
     return __pf(out);

@@ -17,16 +17,24 @@ using namespace FactUtilEmbedded;
 #define CONSOLE_BEHAVIOR_MAX_PARAMETER 8
 #endif
 
+
+
 #if defined(FEATURE_IOSTREAM)
+
 using namespace std;
 #ifndef CONSOLE_FEATURE_CIN
 #define in cin
 #endif
-#elif defined(FEATURE_IOSTREAM_SHIM)
+
+#else
+
 using namespace FactUtilEmbedded::std;
 #ifndef CONSOLE_FEATURE_CIN
 #define in cin
 #endif
+
+#endif
+/*
 #else
 #ifndef CONSOLE_FEATURE_COUT
 #ifndef CONSOLE_FEATURE_CIN
@@ -36,7 +44,7 @@ using namespace FactUtilEmbedded::std;
 #endif
 #endif
 #endif
-
+*/
 
 #ifdef USE_DUMMY_STREAM
 DummyStream _dummyStream;
@@ -48,18 +56,10 @@ DummyStream _dummyStream;
 // a -D switch
 void Console::handler()
 {
-#if defined(FEATURE_IOSTREAM) || defined(FEATURE_IOSTREAM_SHIM)
-  while(!in.eof())
-#else
-  while(in.available() > 0)
-#endif
+  while(in.rdbuf()->in_avail() > 0)
   {
     fact_ostream& out = getOut();
-#if defined(FEATURE_IOSTREAM) || defined(FEATURE_IOSTREAM_SHIM)
     char received = in.get();
-#else
-    char received = in.read();
-#endif
 
     if(processInput(received))
     {

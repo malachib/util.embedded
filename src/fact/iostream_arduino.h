@@ -1,10 +1,17 @@
 #pragma once
 
+// rename, iostream_arduino no longer right name
+// this sets up legacy fact_?streams based on whether we are using "real"
+// or our shim iostream, but we always now will be using our ostream
 #include "features.h"
 #include "c_types.h"
 
-#ifdef FEATURE_IOSTREAM_SHIM
+#ifndef FEATURE_IOSTREAM
 #include "iostream.h"
+#ifndef ARDUINO
+// Needed for __FlashStringHelper*
+#include "noduino.h"
+#endif
 
 // TODO: put fact_ostream in the proper namespace - it's in NONE right now!
 typedef FactUtilEmbedded::std::ostream fact_ostream;
@@ -14,7 +21,8 @@ inline FactUtilEmbedded::std::basic_ostream<char>& operator <<(
     FactUtilEmbedded::std::basic_ostream<char>& out, const __FlashStringHelper* arg)
 { out << (const char*)(arg); return out; }
 
-#elif defined(FEATURE_IOSTREAM)
+//#elif defined(FEATURE_IOSTREAM)
+#else
 #include <iostream>
 // Needed for __FlashStringHelper*
 #include "noduino.h"

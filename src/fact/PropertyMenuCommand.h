@@ -8,11 +8,11 @@
 
 namespace FactUtilEmbedded
 {
-#ifdef FEATURE_IOS
+//#ifdef FEATURE_IOS
 #define __cout std::cout
-#else
+/*#else
 #define __cout cout
-#endif
+#endif*/
 
   extern const char PROPERTYMENUCMD_GET[] PROGMEM;
   extern const char PROPERTYMENUCMD_SET[] PROGMEM;

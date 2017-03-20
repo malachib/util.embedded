@@ -2,9 +2,9 @@
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
-#if defined(FEATURE_IOSTREAM_SHIM)
+#if !defined(FEATURE_IOSTREAM)
 using namespace FactUtilEmbedded::std;
-#elif defined(FEATURE_IOSTREAM)
+#else
 using namespace std;
 #endif
 

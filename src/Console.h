@@ -16,10 +16,10 @@
 #define CONSOLE_FEATURE_COUT_ONLY
 #endif
 
-#ifdef FEATURE_IOS
+#ifdef FEATURE_IOSTREAM
 #define __cout std::cout
 #else
-#define __cout cout
+#define __cout FactUtilEmbedded::std::cout
 #endif
 
 namespace FactUtilEmbedded

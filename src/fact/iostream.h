@@ -259,16 +259,18 @@ public:
 protected:
 #ifdef FEATURE_IOS_STREAMBUF_FULL
     basic_streambuf_t* _rdbuf;
-    
+
+public:
     basic_streambuf_t* rdbuf() const { return _rdbuf; }
 #else
     basic_streambuf_t _rdbuf;
 
-    basic_streambuf_t* rdbuf() const { return (basic_streambuf_t*) &_rdbuf; }
-    
     typedef typename basic_streambuf_t::stream_t stream_t;
 
     basic_ios(stream_t& stream) : _rdbuf(stream) {}
+
+public:
+    basic_streambuf_t* rdbuf() const { return (basic_streambuf_t*) &_rdbuf; }
 #endif
 };
 
