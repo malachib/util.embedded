@@ -34,6 +34,8 @@ public:
         return success ? (int_type) ch : Traits::eof();
     }
 
+    // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html
+    // acts like many sbumpc calls
     streamsize sgetn(char_type* s, streamsize count)
     {
         return xsgetn(s, count);

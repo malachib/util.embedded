@@ -19,6 +19,7 @@
 #endif
 
 //#define FEATURE_IOS_STREAMBUF_FULL
+#define FEATURE_IOS_GCOUNT
 //#define FEATURE_IOS_IOSTREAM
 
 // Compatibility shim for targets (which seem to be many) who don't have an iostream
@@ -56,6 +57,7 @@ template <> struct char_traits<char>
 
     static int_type to_int_type(char ch) { return ch; }
     static int_type eof() { return -1; }
+    static bool eq(char c1, char c2) { return c1 == c2; }
 };
 
 
@@ -261,6 +263,13 @@ class basic_istream :
     typedef TChar char_type;
     typedef typename base_t::basic_streambuf_t basic_streambuf_t;
 
+#ifdef FEATURE_IOS_GCOUNT
+    streamsize _gcount = 0;
+
+public:
+    streamsize gcount() const { return _gcount; }
+#endif
+
 public:
     typedef basic_istream<TChar> __istream_type;
 
@@ -282,21 +291,36 @@ public:
 
     // UNTESTED readline
     // TODO: optimize, ensure this isn't inlined
-    __istream_type& readline(char_type* s, streamsize count, char_type delim = '\n')
+    __istream_type& getline(char_type* s, streamsize count, char_type delim = '\n')
     {
         basic_streambuf_t* stream = this->rdbuf();
-        char_type c;
 
-        // TODO: do a traits::eq operation
-        while(count-- && ((c = stream->sbumpc()) != traits::eof()) && c != delim)
+#ifdef FEATURE_IOS_GCOUNT
+        _gcount = 0;
+#endif
+
+        for(;;)
         {
-            *s = c;
-            s++;
+            int_type c = stream->sbumpc();
+
+            if(traits::eq(c, traits::eof()))
+            {
+                this->setstate(base_t::eofbit);
+                break;
+            }
+
+            if(!count-- || traits::eq(c, delim))
+            {
+                this->setstate(base_t::failbit);
+                break;
+            }
+
+            *s++ = c;
+#ifdef FEATURE_IOS_GCOUNT
+            _gcount++;
+#endif
         }
 
-        // TODO: set error flags if we EOF or abort early due to count underflow
-
-        // TODO: doublecheck we really want to null terminate (pretty sure we do)
         *s = 0;
 
         return *this;

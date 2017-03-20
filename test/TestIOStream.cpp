@@ -58,7 +58,7 @@ SCENARIO( "IOStream tests", "[iostream]" )
       istream file_in(*f);
 
       char input[50];
-      file_in.readline(input, 50);
+      file_in.getline(input, 50);
 
       REQUIRE(strcmp(input, "Test input") == 0);
   }
