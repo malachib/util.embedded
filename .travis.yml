@@ -22,7 +22,12 @@ before_install:
 
 # https://gist.github.com/petrbel/c3bf7e0f59c22a52f534 interesting submodule magic
 
-script:
+before_script:
 - cd test
+- mkdir build
+- cd build
+- cmake ..
+
+script:
 - make
-- ./test
+- ./util.embedded.tests
