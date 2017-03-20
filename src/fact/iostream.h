@@ -1,36 +1,8 @@
 #pragma once
 
-#ifdef ESP_OPEN_RTOS
-#else
-// ESP_OPEN_RTOS has some non-sprintf ways to convert numeric to strings
-#define USING_SPRINTF
-#endif
-
-#ifdef ESP_OPEN_RTOS
-#elif defined(__MBED__)
-#include "Stream.h"
-// FIX: We need this, but right now causes many compilation errors
-//#include "Serial.h"
-#endif
-
-//#define FEATURE_IOS_STREAMBUF_FULL
-
 // Lightweight ios compatibility for targets (which seem to be many) who don't have an iostream
 // implementation.  Also can and should serve as a wrapper class around Stream implementations
 // found in libs like Arduino & mbed OS
-
-extern "C"
-{
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
-#if defined(USING_SPRINTF) || defined(__POSIX__)
-#include <stdio.h>
-#include <inttypes.h>
-#endif
-
-}
 
 #include "streambuf.h"
 #include "ios.h"
@@ -64,6 +36,7 @@ class basic_iostream :
 
 } }
 
+#ifdef OBSOLETE
 #ifdef ESP_OPEN_RTOS
 #include "streams/iostream_esp8266.h"
 #elif defined(__POSIX__)
@@ -74,6 +47,7 @@ class basic_iostream :
 #include "streams/iostream_arduino.h"
 #else
 #warning "Unknown architecture"
+#endif
 #endif
 
 namespace FactUtilEmbedded { namespace std

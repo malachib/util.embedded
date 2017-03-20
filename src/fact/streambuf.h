@@ -1,6 +1,20 @@
 #ifndef UTIL_EMBEDDED_STREAMBUF_H
 #define UTIL_EMBEDDED_STREAMBUF_H
 
+#ifdef ESP_OPEN_RTOS
+#elif defined(__MBED__)
+#include "Stream.h"
+// FIX: We need this, but right now causes many compilation errors
+//#include "Serial.h"
+#endif
+
+
+extern "C"
+{
+#include <stdio.h> // For POSIX modes
+#include <stdint.h>
+}
+
 namespace FactUtilEmbedded { namespace std {
 
 
@@ -11,9 +25,6 @@ namespace FactUtilEmbedded { namespace std {
 typedef uint16_t streamoff;
 typedef uint16_t streamsize;
 
-// TODO: ensure we're creating int_type properly
-typedef int16_t int_type;
-
 //  As per http://tuttlem.github.io/2014/08/18/getting-istream-to-work-off-a-byte-array.html
 //  I won't try to stuff in a uint8_t as a TChar anywhere, although it seems like I could
 // safely make a fully uint8_t version of things
@@ -22,6 +33,7 @@ template <class TChar> struct char_traits;
 template <> struct char_traits<char>
 {
     typedef char char_type;
+    typedef int int_type;
 
     static int_type to_int_type(char ch) { return ch; }
     static int_type eof() { return -1; }
@@ -41,6 +53,7 @@ class basic_streambuf_embedded : public TBase
 {
 protected:
     typedef TChar char_type;
+    typedef typename Traits::int_type int_type;
     TStream &stream;
 
     streamsize xsputn(const char_type *s, streamsize count);
@@ -137,7 +150,7 @@ public:
 
 #include "streams/iostream_posix_streambuf.h"
 #else
-#error "FEATURE_IOS_STREAMBUF_FULL required for this architecture"
+#error "Architecture not yet supported"
 #endif
 #endif
 

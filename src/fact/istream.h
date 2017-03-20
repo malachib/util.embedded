@@ -8,16 +8,17 @@
 
 namespace FactUtilEmbedded { namespace std {
 
-template<class TChar, class traits = char_traits<TChar>>
+template<class TChar, class Traits = char_traits<TChar>>
 class basic_istream :
 #ifdef FEATURE_IOS_STREAMBUF_FULL
         virtual
 #endif
-        public basic_ios<TChar, traits>
+        public basic_ios<TChar, Traits>
 {
     typedef basic_ios<TChar> base_t;
     typedef TChar char_type;
     typedef typename base_t::basic_streambuf_t basic_streambuf_t;
+    typedef typename Traits::int_type int_type;
 
 #ifdef FEATURE_IOS_GCOUNT
     streamsize _gcount = 0;
@@ -27,7 +28,7 @@ public:
 #endif
 
 public:
-    typedef basic_istream<TChar> __istream_type;
+    typedef basic_istream<TChar, Traits> __istream_type;
 
     int get()
     {
@@ -58,13 +59,13 @@ public:
         {
             int_type c = stream->sbumpc();
 
-            if(traits::eq(c, traits::eof()))
+            if(Traits::eq(c, Traits::eof()))
             {
                 this->setstate(base_t::eofbit);
                 break;
             }
 
-            if(!count-- || traits::eq(c, delim))
+            if(!count-- || Traits::eq(c, delim))
             {
                 this->setstate(base_t::failbit);
                 break;

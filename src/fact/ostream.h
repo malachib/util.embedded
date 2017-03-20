@@ -1,6 +1,23 @@
 #ifndef UTIL_EMBEDDED_OSTREAM_H
 #define UTIL_EMBEDDED_OSTREAM_H
 
+#ifdef ESP_OPEN_RTOS
+#else
+// ESP_OPEN_RTOS has some non-sprintf ways to convert numeric to strings
+#define USING_SPRINTF
+#endif
+
+
+extern "C" {
+
+#if defined(USING_SPRINTF) || defined(__POSIX__)
+#include <inttypes.h>
+#endif
+
+#include <string.h>
+
+};
+
 #include "streambuf.h"
 #include "ios.h"
 

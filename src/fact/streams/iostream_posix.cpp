@@ -1,6 +1,6 @@
 #ifdef __POSIX__
 
-#include "../iostream.h"
+#include "../streambuf.h"
 
 namespace FactUtilEmbedded { namespace std { namespace experimental {
 
@@ -20,7 +20,7 @@ streamsize basic_streambuf_embedded<char, TEST_STREAM_T>::
 }
 
 template<>
-int_type basic_streambuf_embedded<char, TEST_STREAM_T>::
+int basic_streambuf_embedded<char, TEST_STREAM_T>::
     sputc(char ch)
 {
     return fputc(ch, &this->stream);
@@ -28,7 +28,7 @@ int_type basic_streambuf_embedded<char, TEST_STREAM_T>::
 
 
 template<>
-int_type basic_streambuf_embedded<char, TEST_STREAM_T>::
+int basic_streambuf_embedded<char, TEST_STREAM_T>::
     sbumpc()
 {
     return fgetc(&this->stream);
