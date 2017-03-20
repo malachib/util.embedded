@@ -9,10 +9,9 @@
 
 //namespace FactUtilEmbedded { namespace std {
 
-//namespace experimental {
-
 typedef ::FILE TEST_STREAM_T;
 //typedef ::_IO_FILE TEST_STREAM_T;
+
 
 template<class TChar, class Traits = char_traits <TChar>>
 class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, Traits>
@@ -36,9 +35,18 @@ public:
     {
         return fread(s, sizeof(TChar), count, &this->stream);
     }
-};
 
-//}
+
+    int_type sputc(char_type ch)
+    {
+        return fputc(ch, &this->stream);
+    }
+
+    int_type sbumpc()
+    {
+        return fgetc(&this->stream);
+    }
+};
 
 //} }
 

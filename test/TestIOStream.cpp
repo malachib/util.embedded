@@ -48,4 +48,8 @@ SCENARIO( "IOStream tests", "[iostream]" )
 
       cout  << special;
   }
+  WHEN("Testing input")
+  {
+      cin.readline(nullptr, 0);
+  }
 }

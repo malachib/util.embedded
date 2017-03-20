@@ -82,6 +82,17 @@ public:
     typedef TStream stream_t;
     
     basic_streambuf_embedded(TStream& stream) : stream(stream) {}
+
+    // TODO: *possibly* implement underflow, if I like it...
+    // Don't think I made this one quite right...
+    int_type sbumpc()
+    {
+        char_type ch;
+
+        bool success = xsgetn(&ch, sizeof(ch)) == sizeof(ch);
+
+        return success ? Traits::to_int_type(ch) : Traits::eof();
+    }
 };
 }
 
@@ -226,8 +237,8 @@ protected:
     basic_streambuf_t* rdbuf() const { return _rdbuf; }
 #else
     basic_streambuf_t _rdbuf;
-    
-    basic_streambuf_t* rdbuf() const { return &_rdbuf; }
+
+    basic_streambuf_t* rdbuf() const { return (basic_streambuf_t*) &_rdbuf; }
     
     typedef typename basic_streambuf_t::stream_t stream_t;
 
