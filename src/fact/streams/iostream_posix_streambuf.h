@@ -1,7 +1,3 @@
-//
-// Created by malachi on 3/19/17.
-//
-
 #ifndef UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_STREAMBUF_H
 #define UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_STREAMBUF_H
 
@@ -12,7 +8,7 @@
 typedef ::FILE TEST_STREAM_T;
 //typedef ::_IO_FILE TEST_STREAM_T;
 
-
+#ifdef __EXP1
 template<class TChar, class Traits = char_traits <TChar>>
 class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, Traits>
 {
@@ -63,6 +59,14 @@ public:
         return xsputn(s, count);
     }
 };
+#else
+
+template <class TChar, class Traits = char_traits<TChar>>
+using basic_streambuf = experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, Traits>;
+
+
+
+#endif
 
 //} }
 

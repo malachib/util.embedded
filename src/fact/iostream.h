@@ -79,6 +79,26 @@ public:
     
     basic_streambuf_embedded(TStream& stream) : stream(stream) {}
 
+    // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html
+    // acts like many sbumpc calls
+    streamsize sgetn(char_type* s, streamsize count)
+    {
+        return xsgetn(s, count);
+    }
+
+    streamsize sputn(const char_type* s, streamsize count)
+    {
+        return xsputn(s, count);
+    }
+
+
+    int_type sputc(char_type ch)
+    {
+        bool success = xsputn(&ch, sizeof(ch)) == sizeof(ch);
+        return success ? ch : Traits::eof();
+    }
+
+
     // TODO: *possibly* implement underflow, if I like it...
     // Don't think I made this one quite right...
     int_type sbumpc()
