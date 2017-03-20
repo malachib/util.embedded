@@ -21,6 +21,12 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
+    
+cache:
+  bundler: true
+  # not sure if we need to explicitly cache usr, specifically want to cache our cmake
+  directories:
+      - /usr
 
 before_install:
 - echo $LANG
