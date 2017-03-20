@@ -2,7 +2,7 @@
 
 // Specifically testing iostream SHIM, not platform-native iostream
 //#define __POSIX__
-#define FEATURE_IOSTREAM_SHIM
+//#define FEATURE_IOSTREAM_SHIM
 
 #include <fact/iostream.h>
 

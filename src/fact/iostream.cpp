@@ -1,5 +1,3 @@
-// FIX: Needs attention, this will break non-shim POSIX compilation
-#if defined(FEATURE_IOSTREAM_SHIM) || defined(__POSIX__)
 #ifdef ESP_OPEN_RTOS
 extern "C"
 {
@@ -22,13 +20,13 @@ namespace FactUtilEmbedded { namespace std
 #ifdef FEATURE_IOS_STREAMBUF_FULL
 ostream cout;
 istream cin;
-#else
+#elif defined(__POSIX__)
 ostream cout(*stdout);
 istream cin(*stdin);
+#else
+#warning "Be sure to define your own explicit cout and cin, defaults not specified for this platform"
 #endif
 ostream& clog = cout;
 ostream& cerr = cout;
 
 } }
-
-#endif

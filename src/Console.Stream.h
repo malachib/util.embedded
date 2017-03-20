@@ -76,7 +76,7 @@ extern DummyStream _dummyStream;
 #ifdef CONSOLE_FEATURE_COUT
 #define MENU_DECLARE_COUT fact_ostream& out = p.console->getOut();
 #else
-#if FEATURE_IOSTREAM_SHIM
+#if defined(FEATURE_IOSTREAM_SHIM)
 #define MENU_DECLARE_COUT fact_ostream& out = FactUtilEmbedded::std::cout;
 #elif defined(FEATURE_IOSTREAM)
 #define MENU_DECLARE_COUT fact_ostream& out = std::cout;

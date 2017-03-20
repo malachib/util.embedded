@@ -2,7 +2,7 @@
 #include "fact/Menu.h"
 
 using namespace FactUtilEmbedded;
-#ifdef FEATURE_IOSTREAM_SHIM
+#ifndef FEATURE_IOSTREAM
 using namespace FactUtilEmbedded::std;
 #else
 using namespace std;

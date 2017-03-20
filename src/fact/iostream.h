@@ -1,15 +1,8 @@
 #pragma once
 
-// FIX: __POSIX__ flag here is right now allowing us to brute-force this into posix mode
-// very bad use, name should be FORCE_SHIM or similar
-#ifndef __POSIX__
-#ifndef FEATURE_IOSTREAM_SHIM
-#error "Only include this for iostream shim compatibility"
-#endif
-#endif
-
 #ifdef ESP_OPEN_RTOS
 #else
+// ESP_OPEN_RTOS has some non-sprintf ways to convert numeric to strings
 #define USING_SPRINTF
 #endif
 
@@ -289,7 +282,6 @@ public:
         return *this;
     }
 
-    // UNTESTED readline
     // TODO: optimize, ensure this isn't inlined
     __istream_type& getline(char_type* s, streamsize count, char_type delim = '\n')
     {
@@ -403,22 +395,6 @@ class basic_iostream :
 };
 #endif
 
-
-namespace experimental
-{
-// embedded flavor you can't reassign rdbuf.  It gets assigned once as a global
-// via TStream& stream and that's all you get.  In theory, this could all optimize
-// all instance variables away from basic_ostream_embedded & basic_streambuf_embedded
-template<class TChar, class TStream>
-class basic_ostream_embedded
-{
-    typedef basic_streambuf_embedded<TChar, TStream> __basic_streambuf_type;
-    __basic_streambuf_type _rdbuf;
-    
-public:
-    __basic_streambuf_type* rdbuf() const { return &_rdbuf; }
-};
-}
 
 
 inline basic_ostream<char>& operator <<(basic_ostream<char>& out, const char* arg)
