@@ -6,11 +6,25 @@
 // should never be manually included, only auto-included from ../iostream.h
 // TODO: change this to use FileHandle once more tested
 
+class basic_streambuf_mbed
+{
+public:
+    typedef uint8_t traits;
+
+    static constexpr traits none = 0;
+    static constexpr traits serialbit = 0x01;
+
+    bool is_serial() { return _traits & serialbit; }
+
+protected:
+    traits _traits = none;
+};
+
 template<class TChar, class Traits = char_traits<TChar>>
-class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>
+class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, basic_streambuf_mbed, Traits>
 {
 protected:
-    typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits> base_t;
+    typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, basic_streambuf_mbed, Traits> base_t;
     typedef TChar char_type;
 
     streamsize xsputn(const char_type* s, streamsize count)
@@ -27,6 +41,13 @@ protected:
 
 public:
     basic_streambuf(mbed::FileLike& stream) : base_t(stream) {}
+
+    /*
+    basic_streambuf(mbed::Serial& stream) : base_t(stream)
+    {
+        this->_traits = this->serial;
+    }
+    */
 
     int_type sputc(char_type ch)
     {
@@ -57,6 +78,17 @@ public:
     {
         return xsputn(s, count);
     }
+
+    /*
+    streamsize is_avail()
+    {
+        if(this->is_serial())
+        {
+            return ((SerialBase&) this->stream).available();
+        }
+        else
+            return 0;
+    } */
 };
 
 

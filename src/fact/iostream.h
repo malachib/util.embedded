@@ -9,6 +9,8 @@
 #ifdef ESP_OPEN_RTOS
 #elif defined(__MBED__)
 #include "Stream.h"
+// FIX: We need this, but right now causes many compilation errors
+//#include "Serial.h"
 #endif
 
 //#define FEATURE_IOS_STREAMBUF_FULL
@@ -64,8 +66,11 @@ protected:
 
 namespace experimental 
 {
-template<class TChar, class TStream, class Traits = char_traits<TChar>>
-class basic_streambuf_embedded : public basic_streambuf_base<TChar, Traits>
+
+class Empty {};
+
+template<class TChar, class TStream, class TBase=Empty, class Traits = char_traits<TChar>>
+class basic_streambuf_embedded : public basic_streambuf_base<TChar, Traits>, public TBase
 {
 protected:
     typedef TChar char_type;
