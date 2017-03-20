@@ -247,6 +247,8 @@ class basic_istream :
         public basic_ios<TChar, traits>
 {
     typedef basic_ios<TChar> base_t;
+    typedef TChar char_type;
+    typedef typename base_t::basic_streambuf_t basic_streambuf_t;
 
 public:
     typedef basic_istream<TChar> __istream_type;
@@ -263,6 +265,28 @@ public:
         // all over the place
         if(this->rdbuf()->sgetn(s, n) != n)
             setstate(base_t::eofbit);
+
+        return *this;
+    }
+
+    // UNTESTED readline
+    // TODO: optimize, ensure this isn't inlined
+    __istream_type& readline(char_type* s, streamsize count, char_type delim = '\n')
+    {
+        basic_streambuf_t* stream = this->rdbuf();
+        char_type c;
+
+        // TODO: do a traits::eq operation
+        while(count-- && (c = stream->sbumpc() != traits::eof()) && c != delim)
+        {
+            *s = c;
+            s++;
+        }
+
+        // TODO: set error flags if we EOF or abort early due to count underflow
+
+        // TODO: doublecheck we really want to null terminate (pretty sure we do)
+        *s = 0;
 
         return *this;
     }
@@ -433,6 +457,16 @@ inline basic_ostream<char>& hex(basic_ostream<char>& __os)
     __os.flags((__os.flags() & ~ios_base::basefield) | ios_base::hex);
     return __os;
 }
+
+
+// To change delimiters, we'll need to do something like this:
+// http://stackoverflow.com/questions/7302996/changing-the-delimiter-for-cin-c
+/*
+inline basic_istream<char>& operator >>(basic_istream<char>& in, short& value)
+{
+    return *in;
+}
+*/
 
 } }
 
