@@ -17,6 +17,7 @@ ADD_DEFINITIONS(-DUNIT_TEST)
 # Because my 3/4 baked event system has unit tests using the special variable-argument feature
 ADD_DEFINITIONS(-DEVENT_FEATURE_VA)
 
+configure_file("data/iostream.test.txt" "iostream.test.txt" COPYONLY)
 
 INCLUDE_DIRECTORIES("../ext/Catch/include")
 

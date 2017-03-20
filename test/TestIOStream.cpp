@@ -50,6 +50,16 @@ SCENARIO( "IOStream tests", "[iostream]" )
   }
   WHEN("Testing input")
   {
-      cin.readline(nullptr, 0);
+      char cwdbuf[128];
+      getcwd(cwdbuf, 128);
+
+      FILE* f = fopen("iostream.test.txt", "r");
+      auto e = strerror(errno);
+      istream file_in(*f);
+
+      char input[50];
+      file_in.readline(input, 50);
+
+      REQUIRE(strcmp(input, "Test input") == 0);
   }
 }

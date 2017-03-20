@@ -288,7 +288,7 @@ public:
         char_type c;
 
         // TODO: do a traits::eq operation
-        while(count-- && (c = stream->sbumpc() != traits::eof()) && c != delim)
+        while(count-- && ((c = stream->sbumpc()) != traits::eof()) && c != delim)
         {
             *s = c;
             s++;
