@@ -1,9 +1,5 @@
 #include "catch.hpp"
 
-// Specifically testing iostream SHIM, not platform-native iostream
-//#define __POSIX__
-//#define FEATURE_IOSTREAM_SHIM
-
 #include <fact/iostream.h>
 
 using namespace FactUtilEmbedded::std;
@@ -50,8 +46,8 @@ SCENARIO( "IOStream tests", "[iostream]" )
   }
   WHEN("Testing input")
   {
-      char cwdbuf[128];
-      getcwd(cwdbuf, 128);
+      //char cwdbuf[128];
+      //getcwd(cwdbuf, 128);
 
       FILE* f = fopen("iostream.test.txt", "r");
       auto e = strerror(errno);
