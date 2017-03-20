@@ -1,4 +1,7 @@
-sudo: false
+# sudo required cuz we gotta upgrade cmake
+sudo: required
+#dist: trusty
+
 language: cpp
 compiler:
   - gcc
