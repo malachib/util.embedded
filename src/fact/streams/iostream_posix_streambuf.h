@@ -57,6 +57,11 @@ public:
     {
         return xsgetn(s, count);
     }
+
+    streamsize sputn(const char_type* s, streamsize count)
+    {
+        return xsputn(s, count);
+    }
 };
 
 //} }

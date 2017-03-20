@@ -1,3 +1,5 @@
+// not needed anymore, everything is wrapped up in streambuf
+#ifdef UNUSED
 #pragma once
 
 //#include "mbed.h"
@@ -137,3 +139,4 @@ public:
 };
 
 } }
+#endif

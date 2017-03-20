@@ -338,21 +338,18 @@ class basic_ostream :
 public:
     typedef basic_ostream<TChar> __ostream_type;
 
-    virtual __ostream_type& write(const TChar* s, streamsize n) = 0;
-    virtual __ostream_type& put(TChar ch) = 0;
-
     // When the time comes, these will replace the old virtual ones
-    __ostream_type& write_new(const TChar* s, streamsize n)
+    __ostream_type& write(const TChar* s, streamsize n)
     {
         this->rdbuf()->sputn(s, n);
         return *this;
     }
 
 
-    __ostream_type& put_new(TChar ch)
+    __ostream_type& put(TChar ch)
     {
         if(this->rdbuf()->sputc(ch) == char_traits<TChar>::eof())
-            setstate(base_t::eofbit);
+            this->setstate(base_t::eofbit);
 
         return *this;
     }
@@ -376,6 +373,10 @@ public:
     basic_ostream(stream_t& stream) : base_t(stream) {}
 #endif
 };
+
+typedef basic_istream<char> istream;
+typedef basic_ostream<char> ostream;
+
 
 #ifdef FEATURE_IOS_STREAMBUF_FULL
 template <class TChar, class traits = char_traits<TChar>>

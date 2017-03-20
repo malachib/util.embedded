@@ -13,9 +13,6 @@ protected:
     typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits> base_t;
     //typedef char char_type;
 
-public:
-    basic_streambuf(FileLike& stream) : base_t(stream) {}
-
     streamsize xsputn(const char_type* s, streamsize count)
     {
         this->stream.write(s, count);
@@ -28,10 +25,13 @@ public:
         return count;
     }
 
+public:
+    basic_streambuf(FileLike& stream) : base_t(stream) {}
+
     int_type sputc(char_type ch)
     {
         bool success = xsputn(&ch, sizeof(ch)) == sizeof(ch);
-        return success ? (int_type) ch : Traits::eof();
+        return success ? ch : Traits::eof();
     }
 
     // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html
@@ -52,9 +52,19 @@ public:
 
         return success ? Traits::to_int_type(ch) : Traits::eof();
     }
-};
 
-}
+    // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html
+    // acts like many sbumpc calls
+    streamsize sgetn(char_type* s, streamsize count)
+    {
+        return xsgetn(s, count);
+    }
+
+    streamsize sputn(const char_type* s, streamsize count)
+    {
+        return xsputn(s, count);
+    }
+};
 
 
 #endif //UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H
