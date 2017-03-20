@@ -27,6 +27,7 @@ extern "C"
 
 #if defined(USING_SPRINTF) || defined(__POSIX__)
 #include <stdio.h>
+#include <inttypes.h>
 #endif
 
 }
@@ -385,7 +386,7 @@ class basic_iostream :
 
 };
 #else
-// don't use virtual inheretence and instead manually redefine basic_istream behaviors
+// don't use virtual inheritance and instead manually redefine basic_istream behaviors
 // creates some visual code slop, but ends up compiling smaller (and maybe faster)
 template <class TChar, class traits = char_traits<TChar>>
 class basic_iostream :
@@ -423,17 +424,12 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
 
 inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 {
-    // TODO: determine word size and optimize this code
-    // right now will crash for 64-bit arch
-    char buffer[10];
+    char buffer[sizeof(uintptr_t) * 3];
 
 #if ESP_OPEN_RTOS
     __utoa((uint32_t)addr, buffer, 16);
 #else
-    if(sizeof(uintptr_t) == 4)
-        snprintf(buffer, sizeof(buffer), "%x", (uintptr_t)addr);
-    else
-        snprintf(buffer, sizeof(buffer), "%lx", (uintptr_t)addr);
+    snprintf(buffer, sizeof(buffer), "%" PRIXPTR, (uintptr_t)addr);
 #endif
     return out << buffer;
 }
