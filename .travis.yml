@@ -8,6 +8,8 @@ notifications:
   slack: factmusic:10PHwS7fLCYhMydiIS2cPigw
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+# lifted from https://github.com/elemental/Elemental/blob/master/.travis.yml
+- curl https://cmake.org/files/v3.6/cmake-3.6.1-Linux-x86_64.tar.gz | sudo tar -x -z --strip-components 1 -C /usr
 addons:
   apt:
     sources:
@@ -29,5 +31,5 @@ before_script:
 - cmake ..
 
 script:
-- make
+- make -j2
 - ./util.embedded.tests
