@@ -109,6 +109,10 @@ public:
 
         return success ? Traits::to_int_type(ch) : Traits::eof();
     }
+
+    // NOTE: this deviates from spec in that it won't wait for CR, for example,
+    // to reflect characters are available
+    streamsize in_avail();
 };
 }
 
