@@ -142,6 +142,7 @@ public:
     
     basic_streambuf(stream_t& stream) : base_t(stream) {}
 };
+#include "streams/iostream_mbed_streambuf.h"
 #elif defined(__POSIX__)
 #include "streams/iostream_posix_streambuf.h"
 /*
