@@ -4,7 +4,9 @@
 #include <fact/c_types.h>
 #include <fact/string_convert.h>
 //#include <fact/menu_invoke.h>
+#include <fact/string.h>
 
+namespace experimental2 = FactUtilEmbedded::experimental;
 
 SCENARIO( "Low level string conversion/handling functions", "[string-convert]" )
 {
@@ -75,5 +77,17 @@ SCENARIO( "Low level string conversion/handling functions", "[string-convert]" )
       char buffer2[experimental::maxStringLength<float>()];
 
       REQUIRE(sizeof(buffer2) == 32);
+  }
+  GIVEN("layer1 string")
+  {
+      experimental2::layer1::string<6> str = { "HELLO" };
+      auto str2 = experimental2::layer1::getString("Hi");
+
+      auto sizetest = experimental2::layer1::size("HI");
+      auto sizetest2 = experimental2::layer1::size(buffer);
+
+      auto str3 = experimental2::layer1::getString2("Hi");
+      REQUIRE(0 == 1);
+    //exp2::
   }
 }
