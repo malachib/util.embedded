@@ -87,7 +87,8 @@ SCENARIO( "Low level string conversion/handling functions", "[string-convert]" )
       auto sizetest2 = experimental2::layer1::size(buffer);
 
       auto str3 = experimental2::layer1::getString2("Hi");
-      REQUIRE(0 == 1);
+      experimental2::layer3::string<> str4(str.getData());
+      REQUIRE(str4.getData() == str.getData());
     //exp2::
   }
 }

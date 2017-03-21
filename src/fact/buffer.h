@@ -72,6 +72,21 @@ namespace FactUtilEmbedded
 
   namespace layer2
   {
+  namespace experimental {
+
+  struct buffer_traits
+  {
+    typedef void* ptr_t;
+  };
+
+  struct const_buffer_traits
+  {
+    typedef const void* ptr_t;
+  };
+
+  }
+
+    template <class Traits = experimental::buffer_traits>
     class MemoryContainerBase
     {
       void* const data;
@@ -82,17 +97,17 @@ namespace FactUtilEmbedded
       void* const getData() const { return data; }
     };
 
-    template <uint16_t size>
+    template <uint16_t size, class Traits = experimental::buffer_traits>
     class MemoryContainer :
       public layer1::MemoryContainerBase<size>,
-      public layer2::MemoryContainerBase
+      public layer2::MemoryContainerBase<Traits>
     {
     public:
         typedef uint16_t size_t;
 
-      MemoryContainer(void* const data) : layer2::MemoryContainerBase(data) {}
+      MemoryContainer(void* const data) : layer2::MemoryContainerBase<Traits>(data) {}
 
-      void clear() { memset(getData(), 0, size); }
+      void clear() { memset(this->getData(), 0, size); }
     };
 
     template <class T, uint16_t size>
@@ -105,7 +120,7 @@ namespace FactUtilEmbedded
       Array(T* const data) : MemoryContainer<size * sizeof(T)>(data) {}
 
       // FIX: definitely will hit data alignment issues here
-      T* getData() const { return (T*) MemoryContainerBase::getData(); }
+      T* getData() const { return (T*) MemoryContainerBase<>::getData(); }
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
       uint16_t getSize() const { return size; }
@@ -125,23 +140,24 @@ namespace FactUtilEmbedded
 
   namespace layer3
   {
-    template <class TSize = uint16_t>
-    class MemoryContainer : public layer2::MemoryContainerBase
+    template <class TSize = uint16_t, class Traits = layer2::experimental::buffer_traits>
+    class MemoryContainer : public layer2::MemoryContainerBase<Traits>
     {
       const TSize size;
 
     public:
       MemoryContainer(void* const data, const TSize size) :
-        layer2::MemoryContainerBase(data), size(size)
+        layer2::MemoryContainerBase<Traits>(data), size(size)
       {}
 
       TSize getSize() const { return size; }
-      void clear() { memset(getData(), 0, size); }
+      void clear() { memset(this->getData(), 0, size); }
     };
 
-    template <class T, class TSize = uint16_t>
-    class Array : public MemoryContainer<TSize>
+    template <class T, class TSize = uint16_t, class Traits = layer2::experimental::buffer_traits>
+    class Array : public MemoryContainer<TSize, Traits>
     {
+        typedef MemoryContainer<TSize, Traits> base_t;
     public:
       typedef T*        iterator;
       typedef const T*  const_iterator;
@@ -150,11 +166,11 @@ namespace FactUtilEmbedded
         MemoryContainer<TSize>(data, size * sizeof(T)) {}
 
       // FIX: definitely will hit data alignment issues here
-      T* getData() const { return (T*) MemoryContainer<TSize>::getData(); }
+      T* getData() const { return (T*) base_t::getData(); }
       T& getValue(uint16_t index) const { return getData()[index]; }
       T& operator[](uint16_t index) const { return getValue(index); }
       TSize getSize() const
-      { return MemoryContainer<TSize>::getSize() / sizeof(T); }
+      { return base_t::getSize() / sizeof(T); }
 
       iterator begin() { return iterator(&getData()[0]); }
       // lifting this from STL example code
