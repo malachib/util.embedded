@@ -21,7 +21,7 @@ void Button::update(bool pressed)
     }
 }
 
-#ifndef NODUINO
+#ifdef ARDUINO
 void ButtonWithTimer::update(bool pressed)
 {
     Button::update(pressed);

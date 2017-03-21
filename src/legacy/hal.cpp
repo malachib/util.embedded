@@ -1,9 +1,6 @@
-#include "hal.h"
 #ifdef ARDUINO
+#include "hal.h"
 #include <Arduino.h>
-#else
-#include "../fact/noduino.h"
-#endif
 
 namespace FactUtilEmbedded {
 
@@ -24,3 +21,4 @@ Led::Led() : Led(13, true)
 }
     
 }
+#endif

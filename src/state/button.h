@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#ifndef NODUINO
+#ifdef ARDUINO
 #include <Arduino.h>
 #endif
 
@@ -35,7 +35,7 @@ protected:
 };
 
 
-#ifndef NODUINO
+#ifdef ARDUINO
 class ButtonWithTimer : public Button
 {
     uint32_t buttonInitialPressTimestamp;
