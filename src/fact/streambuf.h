@@ -4,6 +4,7 @@
 #ifdef ESP_OPEN_RTOS
 #elif defined(__MBED__)
 #include "Stream.h"
+#include "mbed.h"
 // FIX: We need this, but right now causes many compilation errors
 //#include "Serial.h"
 #endif
