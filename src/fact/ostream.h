@@ -106,7 +106,7 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint32_t value
 #if ESP_OPEN_RTOS
     __utoa(value, buffer, 10);
 #else
-    snprintf(buffer, sizeof(buffer), "%lu", value);
+    snprintf(buffer, sizeof(buffer), "%" PRIu32, value);
 #endif
 
     return out << buffer;

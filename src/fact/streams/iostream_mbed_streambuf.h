@@ -18,6 +18,12 @@ public:
 
     bool is_serial() { return _traits & serialbit; }
 
+    // Since mbed OS somewhat scatters these two, directly function pointer them
+    // out.  Don't do virtual tables, since the number of basic_streambufs in a system
+    // is gonna be low, so explicit function pointers almost definitely smaller and faster
+    streamsize (*_in_avail)(void*);
+    int (*_sgetc)(void*);
+
 protected:
     traits _traits = none;
 };
@@ -43,7 +49,14 @@ protected:
     }
 
 public:
-    basic_streambuf(mbed::FileLike& stream) : base_t(stream) {}
+    basic_streambuf(mbed::FileLike& stream,
+                    streamsize (*_in_avail)(void*) = nullptr,
+                    int (*_sgetc)(void*) = nullptr) :
+        base_t(stream)
+    {
+        this->_in_avail = _in_avail;
+        this->_sgetc = _sgetc;
+    }
 
     /*
     basic_streambuf(mbed::Serial& stream) : base_t(stream)
@@ -82,16 +95,20 @@ public:
         return xsputn(s, count);
     }
 
-    /*
+
+    int_type sgetc()
+    {
+        if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
+
+        return Traits::eof();
+    }
+
     streamsize is_avail()
     {
-        if(this->is_serial())
-        {
-            return ((SerialBase&) this->stream).available();
-        }
-        else
-            return 0;
-    } */
+        if(this->_is_avail != nullptr) return this->_is_avail(&this->stream);
+
+        return 0;
+    }
 };
 #endif
 
