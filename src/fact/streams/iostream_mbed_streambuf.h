@@ -46,12 +46,10 @@ protected:
         return count;
     }
 
-    /*
     static streamsize serial_in_avail(void* serial)
     {
-        return ((Serial*)serial)->available();
+        return ((mbed::Serial*)serial)->readable();
     }
-    */
 
 public:
     basic_streambuf(mbed::FileLike& stream,
@@ -63,12 +61,11 @@ public:
         this->_sgetc = _sgetc;
     }
 
-    /*
     basic_streambuf(mbed::Serial& stream) : base_t(stream)
     {
         this->_traits = this->serial;
         this->_in_avail = serial_in_avail;
-    } */
+    }
 
     int_type sputc(char_type ch)
     {

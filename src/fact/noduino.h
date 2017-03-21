@@ -21,7 +21,7 @@
 // Add CPU hardware definitions
 
 #define _AVR_IO_H_
-#define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
+#include "noduino_F.h"
 #define PSTR(str) (str)
 #define _SFR_IO8(io_addr) ((io_addr))
 //#include "C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\iomxx0_1.h"
