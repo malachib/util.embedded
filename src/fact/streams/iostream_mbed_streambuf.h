@@ -28,6 +28,7 @@ class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbe
 protected:
     typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, basic_streambuf_mbed, Traits> base_t;
     typedef TChar char_type;
+    typedef typename Traits::int_type int_type;
 
     streamsize xsputn(const char_type* s, streamsize count)
     {
