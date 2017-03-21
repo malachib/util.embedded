@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace FactUtilEmbedded
 {
 
@@ -14,7 +16,7 @@ class SinglyLinkedNode
   friend DoublyLinkedList;
 
 protected:
-  SinglyLinkedNode* next = NULL;
+  SinglyLinkedNode* next = nullptr;
 
 public:
   SinglyLinkedNode* getNext() const { return next; }
@@ -50,7 +52,7 @@ public:
 class SinglyLinkedList
 {
 protected:
-  SinglyLinkedNode* head = NULL;
+  SinglyLinkedNode* head = nullptr;
 
 public:
   SinglyLinkedNode* getHead() const { return head; }
@@ -65,7 +67,7 @@ public:
   {
     uint16_t counter = 0;
 
-    for(SinglyLinkedNode* node = head; node != NULL; node = node->next)
+    for(SinglyLinkedNode* node = head; node != nullptr; node = node->next)
       counter++;
 
     return counter;

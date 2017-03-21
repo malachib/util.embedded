@@ -1,4 +1,9 @@
 #include "hal.h"
+#ifdef ARDUINO
+#include <Arduino.h>
+#else
+#include "../fact/noduino.h"
+#endif
 
 namespace FactUtilEmbedded {
 

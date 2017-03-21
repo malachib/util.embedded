@@ -9,6 +9,18 @@
 #include "features.h"
 #include "DummyMenu.h"
 
+#include <fact/iostream.h>
+
+namespace FactUtilEmbedded { namespace std {
+
+ostream cout(Serial);
+istream cin(Serial);
+ostream& clog = cout;
+
+} }
+
+using namespace util::std;
+
 void dummyHandler(IMenu::Parameters p);
 
 Service svc1;
@@ -28,8 +40,7 @@ void setup_menuProperty();
 void setup()
 {
   Serial.begin(115200);
-  Serial << F("Starting up");
-  Serial.println();
+  clog << F("Starting up") << endl;
 
 #if FEATURE_MENUPROPERTY >= 3
   setup_menuProperty();

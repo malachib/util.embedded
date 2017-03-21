@@ -1,6 +1,9 @@
 #include <fact/Menu.h>
+#include <fact/iostream.h>
+#include <fact/iostream_arduino.h>
 
 using namespace util;
+using namespace util::std;
 
 #include "DummyMenu.h"
 
@@ -26,19 +29,20 @@ void DummyMenu::testHelp()
     auto menu2 = (MenuBase*) node;
 
     // prints 501 consistently
-    Serial << F("menu = ") << (uint32_t)menu;
+    clog << F("menu = ");
+    clog << (uint32_t)menu;
     Serial.println();
     // prints 507 when deriving SinglyLinkedNode direct from MenuCommand
     // prints 503 when deriving SinglyLinkedNode direct from MenuBase
     // none of that is a red flag though
-    Serial << F("menu2 = ") << (uint32_t)menu2;
+    clog << F("menu2 = ") << (uint32_t)menu2;
     Serial.println();
 
-    Serial << F("menu name = ") << menu->getName();
+    clog << F("menu name = ") << menu->getName();
     Serial.println();
     // menu2->getName() gets unexpected pointer if deriving
     // SinglyLinkedNode direct from MenuCommand
-    Serial << F("menu2 name = ") << menu2->getName();
+    clog << F("menu2 name = ") << menu2->getName();
     Serial.println();
   }
 }

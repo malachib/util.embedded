@@ -98,6 +98,21 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
     return out << buffer;
 }
 
+
+inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint32_t value)
+{
+    char buffer[16];
+
+#if ESP_OPEN_RTOS
+    __utoa(value, buffer, 10);
+#else
+    snprintf(buffer, sizeof(buffer), "%lu", value);
+#endif
+
+    return out << buffer;
+}
+
+
 inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 {
     char buffer[sizeof(uintptr_t) * 3];

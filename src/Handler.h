@@ -49,13 +49,13 @@ namespace FactUtilEmbedded
     {
       SinglyLinkedNode* menu = handlers.getHead();
 
-      for(;menu != NULL; menu = menu->getNext())
+      for(;menu != nullptr; menu = menu->getNext())
       {
         if(((IHandler2<TIn, TOut>)menu)->canHandle(input))
           return (IHandler2<TIn, TOut>) menu;
       }
 
-      return NULL;
+      return nullptr;
     }
   };
 }

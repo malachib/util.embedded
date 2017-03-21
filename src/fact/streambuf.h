@@ -8,6 +8,8 @@
 //#include "mbed.h"
 // FIX: We need this, but right now causes many compilation errors
 //#include "Serial.h"
+#elif defined(ARDUINO)
+#include <Arduino.h>
 #endif
 
 
@@ -155,8 +157,9 @@ public:
 #if defined(__MBED__)
 #include "streams/iostream_mbed_streambuf.h"
 #elif defined(__POSIX__)
-
 #include "streams/iostream_posix_streambuf.h"
+#elif defined(ARDUINO)
+#include "streams/iostream_arduino_streambuf.h"
 #else
 #error "Architecture not yet supported"
 #endif
