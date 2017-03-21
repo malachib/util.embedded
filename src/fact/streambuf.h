@@ -6,8 +6,9 @@
 #include <drivers/Stream.h>
 
 //#include "mbed.h"
-// FIX: We need this, but right now causes many compilation errors
-//#include "Serial.h"
+// FIX: We need this, but right now causes many compilation errors, looks like a collision
+// on the F() macro
+//#include <drivers/Serial.h>
 #elif defined(ARDUINO)
 #include <Arduino.h>
 #endif

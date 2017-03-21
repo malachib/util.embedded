@@ -3,10 +3,8 @@
 
 #ifdef FEATURE_IOS_STREAMBUF_FULL
 #else
-// NOT TESTED, likely will break compilation...
-// for use with non-FEATURE_IOS_STREAMBUF_FULL mode only
-// should never be manually included, only auto-included from ../iostream.h
 // TODO: change this to use FileHandle once more tested
+// TODO: once F() collision is remedied, enable Serial code
 
 class basic_streambuf_mbed
 {
@@ -48,6 +46,13 @@ protected:
         return count;
     }
 
+    /*
+    static streamsize serial_in_avail(void* serial)
+    {
+        return ((Serial*)serial)->available();
+    }
+    */
+
 public:
     basic_streambuf(mbed::FileLike& stream,
                     streamsize (*_in_avail)(void*) = nullptr,
@@ -62,8 +67,8 @@ public:
     basic_streambuf(mbed::Serial& stream) : base_t(stream)
     {
         this->_traits = this->serial;
-    }
-    */
+        this->_in_avail = serial_in_avail;
+    } */
 
     int_type sputc(char_type ch)
     {
