@@ -147,6 +147,9 @@ public:
 
         return success ? Traits::to_int_type(ch) : Traits::eof();
     }
+    
+    // FIX: make this pure and implement in derived class
+    virtual streamsize in_avail() { return 0; }
 };
 #else
 #if defined(__MBED__)

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#ifdef NODUINO
+#ifndef ARDUINO
 #include "noduino.h"
 #else
 #if (!CYPRESS_PSOC)

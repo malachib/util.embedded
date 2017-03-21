@@ -11,8 +11,8 @@ namespace FactUtilEmbedded { namespace std {
 ostream cout;
 #else
 ostream cout(pc);
-ostream& clog = cout;
 #endif
+ostream& clog = cout;
 }}
 
 inline basic_ostream<char>& eol(basic_ostream<char>& __os)

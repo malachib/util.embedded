@@ -53,7 +53,7 @@ void pgm_extract_string(const char* input, char* output)
  */
 
 
-#ifndef NODUINO
+#ifdef ARDUINO
 void pgm_extract_bytes(byte* input, bool (*foo)(byte,void*), void* meta = NULL)
 {
   byte result;

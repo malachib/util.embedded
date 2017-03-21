@@ -79,6 +79,14 @@ protected:
 
 public:
     basic_streambuf_t* rdbuf() const { return _rdbuf; }
+    basic_streambuf_t* rdbuf(basic_streambuf_t* sb) 
+    {
+        clear();
+        auto temp = _rdbuf;
+        _rdbuf = sb; 
+        return temp;
+    }
+    
 #else
     basic_streambuf_t _rdbuf;
 
