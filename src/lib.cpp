@@ -6,22 +6,6 @@
 
 namespace FactUtilEmbedded
 {
-Led::Led(uint8_t pinNumber, bool autoInitOutput) : DigitalPin(pinNumber)
-{
-    // I'd expect LEDs 99% of the time want to be in OUTPUT mode
-	// TODO: notate... again not sure why i need to exclude PSoC here...
-	// could be cuz of global init conflicts
-#if !CYPRESS_PSOC && !WIN32
-    if(autoInitOutput)
-      SetMode(OUTPUT);
-#endif
-}
-
-Led::Led() : Led(13, true)
-{
-
-}
-
 void Profiler::Profile()
 {
 #ifdef AVR
@@ -63,7 +47,7 @@ void Profiler::Profile()
 
 uint16_t Profiler::getAverage()
 {
-  byte i;
+  uint8_t i;
   uint32_t average = 0;
 
   for(i = 0; i < profileCount; i++)

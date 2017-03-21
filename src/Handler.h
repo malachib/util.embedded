@@ -16,6 +16,26 @@ namespace FactUtilEmbedded
     //virtual bool execute(TIn input) = 0;
   };
 
+  struct IToggleHandler : IHandler
+  {
+    virtual void On() = 0;
+    virtual void Off() = 0;
+  };
+
+  struct ICyclingHandler : IHandler
+  {
+    // think in terms of state machines:
+    // return true if full operation has completed
+    // return false if operation still in process
+    virtual bool ProcessCycle() = 0;
+  };
+
+  struct IVectorHandler : IHandler
+  {
+    // Gets fed a value which moves around based on an external algorithm
+    virtual bool ProcessVector(int vector) = 0;
+  };
+
 
   template <class TIn, class TOut>
   class IHandlerAggregator : IHandler2<TIn, TOut>
