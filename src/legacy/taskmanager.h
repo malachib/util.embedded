@@ -2,7 +2,7 @@
 #define _mal_taskmanager
 
 #include "fact/lib.h"
-#include "fact/timinggroup.h"
+#include "timinggroup.h"
 #include "LinkedList.h"
 
 namespace FactUtilEmbedded

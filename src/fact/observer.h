@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CircularBuffer.h"
+
 namespace FactUtilEmbedded
 {
 struct IObservable

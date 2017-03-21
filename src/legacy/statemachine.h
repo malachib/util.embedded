@@ -6,8 +6,9 @@
 #ifndef _mal_statemachine_h
 #define _mal_statemachine_h
 
-#include "lib.h"
 #include "timinggroup.h"
+#include "fact/observer.h"
+#include "../Handler.h"
 
 //#define DEBUG 1
 

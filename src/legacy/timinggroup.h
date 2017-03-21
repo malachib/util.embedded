@@ -1,7 +1,7 @@
 #ifndef _mal_timinggroup
 #define _mal_timinggroup
 
-#include "lib.h"
+#include "fact/c_types.h"
 
 namespace FactUtilEmbedded
 {
