@@ -64,4 +64,16 @@ SCENARIO( "Low level string conversion/handling functions", "[string-convert]" )
     REQUIRE(result != nullptr);
     REQUIRE(result == VALIDATE_FORMAT_ERROR);
   }
+  GIVEN("Retrieve a flaat directly from a buffer")
+  {
+    auto value = fromString<float>("3.3");
+
+    REQUIRE(value == 3.3f);
+  }
+  GIVEN("Deduce maximum buffer size from type")
+  {
+      char buffer2[experimental::maxStringLength<float>()];
+
+      REQUIRE(sizeof(buffer2) == 32);
+  }
 }
