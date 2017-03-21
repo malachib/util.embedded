@@ -7,9 +7,12 @@ Serial pc(USBTX, USBRX);
 
 namespace FactUtilEmbedded { namespace std {
 
+#ifdef FEATURE_IOS_STREAMBUF_FULL
+ostream cout;
+#else
 ostream cout(pc);
 ostream& clog = cout;
-
+#endif
 }}
 
 inline basic_ostream<char>& eol(basic_ostream<char>& __os)

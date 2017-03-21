@@ -1,6 +1,8 @@
 #ifndef UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H
 #define UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H
 
+#ifdef FEATURE_IOS_STREAMBUF_FULL
+#else
 // NOT TESTED, likely will break compilation...
 // for use with non-FEATURE_IOS_STREAMBUF_FULL mode only
 // should never be manually included, only auto-included from ../iostream.h
@@ -90,6 +92,6 @@ public:
             return 0;
     } */
 };
-
+#endif
 
 #endif //UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H

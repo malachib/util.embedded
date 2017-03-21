@@ -112,6 +112,7 @@ class basic_streambuf
 {
 protected:
     typedef TChar char_type;
+    typedef typename Traits::int_type int_type;
 
     virtual streamsize xsputn(const char_type* s, streamsize count) = 0;
     virtual streamsize xsgetn(char_type* s, streamsize count) = 0;
