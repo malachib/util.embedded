@@ -19,7 +19,7 @@
 #endif
 #endif
 
-#ifdef NODUINO
+#ifndef ARDUINO
 #include <stdint.h>
 #else
 // MS unit tests define these for arm_neon

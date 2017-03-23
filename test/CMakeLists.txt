@@ -11,7 +11,7 @@ ADD_DEFINITIONS(-DFEATURE_IOSTREAM)
 ADD_DEFINITIONS(-D__POSIX__)
 
 # Because we still are using sloppy NODUINO flag
-ADD_DEFINITIONS(-DNODUINO)
+# ADD_DEFINITIONS(-DNODUINO)
 # Because we need to expose some private/protected stuff so that unit tests can test them
 ADD_DEFINITIONS(-DUNIT_TEST)
 # Because my 3/4 baked event system has unit tests using the special variable-argument feature

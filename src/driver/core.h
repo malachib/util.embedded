@@ -60,7 +60,7 @@ public:
   void add(IDriver& driver);
 };
 
-#ifndef NODUINO
+#ifdef ARDUINO
 // placement syntax not supported out of the box for Arduino
 // but this article helps us out:
 // http://arduino.stackexchange.com/questions/1484/allocate-object-memory-statically-intialize-it-dynamically
