@@ -91,7 +91,10 @@ public:
 #ifndef FEATURE_IOS_STREAMBUF_FULL
     typedef typename base_t::stream_t stream_t;
 
-    basic_istream(stream_t& stream) : base_t(stream) {}
+    //basic_istream(stream_t& stream) : base_t(stream) {}
+
+    template <class _TStream, class ... TArgs>
+    basic_istream(_TStream& stream, TArgs...args) : base_t(stream, args...) {}
 #endif
 };
 

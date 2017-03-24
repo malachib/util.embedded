@@ -95,6 +95,9 @@ public:
     basic_ios(stream_t &stream) : _rdbuf(stream)
     {}
 
+    template <class _TStream, class ...TArgs>
+    basic_ios(_TStream& stream, TArgs...args) : _rdbuf(stream, args...) {}
+
 public:
     basic_streambuf_t *rdbuf() const
     { return (basic_streambuf_t *) &_rdbuf; }

@@ -46,9 +46,11 @@ protected:
         return count;
     }
 
-    static streamsize serial_in_avail(void* serial)
+    static streamsize serial_in_avail(void* stream)
     {
-        return ((mbed::Serial*)serial)->readable();
+        auto _stream = (mbed::FileLike*) stream;
+        auto serial = (mbed::Serial*) _stream;
+        return serial->readable();
     }
 
 public:
@@ -63,7 +65,7 @@ public:
 
     basic_streambuf(mbed::Serial& stream) : base_t(stream)
     {
-        this->_traits = this->serial;
+        this->_traits = basic_streambuf_mbed::serialbit;
         this->_in_avail = serial_in_avail;
     }
 
