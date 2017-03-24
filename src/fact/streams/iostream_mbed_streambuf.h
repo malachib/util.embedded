@@ -105,9 +105,9 @@ public:
         return Traits::eof();
     }
 
-    streamsize is_avail()
+    streamsize in_avail()
     {
-        if(this->_is_avail != nullptr) return this->_is_avail(&this->stream);
+        if(this->_in_avail != nullptr) return this->_in_avail(&this->stream);
 
         return 0;
     }
