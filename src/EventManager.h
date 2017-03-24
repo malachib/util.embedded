@@ -108,7 +108,7 @@ protected:
     return &handles[h - 1];
   }
 
-  static const Handle* const getHandleRO(const Handle* const handles, handle h)
+  static const Handle* getHandleRO(const Handle* const handles, handle h)
   {
     return &handles[h - 1];
   }
@@ -135,7 +135,7 @@ public:
   // this handle in the list are cleared
   void clear(handle handle);
   Handle* getHandle(handle handle) { return getHandle(handles, handle); }
-  const Handle* const getHandleRO(handle handle) const
+  const Handle* getHandleRO(handle handle) const
   {
     return getHandleRO(handles, handle);
   }
@@ -162,7 +162,7 @@ class EventManager : public HandleManager
     eventCallback getCallback() const { return (eventCallback) data; }
   };
 
-  const Event* const getEvent(handle event) const
+  const Event* getEvent(handle event) const
   { return (const Event* const ) getHandleRO(event); }
 
   typedef void (&_p_invoke)(const void* pc, const void* callback);

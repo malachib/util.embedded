@@ -94,7 +94,7 @@ namespace FactUtilEmbedded
     public:
       MemoryContainerBase(void* const data) : data(data) {}
 
-      void* const getData() const { return data; }
+      void* getData() const { return data; }
     };
 
     template <uint16_t size, class Traits = experimental::buffer_traits>

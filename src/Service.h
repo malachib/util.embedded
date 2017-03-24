@@ -26,7 +26,7 @@ namespace FactUtilEmbedded
 
 typedef void (*initBasic)(void);
 typedef const __FlashStringHelper* (*initErrorStatus)(void);
-typedef const bool (*initErrorStatus2)(const __FlashStringHelper** status);
+typedef bool (*initErrorStatus2)(const __FlashStringHelper** status);
 typedef const __FlashStringHelper* (*initFullStatus)(const __FlashStringHelper** status);
 
 class Service;

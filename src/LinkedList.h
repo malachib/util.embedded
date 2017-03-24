@@ -142,7 +142,7 @@ public:
   }
 
   // cast operator
-  operator TNode* const ()
+  operator TNode* ()
   {
     return getCurrent();
   }
