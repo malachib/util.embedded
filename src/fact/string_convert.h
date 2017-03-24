@@ -56,6 +56,12 @@ extern const char VALIDATE_FORMAT_ERROR[];
 extern const char TYPENAME_INT[];
 extern const char TYPENAME_CHARPTR[];
 
+#ifndef ARDUINO
+// FIX: need a mini-noduino.h...
+#undef PGM_P
+#define PGM_P const char*
+#endif
+
 template<class T> PGM_P validateString(const char* input);
 template<class T> char* toString(char* output, T input);
 template<class T> PGM_P getTypeName();

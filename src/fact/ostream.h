@@ -15,11 +15,13 @@ extern "C" {
 #endif
 
 #include <string.h>
+#include <stdlib.h>
 
 };
 
 #include "streambuf.h"
 #include "ios.h"
+#include "string_convert.h"
 
 namespace FactUtilEmbedded { namespace std {
 
@@ -135,6 +137,15 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, int value)
 #else
     snprintf(buffer, sizeof(buffer), "%d", value);
 #endif
+
+    return out << buffer;
+}
+
+inline ostream& operator<<(ostream& out, float value)
+{
+    char buffer[::experimental::maxStringLength<float>()];
+
+    snprintf(buffer, sizeof(buffer), "%f", value);
 
     return out << buffer;
 }
