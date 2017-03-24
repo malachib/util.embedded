@@ -16,11 +16,12 @@ public:
 
     bool is_serial() { return _traits & serialbit; }
 
-    // Since mbed OS somewhat scatters these two, directly function pointer them
+    // Since mbed OS somewhat scatters these three, directly function pointer them
     // out.  Don't do virtual tables, since the number of basic_streambufs in a system
     // is gonna be low, so explicit function pointers almost definitely smaller and faster
     streamsize (*_in_avail)(void*);
     int (*_sgetc)(void*);
+    int (*_sbumpc)(void*);
 
 protected:
     traits _traits = none;
@@ -48,18 +49,31 @@ protected:
 
     static streamsize serial_in_avail(void* stream)
     {
-        auto _stream = (mbed::FileLike*) stream;
+        auto _stream = (mbed::Stream*) stream;
         auto serial = (mbed::Serial*) _stream;
         return serial->readable();
     }
 
 public:
+    // IMPORTANT: only Stream and Serial can get in, meaning that even though we track FileLike,
+    // we actually are interacting with a Stream always.  We do this because Stream has protected
+    // some methods which we need from FileLike (I can't explain why that decision was made)
+    // - read
+    // - write
+    // yet made public others which we also need that FileLike *doesn't* have:
+    // - getc
+    // Not quite ready yet, something is stopping us from casting to Stream
+
+
+    // FIX: fn pointer for sbumpc super hacky, instead fix mbed::Stream casting
     basic_streambuf(mbed::FileLike& stream,
                     streamsize (*_in_avail)(void*) = nullptr,
+                    int (*_sbumpc)(void*) = nullptr,
                     int (*_sgetc)(void*) = nullptr) :
         base_t(stream)
     {
         this->_in_avail = _in_avail;
+        this->_sbumpc = _sbumpc;
         this->_sgetc = _sgetc;
     }
 
@@ -87,6 +101,12 @@ public:
     // TODO: optimize and reuse via specialization, if we can
     int_type sbumpc()
     {
+        if(this->_sbumpc != nullptr) return this->_sbumpc(&this->stream);
+        /*
+        auto _stream = (mbed::Stream*) &this->stream;
+
+        return _stream->getc();*/
+
         char_type ch;
 
         bool success = xsgetn(&ch, sizeof(ch)) == sizeof(ch);
