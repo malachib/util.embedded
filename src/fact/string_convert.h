@@ -35,7 +35,7 @@ template<> inline char fromString(const char* input)
 }
 
 namespace experimental {
-
+// EXCLUDING null termination
 template<class T> constexpr uint8_t maxStringLength();
 
 template<> inline constexpr uint8_t maxStringLength<char>() { return 1; }

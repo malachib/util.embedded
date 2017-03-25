@@ -91,6 +91,12 @@ template<> char* toString(char* output, int input)
   return output;
 }
 
+template<> char* toString(char* output, uint8_t input)
+{
+  sprintf(output, "%u", input);
+  return output;
+}
+
 #endif
 
 
