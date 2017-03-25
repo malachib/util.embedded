@@ -37,6 +37,7 @@ int basic_streambuf_embedded<char, TEST_STREAM_T>::sgetc()
 {
     int c = fgetc(&this->stream);
     ungetc(c, &this->stream);
+    return c;
 }
 
 } } }

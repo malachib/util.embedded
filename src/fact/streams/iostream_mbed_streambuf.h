@@ -35,6 +35,8 @@ protected:
     typedef TChar char_type;
     typedef typename Traits::int_type int_type;
 
+    mbed::FileLike& fileLike() { return base_t::stream; }
+
     streamsize xsputn(const char_type* s, streamsize count)
     {
         this->stream.write(s, count);
