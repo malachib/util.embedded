@@ -41,7 +41,7 @@ public:
         // so that we don't inline this (and other read/write operations like it)
         // all over the place
         if(this->rdbuf()->sgetn(s, n) != n)
-            setstate(base_t::eofbit);
+            this->setstate(base_t::eofbit);
 
         return *this;
     }
