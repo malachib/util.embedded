@@ -34,6 +34,11 @@ template<> inline char fromString(const char* input)
   return input[0];
 }
 
+template<> inline unsigned short fromString(const char* input)
+{
+    return (unsigned short) strtoul(input, NULL, 10);
+}
+
 namespace experimental {
 // EXCLUDING null termination
 template<class T> constexpr uint8_t maxStringLength();

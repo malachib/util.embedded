@@ -62,6 +62,17 @@ template<> PGM_P validateString<double>(const char* input)
 }
 
 
+template <> PGM_P validateString<unsigned short>(const char* input)
+{
+    DO_VALIDATE_FORNULL;
+    char* str_end;
+
+    strtoul(input, &str_end, 10);
+
+    return input == str_end ? VALIDATE_FORMAT_ERROR : nullptr;
+}
+
+
 
 template<> char* toString(char* output, char input)
 {
