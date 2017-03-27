@@ -24,11 +24,11 @@ public:
     // out.  Don't do virtual tables, since the number of basic_streambufs in a system
     // is gonna be low, so explicit function pointers almost definitely smaller and faster
     streamsize (*_in_avail)(void*);
-    int (*_sgetc)(void*);
+    int (*_sbumpc)(void *);
     union
     {
-        int (*_sbumpc)(void *);
-        short char_cache;
+        int (*_sgetc)(void*);
+        char char_cache;
     };
 
 protected:
@@ -84,18 +84,21 @@ public:
     {
         this->_in_avail = _in_avail;
         this->_sbumpc = _sbumpc;
+        this->_sgetc = _sgetc;
         if(_in_avail != nullptr && _sgetc == nullptr)
         {
             // Not activating feature just yet, want to check in working code
-            //this->_traits = basic_streambuf_mbed::sbumpccachebit;
+            this->_traits = basic_streambuf_mbed::sbumpccachebit;
+            // already should be 0 from the _sgetc assignment
+            //this->char_cache = 0;
         }
-        this->_sgetc = _sgetc;
     }
 
     basic_streambuf(mbed::Serial& stream) : base_t(stream)
     {
-        this->_traits = basic_streambuf_mbed::serialbit;
+        this->_traits = basic_streambuf_mbed::serialbit | basic_streambuf_mbed::sbumpccachebit;;
         this->_in_avail = serial_in_avail;
+        this->char_cache = 0;
     }
 
     int_type sputc(char_type ch)
