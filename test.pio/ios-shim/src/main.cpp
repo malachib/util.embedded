@@ -11,6 +11,7 @@ namespace FactUtilEmbedded { namespace std {
 ostream cout;
 #else
 ostream cout(pc);
+istream cin(pc);
 #endif
 ostream& clog = cout;
 }}
@@ -27,6 +28,10 @@ int main()
         clog << "Waiting..." << counter++ << eol;
         printf("Waiting...%d\r\n", counter++);
         wait(1.0);
+        if(cin.peek() != istream::traits_type::eof())
+        {
+            clog << "Got key: " << (char)cin.get() << endl;
+        }
     }
     return 0;
 }

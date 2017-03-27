@@ -64,8 +64,8 @@ class Empty
 {
 };
 
-template<class TChar, class TStream, class TBase=Empty, class Traits = char_traits <TChar>>
-class basic_streambuf_embedded : public TBase
+template<class TChar, class TStream, class Traits = char_traits <TChar>>
+class basic_streambuf_embedded
 {
 protected:
     typedef TChar char_type;

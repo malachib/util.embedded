@@ -1,5 +1,5 @@
-#ifndef UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H
-#define UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H
+#ifndef UTIL_EMBEDDED_STREAMBUF_MBED_H
+#define UTIL_EMBEDDED_STREAMBUF_MBED_H
 
 #ifdef FEATURE_IOS_STREAMBUF_FULL
 #else
@@ -32,14 +32,31 @@ public:
     };
 
 protected:
+    basic_streambuf_mbed(streamsize (*_in_avail)(void*),
+        int (*_sbumpc)(void*),
+        int (*_sgetc)(void*))
+    {
+        this->_in_avail = _in_avail;
+        this->_sbumpc = _sbumpc;
+        this->_sgetc = _sgetc;
+
+        if(_in_avail != nullptr && _sgetc == nullptr)
+        {
+            this->_traits = basic_streambuf_mbed::sbumpccachebit;
+        }
+        else
+            this->_traits = basic_streambuf_mbed::none;
+    }
+
     traits _traits = none;
 };
 
 template<class TChar, class Traits = char_traits<TChar>>
-class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, basic_streambuf_mbed, Traits>
+class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>,
+    public basic_streambuf_mbed
 {
 protected:
-    typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, basic_streambuf_mbed, Traits> base_t;
+    typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits> base_t;
     typedef TChar char_type;
     typedef typename Traits::int_type int_type;
 
@@ -88,43 +105,25 @@ public:
     // FIX: fn pointer for sbumpc super hacky, instead fix mbed::Stream casting
     // FIX: clean up inheritance/initialization of basic_streambuf_mbed
     basic_streambuf(mbed::Stream& stream,
-                    streamsize (*_in_avail)(void*)) : base_t(stream)
+                    streamsize (*_in_avail)(void*)) :
+            base_t(stream),
+            basic_streambuf_mbed(_in_avail, stream_sbumpc, nullptr)
     {
-        this->_sbumpc = stream_sbumpc;
-        this->_in_avail = _in_avail;
-        this->_sgetc = nullptr;
-        if(_in_avail != nullptr)
-        {
-            this->_traits = basic_streambuf_mbed::sbumpccachebit;
-        }
-        else
-            this->_traits = basic_streambuf_mbed::none;
     }
 
     basic_streambuf(mbed::FileLike& stream,
                     streamsize (*_in_avail)(void*) = nullptr,
                     int (*_sbumpc)(void*) = nullptr,
                     int (*_sgetc)(void*) = nullptr) :
-        base_t(stream)
+        base_t(stream),
+        basic_streambuf_mbed(_in_avail, _sbumpc, _sgetc)
     {
-        this->_in_avail = _in_avail;
-        this->_sbumpc = _sbumpc;
-        this->_sgetc = _sgetc;
-        if(_in_avail != nullptr && _sgetc == nullptr)
-        {
-            this->_traits = basic_streambuf_mbed::sbumpccachebit;
-            // already should be 0 from the _sgetc assignment
-            //this->char_cache = 0;
-        }
-        else
-            this->_traits = basic_streambuf_mbed::none;
     }
 
-    basic_streambuf(mbed::Serial& stream) : base_t(stream)
+    basic_streambuf(mbed::Serial& stream) : base_t(stream),
+                                            basic_streambuf_mbed(serial_in_avail, nullptr, nullptr)
     {
-        this->_traits = basic_streambuf_mbed::serialbit | basic_streambuf_mbed::sbumpccachebit;;
-        this->_in_avail = serial_in_avail;
-        this->char_cache = 0;
+        this->_traits |= basic_streambuf_mbed::serialbit;
     }
 
     int_type sputc(char_type ch)
@@ -208,4 +207,4 @@ public:
 };
 #endif
 
-#endif //UTIL_EMBEDDED_TESTS_IOSTREAM_POSIX_MBED_H_H
+#endif //UTIL_EMBEDDED_STREAMBUF_MBED_H

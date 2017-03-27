@@ -72,6 +72,7 @@ class basic_ios : public ios_base
 {
 public:
     typedef basic_streambuf <TChar, Traits> basic_streambuf_t;
+    typedef Traits traits_type;
 
 protected:
 #ifdef FEATURE_IOS_STREAMBUF_FULL

@@ -62,7 +62,7 @@ public:
 #else
 
 template <class TChar, class Traits = char_traits<TChar>>
-using basic_streambuf = experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, experimental::Empty, Traits>;
+using basic_streambuf = experimental::basic_streambuf_embedded<TChar, TEST_STREAM_T, Traits>;
 
 
 
