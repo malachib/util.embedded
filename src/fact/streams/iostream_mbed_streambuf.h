@@ -51,28 +51,36 @@ protected:
     traits _traits = none;
 };
 
+
+namespace layer3 {
+
+template<>
+inline streamsize basic_streambuf<char, mbed::FileLike, char_traits<char>>::xsputn(const char* s, streamsize count)
+{
+    this->stream.write(s, count);
+    return count;
+}
+
+
+template<>
+inline streamsize basic_streambuf<char, mbed::FileLike, char_traits<char>>::xsgetn(char* s, streamsize count)
+{
+    this->stream.read(s, count);
+    return count;
+}
+
+}
+
 template<class TChar, class Traits = char_traits<TChar>>
-class basic_streambuf : public experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits>,
+class basic_streambuf : public layer3::basic_streambuf<TChar, mbed::FileLike, Traits>,
     public basic_streambuf_mbed
 {
 protected:
-    typedef experimental::basic_streambuf_embedded<TChar, mbed::FileLike, Traits> base_t;
+    typedef layer3::basic_streambuf<TChar, mbed::FileLike, Traits> base_t;
     typedef TChar char_type;
     typedef typename Traits::int_type int_type;
 
     mbed::FileLike& fileLike() { return base_t::stream; }
-
-    streamsize xsputn(const char_type* s, streamsize count)
-    {
-        this->stream.write(s, count);
-        return count;
-    }
-
-    streamsize xsgetn(char_type* s, streamsize count)
-    {
-        this->stream.read(s, count);
-        return count;
-    }
 
     static streamsize serial_in_avail(void* stream)
     {
@@ -126,19 +134,6 @@ public:
         this->_traits |= basic_streambuf_mbed::serialbit;
     }
 
-    int_type sputc(char_type ch)
-    {
-        bool success = xsputn(&ch, sizeof(ch)) == sizeof(ch);
-        return success ? ch : Traits::eof();
-    }
-
-    // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html
-    // acts like many sbumpc calls
-    streamsize sgetn(char_type* s, streamsize count)
-    {
-        return xsgetn(s, count);
-    }
-
     // TODO: *possibly* implement underflow, if I like it...
     // Don't think I made this one quite right...
     // TODO: optimize and reuse via specialization, if we can
@@ -153,22 +148,10 @@ public:
                 return temp;
             }
         }
+
         if(this->_sbumpc != nullptr) return this->_sbumpc(&this->stream);
-        /*
-        auto _stream = (mbed::Stream*) &this->stream;
 
-        return _stream->getc();*/
-
-        char_type ch;
-
-        bool success = xsgetn(&ch, sizeof(ch)) == sizeof(ch);
-
-        return success ? Traits::to_int_type(ch) : Traits::eof();
-    }
-
-    streamsize sputn(const char_type* s, streamsize count)
-    {
-        return xsputn(s, count);
+        return base_t::sbumpc();
     }
 
 
@@ -188,7 +171,7 @@ public:
                 // NOTE: _in_avail should ALWAYS be available when using is_sbumpc_cache
                 if(this->_in_avail(&this->stream))
                 {
-                    return this->char_cache = sbumpc();
+                    return this->char_cache = base_t::sbumpc();
                 }
             }
         }

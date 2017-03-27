@@ -15,7 +15,7 @@ namespace FactUtilEmbedded
 {
   namespace rpc
   {
-      using namespace std;
+      //using namespace std;
 
 class ParameterClass_0
 {
@@ -63,7 +63,7 @@ public:
 
   void debugPrint() const
   {
-    clog << F("p1: ") << param1 << endl;
+    std::clog << F("p1: ") << param1 << std::endl;
   }
 };
 
@@ -96,7 +96,7 @@ public:
   void debugPrint() const
   {
     ParameterClass_1<TIn1>::debugPrint();
-    clog << F("p2: ") << param2 << endl;
+    std::clog << F("p2: ") << param2 << std::endl;
   }
 
   typedef void (&stub)(TIn1, TIn2);

@@ -58,14 +58,10 @@ template <> struct char_traits<char>
 
 
 
-namespace experimental {
-
-class Empty
-{
-};
+namespace layer3 {
 
 template<class TChar, class TStream, class Traits = char_traits <TChar>>
-class basic_streambuf_embedded
+class basic_streambuf
 {
 protected:
     typedef TChar char_type;
@@ -79,7 +75,7 @@ protected:
 public:
     typedef TStream stream_t;
 
-    basic_streambuf_embedded(TStream &stream) : stream(stream)
+    basic_streambuf(TStream &stream) : stream(stream)
     {}
 
     // http://putka.upm.si/langref/cplusplus.com/reference/iostream/streambuf/sgetn/index.html

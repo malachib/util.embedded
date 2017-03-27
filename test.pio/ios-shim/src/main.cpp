@@ -1,4 +1,6 @@
 #include "mbed.h"
+#include "mbed_events.h"
+
 #include <fact/iostream.h>
 
 using namespace FactUtilEmbedded::std;
@@ -16,21 +18,22 @@ istream cin(pc);
 ostream& clog = cout;
 }}
 
-inline basic_ostream<char>& eol(basic_ostream<char>& __os)
-{ return __os.write("\r\n", 2); }
-
 int main()
 {
     static int counter = 0;
 
     for(;;)
     {
-        clog << "Waiting..." << counter++ << eol;
+        clog << "Waiting..." << counter++ << endl;
         printf("Waiting...%d\r\n", counter++);
-        wait(1.0);
-        if(cin.peek() != istream::traits_type::eof())
+
+        for(int i = 0; i < 100; i++)
         {
-            clog << "Got key: " << (char)cin.get() << endl;
+            if(cin.peek() != istream::traits_type::eof())
+            {
+                clog << "Got key: " << (char)cin.get() << endl;
+            }
+            wait(0.01);
         }
     }
     return 0;
