@@ -14,14 +14,22 @@ public:
     static constexpr traits none = 0;
     static constexpr traits serialbit = 0x01;
 
+    // use this to create an sgetc by cleverly using _in_avail and sbumpc
+    static constexpr traits sbumpccachebit = 0x02;
+
     bool is_serial() { return _traits & serialbit; }
+    bool is_sbumpc_cache() { return _traits & sbumpccachebit; }
 
     // Since mbed OS somewhat scatters these three, directly function pointer them
     // out.  Don't do virtual tables, since the number of basic_streambufs in a system
     // is gonna be low, so explicit function pointers almost definitely smaller and faster
     streamsize (*_in_avail)(void*);
     int (*_sgetc)(void*);
-    int (*_sbumpc)(void*);
+    union
+    {
+        int (*_sbumpc)(void *);
+        short char_cache;
+    };
 
 protected:
     traits _traits = none;
@@ -76,6 +84,11 @@ public:
     {
         this->_in_avail = _in_avail;
         this->_sbumpc = _sbumpc;
+        if(_in_avail != nullptr && _sgetc == nullptr)
+        {
+            // Not activating feature just yet, want to check in working code
+            //this->_traits = basic_streambuf_mbed::sbumpccachebit;
+        }
         this->_sgetc = _sgetc;
     }
 
@@ -103,6 +116,15 @@ public:
     // TODO: optimize and reuse via specialization, if we can
     int_type sbumpc()
     {
+        if(this->is_sbumpc_cache())
+        {
+            if(this->char_cache)
+            {
+                short temp = this->char_cache;
+                this->char_cache = 0;
+                return temp;
+            }
+        }
         if(this->_sbumpc != nullptr) return this->_sbumpc(&this->stream);
         /*
         auto _stream = (mbed::Stream*) &this->stream;
@@ -124,6 +146,25 @@ public:
 
     int_type sgetc()
     {
+        // NOTE: should only be available when _sgetc is null
+        if(this->is_sbumpc_cache())
+        {
+            if(this->char_cache)
+            {
+                short temp = this->char_cache;
+                this->char_cache = 0;
+                return temp;
+            }
+            else
+            {
+                // NOTE: _in_avail should ALWAYS be available when using is_sbumpc_cache
+                if(this->_in_avail(&this->stream))
+                {
+                    return this->char_cache = sbumpc();
+                }
+            }
+        }
+
         if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
 
         return Traits::eof();
