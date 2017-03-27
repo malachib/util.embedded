@@ -64,7 +64,16 @@ protected:
         return serial->readable();
     }
 
+
+    static int stream_sbumpc(void* stream)
+    {
+        auto _stream = (mbed::Stream*) stream;
+
+        return _stream->getc();
+    }
+
 public:
+    // Following represents ideal architecture.  Have not reached it just yet
     // IMPORTANT: only Stream and Serial can get in, meaning that even though we track FileLike,
     // we actually are interacting with a Stream always.  We do this because Stream has protected
     // some methods which we need from FileLike (I can't explain why that decision was made)
@@ -75,7 +84,23 @@ public:
     // Not quite ready yet, something is stopping us from casting to Stream
 
 
+    // NOTE: this constructor largely untested
     // FIX: fn pointer for sbumpc super hacky, instead fix mbed::Stream casting
+    // FIX: clean up inheritance/initialization of basic_streambuf_mbed
+    basic_streambuf(mbed::Stream& stream,
+                    streamsize (*_in_avail)(void*)) : base_t(stream)
+    {
+        this->_sbumpc = stream_sbumpc;
+        this->_in_avail = _in_avail;
+        this->_sgetc = nullptr;
+        if(_in_avail != nullptr)
+        {
+            this->_traits = basic_streambuf_mbed::sbumpccachebit;
+        }
+        else
+            this->_traits = basic_streambuf_mbed::none;
+    }
+
     basic_streambuf(mbed::FileLike& stream,
                     streamsize (*_in_avail)(void*) = nullptr,
                     int (*_sbumpc)(void*) = nullptr,
@@ -87,11 +112,12 @@ public:
         this->_sgetc = _sgetc;
         if(_in_avail != nullptr && _sgetc == nullptr)
         {
-            // Not activating feature just yet, want to check in working code
             this->_traits = basic_streambuf_mbed::sbumpccachebit;
             // already should be 0 from the _sgetc assignment
             //this->char_cache = 0;
         }
+        else
+            this->_traits = basic_streambuf_mbed::none;
     }
 
     basic_streambuf(mbed::Serial& stream) : base_t(stream)
