@@ -16,19 +16,22 @@ cross-platform endeavors.
 Code is Arduino, POSIX and mbed OS friendly.  Experimental support for ESP-OPEN-RTOS.
 Plays nice with PlatformIO
 
+* C++ iostream shims; use istream/ostream etc. without all the bloat
+* Circular buffer
 * Debug console: Menuing system for serial port (or other stream) control code to run diagnostics and acquire status
     * Telnet capable (coming soon)
 * Linked lists, single and doubly linked
-* Circular buffer
-* C++ iostream shims; use istream/ostream etc. without all the bloat
+
+Note Circular Buffer and its close relatives conform to the layer1-layer5 design
+as described later.  This could be critical for your small-footprint environment.
 
 Experimental:
 -------------
 
-Following code has worked to varying degrees but has not been tested for a while:
+Following code has worked to varying degrees but has not been tested for a while.
+Code in this category is more subject to breaking changes:
 
 * C#-like event code
-* Cross-thread RPC mechanism (if using an external threading tool)
 * Service objects facilitating start, stop and status querying
  * Canned MQTT Service for use with Adafruit's MQTT libraries (must define either MQTT_TYPE_WIFI or MQTT_TYPE_FONA).  Hard wired to either WiFi or FONA at this time
  * Canned Wifi Service for use with ESP8266 (must define MQTT_TYPE_WIFI)
@@ -42,32 +45,20 @@ Following code has worked to varying degrees but has not been tested for a while
         * pin change interrupts
     * SAM
         * sleep (coming soon)
-        
-Data/Memory code size
----------------------
 
-I won't lie, these libraries take space.  There are a slew of #defines to help curb
-its appetite:
+Obsolete:
+---------
 
-* MEMORY_OPT: Trim memory by reducing internal buffers sizes and string descriptions
- * MEMORY_OPT_CODE: Trim code space by reducing size of string descriptions,
-   some debug/bounds code, and a few potentially less critical features
- * MEMORY_OPT_DATA: Trim data space by reducing various buffer sizes
-* CONSOLE_FEATURE_FULL: Enable all options for Console (enabled by default when
-  MEMORY_OPT_CODE is not enabled)
- * CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND: Enable 'tab' key to auto-complete a menu
-   name in console mode
- * CONSOLE_FEATURE_COUT: Presently disabled by default, this switches Console code
-   from global singular-stream to Console managing its own private stream; useful
-   for multiple consoles speaking over different streams (i.e. Serial and telnet)
-* DRIVER_FEATURE_VTABLE_SUPPRESS: Disables virtual tables/polymorphism for drivers
-* EVENT_FEATURE_TYPE2: Force events to never operate in Type1 mode, only Type2.  
-   *May* save code space if using events heavily.
+Following code worked at once time, but is now being put out to pasture.  If you
+seee it, don't use it:
+
+* Cross-thread RPC mechanism (if using an external threading tool)
+
 
 Other preprocessor defines
 --------------------------
 
-* FEATURE_IOSTREAM_SHIM (experimental): enables lightweight istream/ostream code 
+* FEATURE_IOSTREAM: configures POSIX iostreams to take precedence over our lightweight libs
 
 ## Code paradigm:
 
@@ -88,9 +79,34 @@ Device               | Framework               | Features
 ATmega328P           | Arduino                 |
 ESP8266 12E          | Arduino / ESP-OPEN-RTOS |
 ATtiny85             | Arduino                 |
-ATSAMD21G            | Arduino                 |
-STM32F401RE          | mbed OS                 |
-x86                  | POSIX                   |
+ATSAMD21G            | mbed OS / Arduino       |
+STM32F401RE          | mbed OS                 | IOS
+x86                  | POSIX                   | IOS
+
+Most code in this lib is designed to work everywhere, so missing
+features on this chart only represents that it is *untested* , not
+necessarily *unavailable*.
+
+Data/Memory code size
+---------------------
+
+I won't lie, these libraries take space.  There are a slew of #defines to help curb
+its appetite:
+
+* MEMORY_OPT: Trim memory by reducing internal buffers sizes and string descriptions
+ * MEMORY_OPT_CODE: Trim code space by reducing size of string descriptions,
+   some debug/bounds code, and a few potentially less critical features
+ * MEMORY_OPT_DATA: Trim data space by reducing various buffer sizes
+* CONSOLE_FEATURE_FULL: Enable all options for Console (enabled by default when
+  MEMORY_OPT_CODE is not enabled)
+ * CONSOLE_FEATURE_AUTOCOMPLETE_COMMAND: Enable 'tab' key to auto-complete a menu
+   name in console mode
+ * CONSOLE_FEATURE_COUT: Presently disabled by default, this switches Console code
+   from global singular-stream to Console managing its own private stream; useful
+   for multiple consoles speaking over different streams (i.e. Serial and telnet)
+* DRIVER_FEATURE_VTABLE_SUPPRESS: Disables virtual tables/polymorphism for drivers
+* EVENT_FEATURE_TYPE2: Force events to never operate in Type1 mode, only Type2.  
+   *May* save code space if using events heavily.
 
 Notes
 -----
