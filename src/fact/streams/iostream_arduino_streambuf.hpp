@@ -1,7 +1,7 @@
 // this gets included by either:
 //  iostream_arduino_streambuf.h or
 //  iostream_arduino_cpp
-namespace experimental {
+namespace layer3 {
 
 // Making this inline or .cpp defined seems to have zero effect on
 // code size
@@ -9,7 +9,7 @@ namespace experimental {
 //#define _INLINE inline
 #define _INLINE
 template<>
-_INLINE streamsize basic_streambuf_embedded<char, Stream>::
+_INLINE streamsize basic_streambuf<char, Stream>::
     xsputn(const char* s, streamsize count)
 {
     return this->stream.write(s, count);
@@ -17,33 +17,33 @@ _INLINE streamsize basic_streambuf_embedded<char, Stream>::
 
 
 template<>
-_INLINE streamsize basic_streambuf_embedded<char, Stream>::
+_INLINE streamsize basic_streambuf<char, Stream>::
     xsgetn(char* s, streamsize count)
 {
     return this->stream.readBytes(s, count);
 }
 
 template<>
-_INLINE int basic_streambuf_embedded<char, Stream>::sputc(char ch)
+_INLINE int basic_streambuf<char, Stream>::sputc(char ch)
 {
     return this->stream.print(ch);
 }
 
 
 template<>
-_INLINE int basic_streambuf_embedded<char, Stream>::sbumpc()
+_INLINE int basic_streambuf<char, Stream>::sbumpc()
 {
     return this->stream.read();
 }
 
 template<>
-_INLINE int basic_streambuf_embedded<char, Stream>::sgetc()
+_INLINE int basic_streambuf<char, Stream>::sgetc()
 {
     return this->stream.peek();
 }
 
 template<>
-_INLINE streamsize basic_streambuf_embedded<char, Stream>::in_avail()
+_INLINE streamsize basic_streambuf<char, Stream>::in_avail()
 {
     return this->stream.available();
 }
