@@ -1,5 +1,9 @@
 #pragma once
 
+#if !defined(CYPRESS_PSOC) && !defined(NODUINO)
+#include <Arduino.h>
+#endif
+
 #include "../Handler.h"
 
 namespace FactUtilEmbedded
