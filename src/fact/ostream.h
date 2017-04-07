@@ -178,4 +178,8 @@ inline basic_ostream<char>& hex(basic_ostream<char>& __os)
 
 } }
 
+#ifdef ARDUINO
+#include "streams/ostream_arduino.h"
+#endif
+
 #endif //UTIL_EMBEDDED_OSTREAM_H

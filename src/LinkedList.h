@@ -31,6 +31,7 @@ class DoublyLinkedNode : public SinglyLinkedNode
 {
   friend DoublyLinkedList;
 
+protected:
   DoublyLinkedNode* prev;
 public:
   DoublyLinkedNode* getNext() const { return (DoublyLinkedNode*) this->next; }
