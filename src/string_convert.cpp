@@ -102,6 +102,11 @@ template<> char* toString(char* output, unsigned int input)
   return utoa(input, output, 10);
 }
 
+template<> char* toString(char* output, uint16_t input)
+{
+    return utoa(input, output, 10);
+}
+
 #elif defined(ESP_OPEN_RTOS)
 // ALL THESE UNTESTED, but worked well when embedded in ostream
 template<> char* toString(char* output, int input)

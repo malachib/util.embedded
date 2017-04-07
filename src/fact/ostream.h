@@ -75,8 +75,23 @@ public:
 
 typedef basic_ostream<char> ostream;
 
+/*
+ need to SFINAE (or similar) out particular types like char* from coming in here
+*/
+/*
+template <class T>
+inline ostream& operator<<(ostream& out, T value)
+{
+    char buffer[::experimental::maxStringLength<T>()];
 
-inline basic_ostream<char>& operator <<(basic_ostream<char>& out, const char* arg)
+    toString(buffer, value, sizeof(buffer) - 1);
+
+    return out << buffer;
+}
+*/
+
+
+inline ostream& operator <<(ostream& out, const char* arg)
 {
     return out.write(arg, strlen(arg));
 }
@@ -91,13 +106,7 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
 {
     char buffer[10];
 
-#ifdef ESP_OPEN_RTOS
-    __utoa(value, buffer, 10);
-#elif defined(__AVR__)
-    toString(buffer, value);
-#else
-    snprintf(buffer, sizeof(buffer), "%u", value);
-#endif
+    toString(buffer, value, sizeof(buffer) - 1);
 
     return out << buffer;
 }
@@ -129,18 +138,11 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
     return out << buffer;
 }
 
-
 inline basic_ostream<char>& operator<<(basic_ostream<char>& out, int value)
 {
     char buffer[10];
 
-#ifdef ESP_OPEN_RTOS
-    __itoa(value, buffer, 10);
-#elif defined(__AVR__)
-    toString(buffer, value);
-#else
-    snprintf(buffer, sizeof(buffer), "%d", value);
-#endif
+    toString(buffer, value, sizeof(buffer) - 1);
 
     return out << buffer;
 }
@@ -149,11 +151,7 @@ inline ostream& operator<<(ostream& out, float value)
 {
     char buffer[::experimental::maxStringLength<float>()];
 
-#ifdef __AVR__
-    toString(buffer, value);
-#else
-    snprintf(buffer, sizeof(buffer), "%f", value);
-#endif
+    toString(buffer, value, sizeof(buffer) - 1);
 
     return out << buffer;
 }
