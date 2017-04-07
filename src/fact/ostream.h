@@ -91,8 +91,10 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint16_t value
 {
     char buffer[10];
 
-#if ESP_OPEN_RTOS
+#ifdef ESP_OPEN_RTOS
     __utoa(value, buffer, 10);
+#elif defined(__AVR__)
+    toString(buffer, value);
 #else
     snprintf(buffer, sizeof(buffer), "%u", value);
 #endif
@@ -105,7 +107,7 @@ inline basic_ostream<char>& operator <<(basic_ostream<char>& out, uint32_t value
 {
     char buffer[16];
 
-#if ESP_OPEN_RTOS
+#ifdef ESP_OPEN_RTOS
     __utoa(value, buffer, 10);
 #else
     snprintf(buffer, sizeof(buffer), "%" PRIu32, value);
@@ -119,7 +121,7 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, void* addr)
 {
     char buffer[sizeof(uintptr_t) * 3];
 
-#if ESP_OPEN_RTOS
+#ifdef ESP_OPEN_RTOS
     __utoa((uint32_t)addr, buffer, 16);
 #else
     snprintf(buffer, sizeof(buffer), "%" PRIXPTR, (uintptr_t)addr);
@@ -132,8 +134,10 @@ inline basic_ostream<char>& operator<<(basic_ostream<char>& out, int value)
 {
     char buffer[10];
 
-#if ESP_OPEN_RTOS
+#ifdef ESP_OPEN_RTOS
     __itoa(value, buffer, 10);
+#elif defined(__AVR__)
+    toString(buffer, value);
 #else
     snprintf(buffer, sizeof(buffer), "%d", value);
 #endif
@@ -145,7 +149,11 @@ inline ostream& operator<<(ostream& out, float value)
 {
     char buffer[::experimental::maxStringLength<float>()];
 
+#ifdef __AVR__
+    toString(buffer, value);
+#else
     snprintf(buffer, sizeof(buffer), "%f", value);
+#endif
 
     return out << buffer;
 }

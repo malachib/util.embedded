@@ -95,6 +95,14 @@ template<> char* toString(char* output, unsigned int input)
 {
   return utoa(input, output, 10);
 }
+
+template<> char* toString(char* output, float input)
+{
+    constexpr size_t len = ::experimental::maxStringLength<float>();
+    // UNTESTED
+    dtostrf(input, len, len / 2, output);
+    return output;
+}
 #else
 template<> char* toString(char* output, int input)
 {
@@ -107,6 +115,8 @@ template<> char* toString(char* output, uint8_t input)
   sprintf(output, "%u", input);
   return output;
 }
+
+
 
 #endif
 
