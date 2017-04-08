@@ -7,7 +7,7 @@ public:
   double value;
   double divisor;
   bool foundNonZero = false;
-  void* context = context;
+  void* context; // = context;
   outputCharFunc outputChar;
 
   void dtostrf_helper();

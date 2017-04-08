@@ -20,12 +20,12 @@ void MenuGeneric::handleCommand(IMenu::Parameters p)
 // TODO: Switch this to PGM_P
 void IMenu::_showKeyValuePair(
 #ifdef CONSOLE_FEATURE_COUT
-  fact_ostream& out,
+  ostream& out,
 #endif
   const __FlashStringHelper* key, uint8_t keyPadding)
 {
 #ifndef CONSOLE_FEATURE_COUT
-  fact_ostream& out = cout;
+  ostream& out = cout;
 #endif
 
   // FIX: some Print classes don't seem to return proper bytes-written

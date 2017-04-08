@@ -142,7 +142,7 @@ void Menu::showHelp(Parameters p)
 #if defined(CONSOLE_FEATURE_AUTOCOMPLETE)
 bool Menu::processInput(Console* console, char received)
 {
-  fact_ostream& out = console->getOut();
+  ostream& out = console->getOut();
 
   // look for tab character
   if(received == 9)

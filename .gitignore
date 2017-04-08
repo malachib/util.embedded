@@ -13,4 +13,5 @@ build/
 # CLion metafiles
 **/.idea/workspace.xml
 **/.idea/tasks.xml
+**/.idea/vcs.xml
 cmake-build-*
