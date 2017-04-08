@@ -18,7 +18,6 @@ using namespace FactUtilEmbedded;
 #endif
 
 
-
 #if defined(FEATURE_IOSTREAM)
 
 using namespace std;
@@ -56,90 +55,89 @@ DummyStream _dummyStream;
 // a -D switch
 void Console::handler()
 {
-  // in_avail isn't quite cross platform, but peek should be
-  while(in.peek() != -1)
-  {
-    ostream& out = getOut();
-    char received = in.get();
-
-    if(processInput(received))
+    // in_avail isn't quite cross platform, but peek should be
+    while (in.peek() != -1)
     {
+        ostream &out = getOut();
+        char received = in.get();
 
-    }
-    else
-    if(received == '\n' || received == 13)
-    {
-        out << endl;
-
-      int paramCounter = 0;
-      const char* parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
-
-      inputLine[inputPos] = 0;
-
-      // No input = just show prompt again
-      if(inputPos == 0)
-      {
-        showPrompt();
-        return;
-      }
-
-#ifdef DEBUG2
-      clog << F("Submitting command: ") << inputLine << F("\n");
-#endif
-
-      parameters[0] = inputLine;
-
-      for(int i = 0; i < inputPos; i++)
-      {
-        if(inputLine[i] == ' ')
+        if (processInput(received))
         {
-          inputLine[i] = 0;
-#ifdef DEBUG2
-          clog << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
-#endif
-          paramCounter++;
-          // FIX: preload code is kludgey, replace with something better (wastes one slot)
-          // if we can sneak ahead one character safely, preload next paramCounter
-          if(i + 1 < inputPos)
-          {
-            parameters[paramCounter] = &inputLine[i + 1];
-          }
+
         }
-      }
+        else if (received == '\n' || received == 13)
+        {
+            out << endl;
+
+            int paramCounter = 0;
+            const char *parameters[CONSOLE_BEHAVIOR_MAX_PARAMETER];
+
+            inputLine[inputPos] = 0;
+
+            // No input = just show prompt again
+            if (inputPos == 0)
+            {
+                showPrompt();
+                return;
+            }
+
+#ifdef DEBUG2
+            clog << F("Submitting command: ") << inputLine << F("\n");
+#endif
+
+            parameters[0] = inputLine;
+
+            for (int i = 0; i < inputPos; i++)
+            {
+                if (inputLine[i] == ' ')
+                {
+                    inputLine[i] = 0;
+#ifdef DEBUG2
+                    clog << F("param# ") << paramCounter << F(" = ") << parameters[paramCounter];
+#endif
+                    paramCounter++;
+                    // FIX: preload code is kludgey, replace with something better (wastes one slot)
+                    // if we can sneak ahead one character safely, preload next paramCounter
+                    if (i + 1 < inputPos)
+                    {
+                        parameters[paramCounter] = &inputLine[i + 1];
+                    }
+                }
+            }
 
 
 #ifdef DEBUG2
-      clog.println("handle command 0");
+            clog.println("handle command 0");
 #endif
 
-      handleCommand(Parameters(parameters, paramCounter + 1, this));
+            handleCommand(Parameters(parameters, paramCounter + 1, this));
 
 #ifdef DEBUG2
-      clog.println("handle command 1");
+            clog.println("handle command 1");
 #endif
 
-      out << endl;
+            out << endl;
 
-      showPrompt();
+            showPrompt();
 
-      inputPos = 0;
-    }
-    else
-    {
+            inputPos = 0;
+        }
+        else
+        {
 #ifdef FACT_LIB_STRICT
-      if(inputPos == CONSOLE_INPUTLINE_MAX - 1)
-      {
+            if (inputPos == CONSOLE_INPUTLINE_MAX - 1)
+            {
 #ifdef DEBUG
-        clog << F("Max len");
+                clog << F("Max len");
 #endif
-        out << (char)7; // old ASCII beep
-        return;
-      }
+                out << (char) 7; // old ASCII beep
+                return;
+            }
 #endif
-      out << received;
-      inputLine[inputPos++] = received;
+            out << received;
+            inputLine[inputPos++] = received;
+        }
     }
-  }
 }
 
 
@@ -147,10 +145,10 @@ void Console::handler()
 // we're already maintaining inputPos
 void Console::appendToInputLine_P(PGM_P src)
 {
-  char ch;
+    char ch;
 
-  // apparently strlcpy_P isn't available for some platforms
-  //inputPos += strlcpy_P(&inputLine[inputPos], src, CONSOLE_INPUTLINE_MAX - inputPos);
-  while((ch = pgm_read_byte(src++)) != 0) inputLine[inputPos++] = ch;
+    // apparently strlcpy_P isn't available for some platforms
+    //inputPos += strlcpy_P(&inputLine[inputPos], src, CONSOLE_INPUTLINE_MAX - inputPos);
+    while ((ch = pgm_read_byte(src++)) != 0) inputLine[inputPos++] = ch;
 
 }
