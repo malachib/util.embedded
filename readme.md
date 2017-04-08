@@ -74,14 +74,17 @@ Hardware Compatibility
 
 Tested and works on the following:
 
-Device               | Framework               | Features
--------------------- | ----------------------- | --------
-ATmega328P           | Arduino                 |
-ESP8266 12E          | Arduino / ESP-OPEN-RTOS |
-ATtiny85             | Arduino                 |
-ATSAMD21G            | mbed OS / Arduino       |
-STM32F401RE          | mbed OS                 | IOS
-x86                  | POSIX                   | IOS
+Device           | Framework          | Features
+---------------- | ------------------ | --------
+ATmega328P       | Arduino            |
+ATmega32u4       | Arduino            | IOS, buffer
+ATtiny85         | Arduino            |
+ESP8266          | Arduino            |
+ESP8266          | ESP-OPEN-RTOS      |
+ATSAMD21G        | Arduino            | IOS
+ATSAMD21G        | mbed OS            |
+STM32F401RE      | mbed OS            | IOS
+x86              | POSIX              | IOS
 
 Most code in this lib is designed to work everywhere, so missing
 features on this chart only represents that it is *untested* , not
@@ -90,8 +93,7 @@ necessarily *unavailable*.
 Data/Memory code size
 ---------------------
 
-I won't lie, these libraries take space.  There are a slew of #defines to help curb
-its appetite:
+I won't lie, these libraries take space.  There are a slew of #defines to help curb its appetite:
 
 * MEMORY_OPT: Trim memory by reducing internal buffers sizes and string descriptions
  * MEMORY_OPT_CODE: Trim code space by reducing size of string descriptions,
