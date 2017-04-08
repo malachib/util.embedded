@@ -53,7 +53,7 @@ void NestedMenuHandler::handleCommand(Parameters p)
 
 void NestedMenuHandler::showPrompt(Console* console)
 {
-  fact_ostream& out = console->getOut();
+  ostream& out = console->getOut();
 
   // TODO: We can turn getName into showLocalPrompt if we want to go even more OOP
   out << getName();

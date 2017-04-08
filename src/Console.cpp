@@ -56,9 +56,10 @@ DummyStream _dummyStream;
 // a -D switch
 void Console::handler()
 {
-  while(in.rdbuf()->in_avail() > 0)
+  // in_avail isn't quite cross platform, but peek should be
+  while(in.peek() != -1)
   {
-    fact_ostream& out = getOut();
+    ostream& out = getOut();
     char received = in.get();
 
     if(processInput(received))
