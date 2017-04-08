@@ -82,7 +82,7 @@ template<> char* toString(char* output, char input)
 }
 
 
-#if defined(__AVR__) or defined(__SAMD21G18A__)
+#if defined(__AVR__) or defined(__SAMD21G18A__) or (defined(ESP8266) and defined(ARDUINO))
 #define STDLIB_NONISO
 #define STDLIB_NONISO_ITOA
 #define STDLIB_NONISO_UTOA
@@ -93,13 +93,12 @@ template<> char* toString(char* output, char input)
 
 template<> char* toString(char* output, int input)
 {
-  return itoa(input, output, 10);
+    return itoa(input, output, 10);
 }
-
 
 template<> char* toString(char* output, unsigned int input)
 {
-  return utoa(input, output, 10);
+    return utoa(input, output, 10);
 }
 
 template<> char* toString(char* output, uint16_t input)
@@ -108,6 +107,7 @@ template<> char* toString(char* output, uint16_t input)
 }
 
 #elif defined(ESP_OPEN_RTOS)
+// ESP RTOS has its own flavor of stdlib calls
 // ALL THESE UNTESTED, but worked well when embedded in ostream
 template<> char* toString(char* output, int input)
 {
@@ -133,6 +133,11 @@ template<> char* toString(char* output, uint8_t input)
 }
 
 
+template<> char* toString(char* output, uint16_t input)
+{
+  sprintf(output, "%u", input);
+  return output;
+}
 
 #endif
 

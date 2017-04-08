@@ -1,6 +1,17 @@
 #pragma once
 
 #include "buffer.h"
+#if defined(DEBUG)
+#ifdef FEATURE_IOSTREAM
+#include <iostream>
+// TODO: clean up annoying __clog
+#define __clog  ::std::clog
+#else
+#include <fact/iostream.h>
+
+#define __clog  FactUtilEmbedded::std::clog
+#endif
+#endif
 
 namespace FactUtilEmbedded
 {
@@ -167,15 +178,15 @@ protected:
 
     void debugPrint() const
     {
-#if defined(ARDUINO) && defined(DEBUG)
+#if defined(DEBUG)
       auto buffer = array.getData();
       auto size = array.getSize();
 
       for(int i = 0; i < size; i++)
       {
-        Serial << buffer[i] << F(", ");
+        __clog << buffer[i] << F(", ");
       }
-  #endif
+#endif
     }
   };
 

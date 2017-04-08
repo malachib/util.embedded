@@ -13,7 +13,7 @@
 
 namespace FactUtilEmbedded { namespace std {
 
-#ifdef __AVR__
+#if  defined(__AVR__) or defined(ESP8266)
 ostream cout(Serial);
 istream cin(Serial);
 #else
@@ -44,7 +44,7 @@ void setup_menuProperty();
 
 void setup()
 {
-#ifdef __AVR__
+#if defined(__AVR__) or defined(ESP8266)
   Serial.begin(115200);
 #else
     SerialUSB.begin(115200);

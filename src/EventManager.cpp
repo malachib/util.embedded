@@ -1,7 +1,11 @@
 #include "EventManager.h"
 #include "Console.Stream.h"
 
+#ifdef FEATURE_IOSTREAM
 using namespace std;
+#else
+using namespace FactUtilEmbedded::std;
+#endif
 
 EventManager eventManager;
 
