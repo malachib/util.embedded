@@ -21,6 +21,7 @@ Plays nice with PlatformIO
 * Debug console: Menuing system for serial port (or other stream) control code to run diagnostics and acquire status
     * Telnet capable (coming soon)
 * Linked lists, single and doubly linked
+* Templatized toString/fromString
 
 Note Circular Buffer and its close relatives conform to the layer1-layer5 design
 as described later.  This could be critical for your small-footprint environment.
@@ -83,6 +84,7 @@ ESP8266          | Arduino            |
 ESP8266          | ESP-OPEN-RTOS      |
 ATSAMD21G        | Arduino            | IOS
 ATSAMD21G        | mbed OS            |
+STM32F303K8      | mbed OS            | IOS
 STM32F401RE      | mbed OS            | IOS
 x86              | POSIX              | IOS
 
@@ -110,9 +112,12 @@ I won't lie, these libraries take space.  There are a slew of #defines to help c
 * EVENT_FEATURE_TYPE2: Force events to never operate in Type1 mode, only Type2.  
    *May* save code space if using events heavily.
 
-Notes
------
+# Notes
 
 Remember, istream/ostream are (arguably) by design blocking I/O.  There is a lot of
-discussion about this on the internet.  So far I have done nothing to adjust or enhance
-the FEATURE_IOSTREAM_SHIM to be async.
+discussion about this on the internet.  Our lightweight iostream implementation follows suit, but deviates importantly with its "in_avail" behavior.  
+
+"in_avail" for our implementation
+reliably reports available bytes in the stream and does not emulate the buffered behavior
+of official iostream libraries.  As such, one may use it for polling loops for an 
+async-ish behavior.
