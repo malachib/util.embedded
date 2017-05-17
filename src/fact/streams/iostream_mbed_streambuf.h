@@ -28,8 +28,13 @@ public:
     union
     {
         int (*_sgetc)(void*);
-        char char_cache;
+        int16_t char_cache;
     };
+
+    // use this to determine of we have a character in char_cache or not
+    // FIX: right now is a zero-compare, which obviously will work poorly for binary
+    // so in a proper testable environment change to something else (like EOF/-1)
+    bool is_char_cache_filled() { return char_cache; }
 
 protected:
     basic_streambuf_mbed(streamsize (*_in_avail)(void*),
@@ -141,7 +146,7 @@ public:
     {
         if(this->is_sbumpc_cache())
         {
-            if(this->char_cache)
+            if(is_char_cache_filled())
             {
                 short temp = this->char_cache;
                 this->char_cache = 0;
@@ -160,10 +165,9 @@ public:
         // NOTE: should only be available when _sgetc is null
         if(this->is_sbumpc_cache())
         {
-            if(this->char_cache)
+            if(is_char_cache_filled())
             {
                 short temp = this->char_cache;
-                this->char_cache = 0;
                 return temp;
             }
             else

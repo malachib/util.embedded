@@ -49,7 +49,11 @@ template <class TChar> struct char_traits;
 template <> struct char_traits<char>
 {
     typedef char char_type;
+#ifdef __MBED__
+    typedef int16_t int_type;
+#else
     typedef int int_type;
+#endif
 
     static int_type to_int_type(char ch) { return ch; }
     static int_type eof() { return -1; }
