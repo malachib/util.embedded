@@ -18,6 +18,8 @@ public:
     static constexpr traits sbumpccachebit = 0x02;
 
     bool is_serial() { return _traits & serialbit; }
+
+    /// @brief Are we operating in one-char cache mode
     bool is_sbumpc_cache() { return _traits & sbumpccachebit; }
 
     // Since mbed OS somewhat scatters these three, directly function pointer them
@@ -144,6 +146,7 @@ public:
     // TODO: optimize and reuse via specialization, if we can
     int_type sbumpc()
     {
+        // NOTE: should only be available when _sgetc is null
         if(this->is_sbumpc_cache())
         {
             if(is_char_cache_filled())
@@ -160,6 +163,9 @@ public:
     }
 
 
+    /// mbed streams don't natively have a non-blocking get/peek mode
+    /// so we have to workaround it by either precaching a byte, if necessary
+    /// or by calling a specialized helper function ptr
     int_type sgetc()
     {
         // NOTE: should only be available when _sgetc is null
@@ -167,6 +173,7 @@ public:
         {
             if(is_char_cache_filled())
             {
+                // don't clear it out
                 short temp = this->char_cache;
                 return temp;
             }
@@ -178,9 +185,7 @@ public:
                     return this->char_cache = base_t::sbumpc();
                 }
             }
-        }
-
-        if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
+        } else if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
 
         return Traits::eof();
     }
