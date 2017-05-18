@@ -35,6 +35,14 @@ public:
         return this->rdbuf()->sbumpc();
     }
 
+
+    /*
+    // nonblocking read
+    streamsize readsome(TChar* s, streamsize n)
+    {
+
+    } */
+
     __istream_type& read(TChar* s, streamsize n)
     {
         // TODO: optimization point.  We want to do something
@@ -86,6 +94,26 @@ public:
     int_type peek()
     {
         return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+    }
+
+    // delim test is disabled if delim is default value, which would be EOF
+    basic_istream& ignore(streamsize count = 1)
+    {
+        while(count--) get();
+        return *this;
+    }
+
+    // http://en.cppreference.com/w/cpp/io/basic_istream/ignore
+    basic_istream& ignore(streamsize count, const int_type delim)
+    {
+        if(delim == Traits::eof()) return ignore(count);
+
+        while(count--)
+        {
+            int_type ch = get();
+            if(ch == delim) break;
+        }
+        return *this;
     }
 
 #ifndef FEATURE_IOS_STREAMBUF_FULL

@@ -41,6 +41,11 @@ namespace FactUtilEmbedded { namespace std {
 typedef uint16_t streamoff;
 typedef uint16_t streamsize;
 
+#if __cplusplus > 199711L
+#define CONSTEXPR constexpr
+#else
+#define CONSTEXPR
+#endif
 //  As per http://tuttlem.github.io/2014/08/18/getting-istream-to-work-off-a-byte-array.html
 //  I won't try to stuff in a uint8_t as a TChar anywhere, although it seems like I could
 // safely make a fully uint8_t version of things
@@ -55,9 +60,10 @@ template <> struct char_traits<char>
     typedef int int_type;
 #endif
 
-    static int_type to_int_type(char ch) { return ch; }
-    static int_type eof() { return -1; }
-    static bool eq(char c1, char c2) { return c1 == c2; }
+    static CONSTEXPR char_type to_char_type(int_type ch) { return ch; }
+    static CONSTEXPR int_type to_int_type(const char ch) { return ch; }
+    static CONSTEXPR int_type eof() { return -1; }
+    static CONSTEXPR bool eq(char c1, char c2) { return c1 == c2; }
 };
 
 
