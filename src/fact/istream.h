@@ -3,6 +3,7 @@
 
 #include "streambuf.h"
 #include "ios.h"
+#include <algorithm> // for min function
 
 #define FEATURE_IOS_GCOUNT
 
@@ -36,12 +37,18 @@ public:
     }
 
 
-    /*
     // nonblocking read
-    streamsize readsome(TChar* s, streamsize n)
+    // UNTESTED
+    streamsize readsome(TChar* s, streamsize count)
     {
+        auto rdbuf = *(this->rdbuf());
+        // if count > number of available bytes
+        // then read only available bytes
+        // otherwise read all of count
+        streamsize m = min(count, rdbuf.in_avail());
 
-    } */
+        return rdbuf.sgetn(s, m);
+    }
 
     __istream_type& read(TChar* s, streamsize n)
     {
