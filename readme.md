@@ -16,10 +16,9 @@ cross-platform endeavors.
 Code is Arduino, POSIX and mbed OS friendly.  Experimental support for ESP-OPEN-RTOS.
 Plays nice with PlatformIO
 
-* C++ iostream shims; use istream/ostream etc. without all the bloat
+* C++ iostream reimplementation; embedded istream/ostream etc. without all the bloat
 * Circular buffer
 * Debug console: Menuing system for serial port (or other stream) control code to run diagnostics and acquire status
-    * Telnet capable (coming soon)
 * Linked lists, single and doubly linked
 * Templatized toString/fromString
 
@@ -45,7 +44,7 @@ Code in this category is more subject to breaking changes:
         * watchdog
         * pin change interrupts
     * SAM
-        * sleep (coming soon)
+        * sleep (somewhat functional, not well tested)
 
 Obsolete:
 ---------
@@ -55,6 +54,17 @@ seee it, don't use it:
 
 * Cross-thread RPC mechanism (if using an external threading tool)
 
+# Planned
+
+* Minimal implementation of mbed-compatible callback/function pointer code
+ * Will upgrade our own event code at that time, though the existing architecture
+   shall be kept available since it has a much lighter footprint
+* Telnet capability for console
+
+# Thoughts
+
+* The iostream stuff may be better suited to its own repository altogether,
+  kicking this one around in my mind
 
 Other preprocessor defines
 --------------------------
@@ -86,7 +96,7 @@ ATSAMD21G        | Arduino            | IOS
 ATSAMD21G        | mbed OS            |
 STM32F303K8      | mbed OS            | IOS
 STM32F401RE      | mbed OS            | IOS
-x86              | POSIX              | IOS
+x86              | POSIX              | IOS, buffer
 
 Most code in this lib is designed to work everywhere, so missing
 features on this chart only represents that it is *untested* , not
@@ -121,3 +131,6 @@ discussion about this on the internet.  Our lightweight iostream implementation 
 reliably reports available bytes in the stream and does not emulate the buffered behavior
 of official iostream libraries.  As such, one may use it for polling loops for an 
 async-ish behavior.
+
+"readsome" appears to be the lone non-blocking-friendly call, and is not yet implemented 
+but is planned.
