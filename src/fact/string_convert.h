@@ -49,6 +49,8 @@ template<> inline constexpr uint8_t maxStringLength<int8_t>() { return 4; }
 template<> inline constexpr uint8_t maxStringLength<uint16_t>() { return 5; }
 template<> inline constexpr uint8_t maxStringLength<int16_t>() { return 6; }
 template<> inline constexpr uint8_t maxStringLength<uint32_t>() { return 10; }
+template<> inline constexpr uint8_t maxStringLength<int32_t>() { return 11; }
+template<> inline constexpr uint8_t maxStringLength<int64_t>() { return 20; }
 template<> inline constexpr uint8_t maxStringLength<float>() { return 32; }
 template<> inline constexpr uint8_t maxStringLength<double>() { return 64; }
 
