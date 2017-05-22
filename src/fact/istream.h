@@ -3,11 +3,23 @@
 
 #include "streambuf.h"
 #include "ios.h"
-#include <algorithm> // for min function
+
+// FIX: Re-include this if
+//  a) we're sure Arduino and other off-the-beaten-std path has it and
+//  b) we feel like fighting with the standard std namespace (which algorithm seems to auto include
+//     i.e. it seems to specify 'using namespace std'
+//#include <algorithm> // for min function
 
 #define FEATURE_IOS_GCOUNT
 
 namespace FactUtilEmbedded { namespace std {
+
+// lifted from http://www.cplusplus.com/reference/algorithm/min/
+// FIX: put this into algorithm.h if we're gonna really roll with it
+template <class T> const T& min (const T& a, const T& b)
+{
+    return !(b<a)?a:b;     // or: return !comp(b,a)?a:b; for version (2)
+}
 
 template<class TChar, class Traits = char_traits<TChar>>
 class basic_istream :
