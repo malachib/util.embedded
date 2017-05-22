@@ -54,14 +54,14 @@ seee it, don't use it:
 
 * Cross-thread RPC mechanism (if using an external threading tool)
 
-# Planned
+## Planned
 
 * Minimal implementation of mbed-compatible callback/function pointer code
  * Will upgrade our own event code at that time, though the existing architecture
    shall be kept available since it has a much lighter footprint
 * Telnet capability for console
 
-# Thoughts
+## Thoughts
 
 * The iostream stuff may be better suited to its own repository altogether,
   kicking this one around in my mind
@@ -125,12 +125,15 @@ I won't lie, these libraries take space.  There are a slew of #defines to help c
 # Notes
 
 Remember, istream/ostream are (arguably) by design blocking I/O.  There is a lot of
-discussion about this on the internet.  Our lightweight iostream implementation follows suit, but deviates importantly with its "in_avail" behavior.  
+discussion about this on the internet.  Our lightweight iostream implementation follows suit, but deviates importantly with its "in_avail" and "peek" behavior.  
 
 "in_avail" for our implementation
 reliably reports available bytes in the stream and does not emulate the buffered behavior
-of official iostream libraries.  As such, one may use it for polling loops for an 
+of official iostream libraries.  As such, one may use it for polling loops for an
 async-ish behavior.
 
-"readsome" appears to be the lone non-blocking-friendly call, and is not yet implemented 
-but is planned.
+"peek" similar to standard behavior in that it does not extract the value from the stream
+but deviates in that it *never* blocks.
+
+"readsome" is the lone *standard* non-blocking-friendly call, and is implemented but not well
+tested.
