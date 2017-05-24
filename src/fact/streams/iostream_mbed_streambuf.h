@@ -140,7 +140,7 @@ protected:
             if(is_char_cache_filled())
             {
                 // don't clear it out
-                short temp = this->char_cache;
+                int_type temp = this->char_cache;
                 return temp;
             }
             else
@@ -261,11 +261,17 @@ public:
     }
 #endif
 
+    // TODO: We will need to optimize this, scattering this everywhere inline
+    // not helpful
     streamsize in_avail()
     {
-        if(this->_in_avail != nullptr) return this->_in_avail(&this->stream);
+        streamsize n = 0;
 
-        return 0;
+        if(this->_in_avail != nullptr) n = this->_in_avail(&this->stream);
+
+        if(is_sbumpc_cache() && is_char_cache_filled()) n++;
+
+        return n;
     }
 };
 #endif
