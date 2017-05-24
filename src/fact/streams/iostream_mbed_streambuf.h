@@ -116,6 +116,53 @@ protected:
 #endif
     }
 
+    /**
+     * this is a 100% non blocking version of sgetc
+     * @return
+     */
+    int_type speekc(bool& have_data)
+    {
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
+        static constexpr int_type result_nodata = Traits::nodata();
+#else
+        static constexpr int_type result_nodata = Traits::eof();
+#endif
+        /// mbed streams don't natively have a non-blocking get/peek mode
+        /// so we have to workaround it by either precaching a byte, if necessary
+        /// or by calling a specialized helper function ptr
+
+        have_data = true;
+        // NOTE: should only be available when _sgetc is null
+        // indicates we are using a simplistic one-character buffer mechanism
+        // to handle peek operations
+        if(this->is_sbumpc_cache())
+        {
+            if(is_char_cache_filled())
+            {
+                // don't clear it out
+                short temp = this->char_cache;
+                return temp;
+            }
+            else
+            {
+                // NOTE: _in_avail should ALWAYS be available when using is_sbumpc_cache
+                if(this->_in_avail(&this->stream))
+                {
+                    return this->char_cache = base_t::sbumpc();
+                }
+
+                have_data = false;
+            }
+        }
+
+        // NOTE: might need to bring in a _speekc too?  at a minimum
+        // if we move this function to speekc then we can't do this here
+        //else if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
+
+        return result_nodata;
+    }
+
+
 public:
     // Following represents ideal architecture.  Have not reached it just yet
     // IMPORTANT: only Stream and Serial can get in, meaning that even though we track FileLike,
@@ -175,40 +222,26 @@ public:
     }
 
 
-    /// mbed streams don't natively have a non-blocking get/peek mode
-    /// so we have to workaround it by either precaching a byte, if necessary
-    /// or by calling a specialized helper function ptr
-#ifdef FEATURE_IOS_SPEEKC
-    /**
-     * this is a 100% non blocking version of sgetc
-     * @return
-     */
-    int_type speekc()
-#else
     int_type sgetc()
-#endif
     {
+        /*
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
+        static constexpr int_type result_nodata = Traits::nodata();
+#else
+        static constexpr int_type result_nodata = Traits::eof();
+#endif */
+
+#ifndef FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
+        wait_for_input();
+#endif
+
         // NOTE: should only be available when _sgetc is null
+        // indicates we are using a simplistic one-character buffer mechanism
+        // to handle peek operations
         if(this->is_sbumpc_cache())
         {
-            if(is_char_cache_filled())
-            {
-                // don't clear it out
-                short temp = this->char_cache;
-                return temp;
-            }
-            else
-            {
-                // NOTE: _in_avail should ALWAYS be available when using is_sbumpc_cache
-                if(this->_in_avail(&this->stream))
-                {
-                    return this->char_cache = base_t::sbumpc();
-                }
-
-#ifdef FEATURE_IOS_SPEEKC
-                return Traits::nodata();
-#endif
-            }
+            bool have_data;
+            return speekc(have_data);
         }
         // NOTE: might need to bring in a _speekc too?  at a minimum
         // if we move this function to speekc then we can't do this here
@@ -219,14 +252,12 @@ public:
 
 #ifdef FEATURE_IOS_SPEEKC
     /**
-     * With this feature enabled, sgetc actually becomes blocking again for "pure"
-     * streabuf compatibility
-     *
+     * Gaurunteed non-blocking glance into incoming buffer
      */
-    int_type sgetc()
+    int_type speekc()
     {
-        wait_for_input();
-        return speekc();
+        bool have_data;
+        return speekc(have_data);
     }
 #endif
 

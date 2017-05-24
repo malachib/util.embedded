@@ -68,8 +68,8 @@
 // or
 // a semi-standard blocking 'peek' (docs suggest it's NOT blocking, but implementations are)
 // with a non-standard non-blocking 'anticipate' type of call
-#define FEATURE_IOS_EXPERIMENTAL_INSPECT
-//#define FEATURE_IOS_EXPERIMENTAL_GETSOME
+//#define FEATURE_IOS_EXPERIMENTAL_INSPECT
+#define FEATURE_IOS_EXPERIMENTAL_GETSOME
 
 // Shouldn't hurt anything other than burning up a bit of memory as we test things
 // this turns out a circular buffer for streambuf which ultimately will enable putback and unget

@@ -3,6 +3,8 @@
 
 #include "streambuf.h"
 #include "ios.h"
+#include "features.h"
+
 #include <cassert>
 
 // FIX: Re-include this if
@@ -44,9 +46,8 @@ class basic_istream :
     }
 
     /**
-     * It seems the proper behavior of 'peek' is ambiguous, so this helper
+     * The proper behavior of 'peek' is to permit blocking, so this helper
      * method *always* is nonblocking version of peek.
-     * *may* have to change from sgetc() to a nonstandard speekc() not sure yet
      * @return
      */
     inline int_type real_peek()
@@ -178,8 +179,6 @@ public:
 
     int_type peek()
     {
-        // TODO: don't call real_peek() anymore here
-        // put this line back:
 #ifdef FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
         return real_peek();
 #else

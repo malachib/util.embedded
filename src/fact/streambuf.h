@@ -145,6 +145,10 @@ public:
 
     int_type sgetc();
 
+#ifdef FEATURE_IOS_SPEEKC
+    int_type speekc();
+#endif
+
     // NOTE: this deviates from spec in that it won't wait for CR, for example,
     // to reflect characters are available
     streamsize in_avail();
