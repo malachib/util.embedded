@@ -22,6 +22,10 @@
 #include <Arduino.h>
 #endif
 
+#ifdef FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF
+#include "CircularBuffer.h"
+#endif
+
 
 extern "C"
 {
@@ -78,8 +82,6 @@ template <> struct char_traits<char>
     }
 };
 
-
-
 namespace layer3 {
 
 template<class TChar, class TStream, class Traits = char_traits <TChar>>
@@ -89,6 +91,10 @@ protected:
     typedef TChar char_type;
     typedef typename Traits::int_type int_type;
     TStream &stream;
+
+#ifdef FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF
+    FactUtilEmbedded::layer1::CircularBuffer<char_type, (uint16_t)FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF> experimental_buf;
+#endif
 
     streamsize xsputn(const char_type *s, streamsize count);
 

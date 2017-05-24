@@ -38,6 +38,29 @@ class basic_istream :
     typedef typename base_t::basic_streambuf_t basic_streambuf_t;
     typedef typename Traits::int_type int_type;
 
+    /**
+     * It seems the proper behavior of 'peek' is ambiguous, so this helper
+     * method *always* is nonblocking version of peek.
+     * *may* have to change from sgetc() to a nonstandard speekc() not sure yet
+     * @return
+     */
+    inline int_type real_peek()
+    {
+        return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+    }
+
+    /**
+     *
+     * @return true if data available, false if timeout occured
+     */
+    bool block_experimental()
+    {
+        // TODO: add timeout logic here
+        while(!this->rdbuf()->in_avail());
+
+        return true;
+    }
+
 #ifdef FEATURE_IOS_GCOUNT
     streamsize _gcount = 0;
 
@@ -114,10 +137,19 @@ public:
         return *this;
     }
 
+#ifdef FEATURE_IOS_EXPERIMENTAL_INSPECT
+    int_type inspect()
+    {
+        block_experimental();
+
+        return real_peek();
+    }
+#endif
+
 
     int_type peek()
     {
-        return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+        return real_peek();
     }
 
     // delim test is disabled if delim is default value, which would be EOF

@@ -62,3 +62,19 @@
 #ifdef FEATURE_IOSTREAM
 #define FEATURE_STDLIBCPP
 #endif
+
+// Add 'inspect' method to istream for a blocking version of peek
+// Not fully decided if we want a semi-non-standard non-blocking 'peek' with a non-standard blocking 'inspect'
+// or
+// a semi-standard blocking 'peek' (docs suggest it's NOT blocking, but implementations are)
+// with a non-standard non-blocking 'anticipate' type of call
+#define FEATURE_IOS_EXPERIMENTAL_INSPECT
+//#define FEATURE_IOS_EXPERIMENTAL_ANTICIPATE
+
+// Shouldn't hurt anything other than burning up a bit of memory as we test things
+// this turns out a circular buffer for streambuf which ultimately will enable putback and unget
+#ifdef FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF
+#if ((FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF + 0) < 4)
+#error "Must defined a value of 4 or higher if using FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF"
+#endif
+#endif
