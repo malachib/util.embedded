@@ -104,6 +104,18 @@ protected:
         return _stream->getc();
     }
 
+
+    // blocking function
+    void wait_for_input()
+    {
+#ifdef FEATURE_IOS_TIMEOUT
+#error "Need FAL timer functions before this feature can be used"
+        //while(in_avail())
+#else
+        while(in_avail() == 0);
+#endif
+    }
+
 public:
     // Following represents ideal architecture.  Have not reached it just yet
     // IMPORTANT: only Stream and Serial can get in, meaning that even though we track FileLike,
@@ -171,7 +183,7 @@ public:
      * this is a 100% non blocking version of sgetc
      * @return
      */
-    int_type speekc_experimental()
+    int_type speekc()
 #else
     int_type sgetc()
 #endif
@@ -192,8 +204,15 @@ public:
                 {
                     return this->char_cache = base_t::sbumpc();
                 }
+
+#ifdef FEATURE_IOS_SPEEKC
+                return Traits::nodata();
+#endif
             }
-        } else if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
+        }
+        // NOTE: might need to bring in a _speekc too?  at a minimum
+        // if we move this function to speekc then we can't do this here
+        else if(this->_sgetc != nullptr) return this->_sgetc(&this->stream);
 
         return Traits::eof();
     }
@@ -206,13 +225,8 @@ public:
      */
     int_type sgetc()
     {
-#ifdef FEATURE_IOS_TIMEOUT
-#error "Need FAL timer functions before this feature can be used"
-        //while(in_avail())
-#else
-        while(in_avail() == 0);
-#endif
-        return speekc_experimental();
+        wait_for_input();
+        return speekc();
     }
 #endif
 

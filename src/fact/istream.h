@@ -46,6 +46,7 @@ class basic_istream :
      */
     inline int_type real_peek()
     {
+        // TODO: change this to call non-standard this->rdbuf()->speekc();
         return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
     }
 
@@ -146,9 +147,19 @@ public:
     }
 #endif
 
+#ifdef FEATURE_IOS_EXPERIMENTAL_GETSOME
+    int_type getsome()
+    {
+        return real_peek();
+    }
+#endif
+
 
     int_type peek()
     {
+        // TODO: don't call real_peek() anymore here
+        // put this line back:
+        //    return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
         return real_peek();
     }
 
