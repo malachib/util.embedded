@@ -58,3 +58,7 @@
 // cout -> Serial might be in use
 #define FEATURE_IOS
 #endif
+
+#ifdef FEATURE_IOSTREAM
+#define FEATURE_STDLIBCPP
+#endif

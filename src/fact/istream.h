@@ -3,6 +3,7 @@
 
 #include "streambuf.h"
 #include "ios.h"
+#include <cassert>
 
 // FIX: Re-include this if
 //  a) we're sure Arduino and other off-the-beaten-std path has it and
@@ -13,6 +14,10 @@
 #define FEATURE_IOS_GCOUNT
 
 namespace FactUtilEmbedded { namespace std {
+
+#ifdef min
+#undef min
+#endif
 
 // lifted from http://www.cplusplus.com/reference/algorithm/min/
 // FIX: put this into algorithm.h if we're gonna really roll with it
@@ -157,6 +162,23 @@ inline basic_istream<char>& operator >>(basic_istream<char>& in, short& value)
 }
 */
 
+#ifndef FEATURE_IOSTREAM
+
+/**
+ * Consume whitespace
+ * @tparam TChar
+ * @param __os
+ * @return
+ */
+template <class TChar>
+inline basic_istream<TChar>& ws(basic_istream<TChar>& __is)
+{
+    static_assert(&__is != nullptr, "Feature not yet ready");
+
+    return __is;
+    //isspace(' ');
+}
+#endif
 
 } }
 #endif //UTIL_EMBEDDED_ISTREAM_H

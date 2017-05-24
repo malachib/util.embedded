@@ -34,3 +34,21 @@ typedef unsigned long uint32_t;
 #ifndef byte
 typedef unsigned char byte;
 #endif
+
+#include "features.h"
+
+#ifndef FEATURE_STDLIBCPP
+namespace FactUtilEmbedded { namespace std {
+
+// TODO: move this into string.h
+template <class TChar> struct char_traits;
+
+template <class TChar = char, class TTraits = char_traits<TChar>>
+typename TTraits::int_type isspace(typename TTraits::int_type ch)
+{
+    static constexpr typename TTraits::char_type WHITESPACE[] = { 0x20, 0x0C, 0x0A, 0x0D, 0x09, 0x0B };
+    return TTraits::find(WHITESPACE, sizeof(WHITESPACE), ch);
+};
+
+}}
+#endif

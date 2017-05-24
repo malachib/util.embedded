@@ -50,7 +50,9 @@ typedef uint16_t streamsize;
 //  I won't try to stuff in a uint8_t as a TChar anywhere, although it seems like I could
 // safely make a fully uint8_t version of things
 
+// TODO: move this into our string.h (also this prototype is present in c_types.h)
 template <class TChar> struct char_traits;
+
 template <> struct char_traits<char>
 {
     typedef char char_type;
@@ -64,6 +66,16 @@ template <> struct char_traits<char>
     static CONSTEXPR int_type to_int_type(const char ch) { return ch; }
     static CONSTEXPR int_type eof() { return -1; }
     static CONSTEXPR bool eq(char c1, char c2) { return c1 == c2; }
+    static const char_type* find(const char_type* p, size_t count, const char_type& ch)
+    {
+        while(count--)
+        {
+            if(*p == ch) return p;
+            p++;
+        }
+
+        return nullptr;
+    }
 };
 
 

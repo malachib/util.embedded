@@ -166,7 +166,15 @@ public:
     /// mbed streams don't natively have a non-blocking get/peek mode
     /// so we have to workaround it by either precaching a byte, if necessary
     /// or by calling a specialized helper function ptr
+#ifdef FEATURE_IOS_SPEEKC
+    /**
+     * this is a 100% non blocking version of sgetc
+     * @return
+     */
+    int_type speekc_experimental()
+#else
     int_type sgetc()
+#endif
     {
         // NOTE: should only be available when _sgetc is null
         if(this->is_sbumpc_cache())
@@ -189,6 +197,24 @@ public:
 
         return Traits::eof();
     }
+
+#ifdef FEATURE_IOS_SPEEKC
+    /**
+     * With this feature enabled, sgetc actually becomes blocking again for "pure"
+     * streabuf compatibility
+     *
+     */
+    int_type sgetc()
+    {
+#ifdef FEATURE_IOS_TIMEOUT
+#error "Need FAL timer functions before this feature can be used"
+        //while(in_avail())
+#else
+        while(in_avail() == 0);
+#endif
+        return speekc_experimental();
+    }
+#endif
 
     streamsize in_avail()
     {
