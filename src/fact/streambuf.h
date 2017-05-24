@@ -81,7 +81,7 @@ template <> struct char_traits<char>
         return nullptr;
     }
 
-#if defined(FEATURE_IOS_TIMEOUT) || defined(FEATURE_IOS_SPEEKC)
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
     // Non-standard timeout/data unavailable return value, since eof() suggests no more data EVER
     // we want a different error code
     static CONSTEXPR int_type nodata() { return -2; }

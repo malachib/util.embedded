@@ -38,6 +38,11 @@ class basic_istream :
     typedef typename base_t::basic_streambuf_t basic_streambuf_t;
     typedef typename Traits::int_type int_type;
 
+    inline int_type standard_peek()
+    {
+        return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+    }
+
     /**
      * It seems the proper behavior of 'peek' is ambiguous, so this helper
      * method *always* is nonblocking version of peek.
@@ -46,8 +51,24 @@ class basic_istream :
      */
     inline int_type real_peek()
     {
+#ifdef FEATURE_IOS_SPEEKC
         // TODO: change this to call non-standard this->rdbuf()->speekc();
-        return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+        return this->good() ? this->rdbuf()->speekc() : Traits::eof();
+#else
+        if(this->rdbuf()->in_avail())
+        {
+            return standard_peek();
+        }
+        else
+        {
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
+            return Traits::nodata();
+#else
+#warning "eof used to indicate non-eof lack of data condition.   Not advised!"
+            return Traits::eof();
+#endif
+        }
+#endif
     }
 
     /**
@@ -143,7 +164,7 @@ public:
     {
         block_experimental();
 
-        return real_peek();
+        return standard_peek();
     }
 #endif
 
@@ -159,8 +180,11 @@ public:
     {
         // TODO: don't call real_peek() anymore here
         // put this line back:
-        //    return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
+#ifdef FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
         return real_peek();
+#else
+        return standard_peek();
+#endif
     }
 
     // delim test is disabled if delim is default value, which would be EOF

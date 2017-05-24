@@ -78,3 +78,12 @@
 #error "Must defined a value of 4 or higher if using FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF"
 #endif
 #endif
+
+// Only for legacy behavior, phase this out
+#define FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
+
+#if defined(FEATURE_IOS_TIMEOUT) || defined(FEATURE_IOS_SPEEKC)
+// enable experimental nodata() traits and bit behaviors for istream
+// indicating no data was present in a non-blocking way, like an EOF-lite
+#define FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
+#endif
