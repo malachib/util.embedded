@@ -6,25 +6,29 @@ using namespace FactUtilEmbedded::experimental;
 
 class A
 {
-
+public:
+    static constexpr int ID = 1;
 };
 
 
 class BdependsOnA
 {
-
+public:
+    static constexpr int ID = 2;
 };
 
 
 class CdependsOnB
 {
-
+public:
+    static constexpr int ID = 3;
 };
 
 
 class DdependsOnBandC
 {
-
+public:
+    static constexpr int ID = 4;
 };
 
 
@@ -40,7 +44,18 @@ DependencyManager<
         Dependent<CdependsOnB>::On<BdependsOnA>,
         Dependent<DdependsOnBandC>::On<BdependsOnA, CdependsOnB>> dm;
 
+DependencyManager<
+        Dependent<BdependsOnA>::On<A>> dm2;
+
+void responder(int parent_id, int id)
+{
+    printf("Inspecting: Parent = %d, id = %d\r\n", parent_id, id);
+}
+
 SCENARIO( "Experimental dependency code", "[exp-dependency]" )
 {
-
+    GIVEN("Test #1")
+    {
+        dm.walk<responder>();
+    }
 }
