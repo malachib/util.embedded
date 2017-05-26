@@ -104,9 +104,12 @@ class DependencyManager
     };
 
     template <int id, class T, class ...TArgs2>
-    static void _get()
+    static T _get()
     {
-        _get<id, TArgs2...>();
+        if(id == T::t_t::ID)
+            return std::declval<T>;
+
+        return _get<id, TArgs2...>();
     }
 
     // walk over a specific ID only
@@ -140,11 +143,11 @@ class DependencyManager
 public:
 
     // Get the 'On' class for this particular ID
-    /*
     template <const int id>
-    auto get() -> decltype(_get<id, TArgs...>())
+    static auto get() -> decltype(_get<id, TArgs...>())
     {
-    } */
+        //return _get<id, TArgs...>();
+    }
 
     // walk over everything under a specific ID
     template <int id, responder_t responder, class TAlreadyVisited>

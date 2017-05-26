@@ -59,5 +59,11 @@ SCENARIO( "Experimental dependency code", "[exp-dependency]" )
         //dm.walk<responder>();
         //dm.walk2<4, responder>();
         dm.walk3<4, responder>();
+        auto val_on = dm.get<4>();
+        typedef decltype(val_on) val_on_t;
+        auto id = val_on_t::t_t::ID;
+        // annoyingly always returns 2.  Presumably because decltype doesn't actually
+        // run the method
+        printf("Test id = %d", id);
     }
 }
