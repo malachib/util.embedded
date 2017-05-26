@@ -1,6 +1,7 @@
 #include "catch.hpp"
 
 #include <experimental/Dependency.h>
+#include <experimental/Service.h>
 
 using namespace FactUtilEmbedded::experimental;
 
@@ -9,6 +10,7 @@ class A
 public:
     static constexpr int ID = 1;
 };
+
 
 
 class BdependsOnA
@@ -40,6 +42,7 @@ Dependent<DdependsOnBandC>::On<BdependsOnA, CdependsOnB> val2;
 
 
 DependencyManager<
+        Dependent<A>::On<>,
         Dependent<BdependsOnA>::On<A>,
         Dependent<CdependsOnB>::On<BdependsOnA>,
         Dependent<DdependsOnBandC>::On<BdependsOnA, CdependsOnB>> dm;
@@ -65,5 +68,7 @@ SCENARIO( "Experimental dependency code", "[exp-dependency]" )
         // annoyingly always returns 2.  Presumably because decltype doesn't actually
         // run the method
         printf("Test id = %d", id);
+
+        //dm.walk4<4, responder>();
     }
 }

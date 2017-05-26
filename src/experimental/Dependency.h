@@ -107,6 +107,7 @@ class DependencyManager
     static T _get()
     {
         if(id == T::t_t::ID)
+            //return *((T *) nullptr);
             return std::declval<T>;
 
         return _get<id, TArgs2...>();
@@ -170,6 +171,12 @@ public:
         walk2<id, responder, already_visited_t>();
         responder(0, id);
     }
+
+    template <int id, class TClassCallback>
+    static void walk4()
+    {
+
+    };
 };
 
 }}
