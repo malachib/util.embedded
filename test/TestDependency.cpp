@@ -100,16 +100,17 @@ SCENARIO( "Experimental dependency code", "[exp-dependency]" )
 
         typedef VectorBase<long, 100, 101, 102> vector_t;
 
+        /*
         auto value = vector_t::get(0);
         value = vector_t::get(1);
         value = vector_t::get(2);
         value = vector_t::get(3);
         value = vector_t::get(index);
-        value = vector_t::get(4);
+        value = vector_t::get(4); */
 
-        value = vector_t::get<0>();
-        value = vector_t::get<1>();
-        value = vector_t::get<2>();
+        REQUIRE(vector_t::get<0>() == 100);
+        REQUIRE(vector_t::get<1>() == 101);
+        REQUIRE(vector_t::get<2>() == 102);
         //value = vector_t::get<index2>();
         //value = vector_t::get<4>();
     }

@@ -71,6 +71,7 @@ public:
 template <class T, T ...items>
 class VectorBase
 {
+    /*
     template <class TDummy>
     static T _get(const int index)
     {
@@ -83,7 +84,7 @@ class VectorBase
         if(index == 0) return item;
 
         return _get<TDummy, _items...>(index - 1);
-    }
+    } */
 
     template <int index>
     static T _get()
@@ -106,10 +107,11 @@ public:
         return sizeof...(items);
     }
 
+    /*
     static T get(int index)
     {
         return _get<int, items...>(index);
-    }
+    } */
 
     template <int index>
     static T get()
