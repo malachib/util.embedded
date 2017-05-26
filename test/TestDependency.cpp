@@ -59,9 +59,9 @@ class TestContext
 {
 public:
     template <class TParent, class T>
-    static void top_callback()
+    static bool top_callback()
     {
-
+        return true;
     }
 
     template <class TParent, class T>

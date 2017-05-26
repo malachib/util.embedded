@@ -56,8 +56,9 @@ public:
 
     struct
     {
-        uint8_t _state : 4;
+        uint8_t _state : 3;
         uint8_t sub_state : 3;
+        uint8_t status_custom : 1;
         uint8_t attn_subsystem : 1;
     };
 
@@ -169,8 +170,8 @@ class ServiceManager : public DependencyManager<TArgs...>
             {
                 case state_t::Running:
                     // If state is running OK, then we assume subsystems are running OK too so
-                    // return false to abort any further digging
-                    return false;
+                    // return false to abort any further digging - unless subsystems need attention
+                    return TServiceContainer::service.subsystem_attention();
 
                 case state_t::Error:
                     if(parent_id != id)
@@ -199,9 +200,9 @@ class ServiceManager : public DependencyManager<TArgs...>
     struct LoopContext
     {
         template <class TParent, class TServiceContainer>
-        static void top_callback()
+        static bool top_callback()
         {
-
+            return true;
         }
 
         template <class TParent, class TServiceContainer>

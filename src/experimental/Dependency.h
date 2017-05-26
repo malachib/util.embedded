@@ -100,7 +100,9 @@ public:
         template <class TDM, class TContext, class T2, class ...TArgs2>
         static void _walk_across2()
         {
-            TContext::template top_callback<t_t, T2>();
+            bool result = TContext::template top_callback<t_t, T2>();
+
+            if(!result) return;
 
             _walk_across2<TDM, TContext, TArgs2...>();
 
