@@ -27,6 +27,39 @@ public:
     }
 };
 
+class FakeWifiService : public Service
+{
+public:
+    static constexpr int ID = 3;
+
+    void start()
+    {
+
+    }
+
+
+    void loop()
+    {
+
+    }
+};
+
+class FakeRadioService : public Service
+{
+public:
+    static constexpr int ID = 4;
+
+    void start()
+    {
+
+    }
+
+
+    void loop()
+    {
+
+    }
+};
 
 class AppService : public Service
 {
@@ -60,7 +93,11 @@ T ServiceContainerBase<T>::service;
 
 ServiceManager<
         Dependent<ServiceContainer<MostImportantService>>::On<>,
-        Dependent<ServiceContainer<AppService>>::On<ServiceContainer<MostImportantService>>
+        Dependent<ServiceContainer<FakeRadioService>>::On<ServiceContainer<MostImportantService>>,
+        Dependent<ServiceContainer<FakeWifiService>>::On<
+                ServiceContainer<MostImportantService>, ServiceContainer<FakeRadioService>>,
+        Dependent<ServiceContainer<AppService>>::On<
+                ServiceContainer<MostImportantService>, ServiceContainer<FakeWifiService>>
         > sm;
 
 SCENARIO( "Experimental service code", "[exp-service]" )

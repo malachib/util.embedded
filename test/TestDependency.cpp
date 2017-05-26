@@ -58,7 +58,13 @@ void responder(int parent_id, int id)
 class TestContext
 {
 public:
-    template <class T>
+    template <class TParent, class T>
+    static void top_callback()
+    {
+
+    }
+
+    template <class TParent, class T>
     static void callback()
     {
         constexpr auto id = T::ID;

@@ -91,30 +91,32 @@ public:
         }
 
 
-        template <int parent_id, class TDM, class TContext>
+        template <class TDM, class TContext>
         static void _walk_across2()
         {
 
         }
 
-        template <int parent_id, class TDM, class TContext, class T2, class ...TArgs2>
+        template <class TDM, class TContext, class T2, class ...TArgs2>
         static void _walk_across2()
         {
-            _walk_across2<parent_id, TDM, TContext, TArgs2...>();
+            TContext::template top_callback<t_t, T2>();
+
+            _walk_across2<TDM, TContext, TArgs2...>();
 
             // Now, here we need to dig into the On:: for each child represented by T2,
             // so that we can recursively walk down in and walk across from there (if needed)
             // so perhaps we need to retrieve that from the manager via the ID
             TDM::template walk5<T2::ID, TContext>();
 
-            TContext::template callback<T2>();
+            TContext::template callback<t_t, T2>();
         }
 
 
-        template <int parent_id, class TDM, class TContext>
+        template <class TDM, class TContext>
         static void walk_across2()
         {
-            _walk_across2<parent_id, TDM, TContext, TArgs...>();
+            _walk_across2<TDM, TContext, TArgs...>();
         }
     };
 
@@ -182,9 +184,12 @@ class DependencyManager
 
         if(id == ID)
         {
-            T2::template walk_across2<id, DependencyManager<TArgs...>, TContext>();
             if(parent_id == id)
-                TContext::template callback<t_t>();
+                TContext::template top_callback<t_t, t_t>();
+
+            T2::template walk_across2<DependencyManager<TArgs...>, TContext>();
+            if(parent_id == id)
+                TContext::template callback<t_t, t_t>();
             return;
         }
 

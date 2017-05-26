@@ -57,7 +57,8 @@ public:
     struct
     {
         uint8_t _state : 4;
-        uint8_t sub_state : 4;
+        uint8_t sub_state : 3;
+        uint8_t attn_subsystem : 1;
     };
 
 protected:
@@ -85,6 +86,9 @@ public:
         _state = s;
         this->sub_state = sub_state;
     }
+
+    bool subsystem_attention() { return attn_subsystem; }
+    void subsystem_attention(bool value) { attn_subsystem = value; }
 };
 
 template<>
@@ -149,26 +153,59 @@ class ServiceManager : public DependencyManager<TArgs...>
 
     struct CheckStatusContext
     {
-        template <class TServiceContainer>
-        static void callback()
+        template <class TParent, class TServiceContainer>
+        static bool top_callback()
         {
+            constexpr int parent_id = TParent::ID;
+            constexpr int id = TServiceContainer::ID;
+
             typedef Service::State state_t;
 
             state_t state = TServiceContainer::service.state();
-
-            constexpr int id = TServiceContainer::ID;
 
             std::clog << "Checking status on service " << id << std::endl;
 
             switch(state)
             {
                 case state_t::Running:
-                    return;
+                    // If state is running OK, then we assume subsystems are running OK too so
+                    // return false to abort any further digging
+                    return false;
+
+                case state_t::Error:
+                    if(parent_id != id)
+                        TParent::service.subsystem_attention(true);
+                    break;
 
                 default:
-                    // Attention required
-                    return;
+                    // Sleeping, Paused we ignore and also don't check subsystem status
+                    return false;
             }
+        }
+
+        template <class TParent, class TServiceContainer>
+        static void callback()
+        {
+            constexpr int parent_id = TParent::ID;
+            constexpr int id = TServiceContainer::ID;
+
+            std::clog << "Entering service " << id << "(parent: " << parent_id << ")" << std::endl;
+        }
+    };
+
+
+    struct LoopContext
+    {
+        template <class TParent, class TServiceContainer>
+        static void top_callback()
+        {
+
+        }
+
+        template <class TParent, class TServiceContainer>
+        static void callback()
+        {
+            TServiceContainer::service.loop();
         }
     };
 
@@ -177,6 +214,7 @@ public:
     static void loop()
     {
         base_t::template walk5<id, CheckStatusContext, id>();
+        base_t::template walk5<id, LoopContext, id>();
         //walk3<id, check_status>();
     }
 
