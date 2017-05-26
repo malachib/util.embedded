@@ -57,6 +57,7 @@ SCENARIO( "Experimental dependency code", "[exp-dependency]" )
     GIVEN("Test #1")
     {
         //dm.walk<responder>();
-        dm.walk2<4, responder>();
+        //dm.walk2<4, responder>();
+        dm.walk3<4, responder>();
     }
 }
