@@ -1,8 +1,16 @@
 #pragma once
 
+//#define FEATURE_DEPENDENCY_EXPERIMENTAL_INIT
+
 namespace FactUtilEmbedded { namespace experimental {
 
-typedef void (*responder_t)(int, int);
+/**
+ * Parameters:
+ *
+ * @param parent_id id of parent of the item being processed
+ * @param id id of the actual item being processed
+ */
+typedef void (*responder_t)(int parent_id, int id);
 
 template <int ...vectors>
 class Vector
@@ -89,43 +97,6 @@ public:
 template <class ...TArgs>
 class DependencyManager
 {
-    /*
-    template <void responder(int id), class Dependency>
-    static void do_walk()
-    {
-
-    } */
-
-    template <responder_t responder>
-    static void do_walk()
-    {
-
-    }
-
-    // We want T to be 'Dependent::On<...>' in this case
-    template <responder_t responder, class T>
-    static void handle_it()
-    {
-        typedef typename T::t_t t_t;
-        constexpr int ID = t_t::ID;
-
-        // Done from within 'On' class
-        //responder(ID, 0);
-
-        // As per https://stackoverflow.com/questions/2105901/how-to-fix-expected-primary-expression-before-error-in-c-template-code
-        T::template walk_across<responder, DependencyManager<TArgs...>, ID>();
-        //T::template _test<int>(5);
-        //T::_test();
-    }
-
-    template <responder_t responder, class T, class ...TArgs2>
-    static void do_walk()
-    {
-        do_walk<responder, TArgs2...>();
-
-        handle_it<responder, T>();
-    }
-
     template <int id>
     static void _get()
     {
@@ -168,26 +139,18 @@ class DependencyManager
 
 public:
 
-    template <responder_t responder>
-    static void walk()
-    {
-        do_walk<responder, TArgs...>();
-    }
-
     // Get the 'On' class for this particular ID
-    template <int id>
-    void get() {}
     /*
-    T get() -> decltype()
+    template <const int id>
+    auto get() -> decltype(_get<id, TArgs...>())
     {
-        return 5;
-    }
-     */
+    } */
 
     // walk over everything under a specific ID
     template <int id, responder_t responder, class TAlreadyVisited>
     static void walk2()
     {
+        //typedef TAlreadyVisited already_visited_t;
         typedef Vector<> already_visited_t;
 
         // FIX: Have a serious issue, passing in TAlreadyVisited like we want to causes the compiler to go nuts
