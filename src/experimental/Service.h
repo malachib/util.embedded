@@ -181,6 +181,8 @@ class ServiceManager : public DependencyManager<TArgs...>
                     // Sleeping, Paused we ignore and also don't check subsystem status
                     return false;
             }
+
+            return true;
         }
 
         template <class TParent, class TServiceContainer>
