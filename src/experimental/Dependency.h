@@ -89,6 +89,33 @@ public:
         {
             _walk_across<responder, TAlreadyVisited, TDM, parent_id, TArgs...>();
         }
+
+
+        template <int parent_id, class TDM, class TContext>
+        static void _walk_across2()
+        {
+
+        }
+
+        template <int parent_id, class TDM, class TContext, class T2, class ...TArgs2>
+        static void _walk_across2()
+        {
+            _walk_across2<parent_id, TDM, TContext, TArgs2...>();
+
+            // Now, here we need to dig into the On:: for each child represented by T2,
+            // so that we can recursively walk down in and walk across from there (if needed)
+            // so perhaps we need to retrieve that from the manager via the ID
+            TDM::template walk5<T2::ID, TContext>();
+
+            TContext::template callback<T2>();
+        }
+
+
+        template <int parent_id, class TDM, class TContext>
+        static void walk_across2()
+        {
+            _walk_across2<parent_id, TDM, TContext, TArgs...>();
+        }
     };
 
 };
@@ -141,6 +168,30 @@ class DependencyManager
         _walk2<id, responder, TAlreadyVisited, TArgs2...>();
     }
 
+    template <int id, class TContext, int parent_id>
+    static void _walk5()
+    {
+
+    }
+
+    template <int id, class TContext, int parent_id, class T2, class ...TArgs2>
+    static void _walk5()
+    {
+        typedef typename T2::t_t t_t;
+        constexpr int ID = t_t::ID;
+
+        if(id == ID)
+        {
+            T2::template walk_across2<id, DependencyManager<TArgs...>, TContext>();
+            if(parent_id == id)
+                TContext::template callback<t_t>();
+            return;
+        }
+
+        _walk5<id, TContext, parent_id, TArgs2...>();
+    }
+
+
 public:
 
     // Get the 'On' class for this particular ID
@@ -177,6 +228,12 @@ public:
     {
 
     };
+
+    template <int id, class TContext, int parent_id = -1>
+    static void walk5()
+    {
+        _walk5<id, TContext, parent_id, TArgs...>();
+    }
 };
 
 }}

@@ -111,6 +111,8 @@ template <class TService>
 class ServiceContainerBase
 {
 public:
+    constexpr static int ID = TService::ID;
+
     // FIX: temporary, this means we can only have one of each type of service for now
     // once we get DependencyManager working with instances, then we can switch this around also
     static TService service;
@@ -129,6 +131,8 @@ class ServiceContainerNonBlocking : public ServiceContainerBase<TService>
 {
 public:
     static constexpr bool is_blocking = false;
+
+    //static TService& get_service() { return service; }
 };
 
 
@@ -136,16 +140,51 @@ public:
 template <class ...TArgs>
 class ServiceManager : public DependencyManager<TArgs...>
 {
-public:
+    typedef DependencyManager<TArgs...> base_t;
+
     static void check_status(int parent_id, int id)
     {
 
     }
 
+    struct CheckStatusContext
+    {
+        template <class TServiceContainer>
+        static void callback()
+        {
+            typedef Service::State state_t;
+
+            state_t state = TServiceContainer::service.state();
+
+            constexpr int id = TServiceContainer::ID;
+
+            std::clog << "Checking status on service " << id << std::endl;
+
+            switch(state)
+            {
+                case state_t::Running:
+                    return;
+
+                default:
+                    // Attention required
+                    return;
+            }
+        }
+    };
+
+public:
     template <int id>
     static void loop()
     {
+        base_t::template walk5<id, CheckStatusContext, id>();
         //walk3<id, check_status>();
+    }
+
+
+    template <class TService>
+    static void loop()
+    {
+        loop<TService::ID>();
     }
 };
 

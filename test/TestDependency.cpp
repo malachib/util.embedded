@@ -55,6 +55,17 @@ void responder(int parent_id, int id)
     printf("Inspecting: Parent = %d, id = %d\r\n", parent_id, id);
 }
 
+class TestContext
+{
+public:
+    template <class T>
+    static void callback()
+    {
+        constexpr auto id = T::ID;
+        printf("Inspecting: id = %d\r\n", id);
+    }
+};
+
 SCENARIO( "Experimental dependency code", "[exp-dependency]" )
 {
     GIVEN("Test #1")
@@ -70,5 +81,6 @@ SCENARIO( "Experimental dependency code", "[exp-dependency]" )
         printf("Test id = %d", id);
 
         //dm.walk4<4, responder>();
+        dm.walk5<4, TestContext, 4>();
     }
 }
