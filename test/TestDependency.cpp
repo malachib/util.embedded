@@ -91,5 +91,26 @@ SCENARIO( "Experimental dependency code", "[exp-dependency]" )
 
         //dm.walk4<4, responder>();
         dm.walk5<4, TestContext, 4>();
+
+    }
+    GIVEN("Template compile-time vector tests")
+    {
+        int index = 0;
+        //const int index2 = index;
+
+        typedef VectorBase<long, 100, 101, 102> vector_t;
+
+        auto value = vector_t::get(0);
+        value = vector_t::get(1);
+        value = vector_t::get(2);
+        value = vector_t::get(3);
+        value = vector_t::get(index);
+        value = vector_t::get(4);
+
+        value = vector_t::get<0>();
+        value = vector_t::get<1>();
+        value = vector_t::get<2>();
+        //value = vector_t::get<index2>();
+        //value = vector_t::get<4>();
     }
 }

@@ -8,20 +8,34 @@ namespace FactUtilEmbedded { namespace experimental {
 class Service
 {
 public:
+    template <class ...TArgs>
+    class DependsOn : public Vector2<TArgs...>
+    {
+
+    };
+
     enum State
     {
         Stopped,
+        Initializing,
         Running,
         Paused,
         Sleeping,
+        Shutdown, // in process of shutting down
         Error
     };
+
+    // TODO: substate may not be best place to track the transition
+    // of one major state to another.  By definition it's temporary
+    // so perhaps we can have a context instance floating around to
+    // hold onto it and a set of specialized template functions to
+    // ensure validity of one move to the next
 
     enum class StoppedState
     {
         Unstarted,
         Starting,
-        Finished
+        Finished  // reach here after a shutdown only
     };
 
     enum class SleepingState
@@ -33,9 +47,9 @@ public:
     enum class RunningState
     {
         Running,
-        Pausing,
+        Pausing, // entering pause state
         EnteringSleep,
-        Stopping
+        Shutdown, // entering shutdown state
     };
 
 
@@ -44,6 +58,23 @@ public:
         Paused,
         Unpausing
     };
+
+
+    enum class InitializingState
+    {
+        Initializing,
+        Retrying, // held up in exceptionally long retry conditions
+        Starting // Initialized and moving to running state
+    };
+
+
+    enum class ShutdownState
+    {
+        ShuttingDown,
+        Retrying, // held up in exceptionally long retry conditions
+        Stopping // All shut down and moving to stopped state
+    };
+
 
     union SubState
     {
@@ -72,6 +103,7 @@ protected:
     void state(PausedState s) { sub_state = static_cast<int>(s); }
     void state(RunningState s) { sub_state = static_cast<int>(s); }
     void state(SleepingState s) { sub_state = static_cast<int>(s); }
+    void state(InitializingState s) { sub_state = static_cast<int>(s); }
 
 public:
 
@@ -104,6 +136,9 @@ inline Service::RunningState Service::state<Service::RunningState>() { return st
 
 template<>
 inline Service::SleepingState Service::state<Service::SleepingState>() { return static_cast<SleepingState>(sub_state); }
+
+template<>
+inline Service::InitializingState Service::state<Service::InitializingState >() { return static_cast<InitializingState >(sub_state); }
 
 /*
 class Service : public ServiceStateSplitBase<ServiceBase::State, ServiceBase::SubState>

@@ -52,6 +52,86 @@ public:
     //static Vector<3, vectors> add_() {}
 };
 
+
+template <class ...TArgs>
+class Vector2
+{
+public:
+    template <class TValue>
+    static auto add() -> decltype(Vector2<TValue, TArgs...>())
+    {
+    }
+
+    static constexpr int size()
+    {
+        return sizeof...(TArgs);
+    }
+};
+
+template <class T, T ...items>
+class VectorBase
+{
+    template <class TDummy>
+    static T _get(const int index)
+    {
+
+    }
+
+    template <class TDummy, T item, T ..._items>
+    static T _get(const int index)
+    {
+        if(index == 0) return item;
+
+        return _get<TDummy, _items...>(index - 1);
+    }
+
+    template <int index>
+    static T _get()
+    {
+        //static_assert(false, "No item at index is available");
+        //assert(false, "");
+    }
+
+    template <int index, T item, T ..._items>
+    static T _get()
+    {
+        if(index == 0) return item;
+
+        return _get<index - 1, _items...>();
+    }
+
+public:
+    static constexpr int size()
+    {
+        return sizeof...(items);
+    }
+
+    static T get(int index)
+    {
+        return _get<int, items...>(index);
+    }
+
+    template <int index>
+    static T get()
+    {
+        static_assert(index < size(), "No item at index is available");
+
+        return _get<index, items...>();
+    }
+};
+
+typedef void (*callback_t)(void*);
+
+template <class TCallback, TCallback...callbacks>
+class CallbackVectorBase : VectorBase<TCallback, callbacks...>
+{
+public:
+    void invoke()
+    {
+
+    }
+};
+
 template <class T>
 class Dependent
 {

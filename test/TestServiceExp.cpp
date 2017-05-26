@@ -30,6 +30,11 @@ public:
 class FakeWifiService : public Service
 {
 public:
+    typedef DependsOn<MostImportantService> depends_on_t;
+
+    template <class TService>
+    void on_dependent_state_change();
+
     static constexpr int ID = 3;
 
     void start()
