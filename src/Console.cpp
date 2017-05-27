@@ -55,8 +55,12 @@ DummyStream _dummyStream;
 // a -D switch
 void Console::handler()
 {
-    // in_avail isn't quite cross platform, but peek should be
-    while (in.peek() != -1)
+    // FIX: isn't cross platform, make a global helper version of getsome for that
+#ifdef FEATURE_IOS_EXPERIMENTAL_GETSOME
+    while (in.getsome() >= 0)
+#else
+    while (in.rdbuf()->in_avail() > 0)
+#endif
     {
         ostream &out = getOut();
         char received = in.get();

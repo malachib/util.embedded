@@ -3,6 +3,8 @@
 
 #include "streambuf.h"
 #include "ios.h"
+#include "features.h"
+
 #include <cassert>
 
 // FIX: Re-include this if
@@ -38,15 +40,8 @@ class basic_istream :
     typedef typename base_t::basic_streambuf_t basic_streambuf_t;
     typedef typename Traits::int_type int_type;
 
-    /**
-     * It seems the proper behavior of 'peek' is ambiguous, so this helper
-     * method *always* is nonblocking version of peek.
-     * *may* have to change from sgetc() to a nonstandard speekc() not sure yet
-     * @return
-     */
-    inline int_type real_peek()
+    inline int_type standard_peek()
     {
-        // TODO: change this to call non-standard this->rdbuf()->speekc();
         return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
     }
 
@@ -143,24 +138,50 @@ public:
     {
         block_experimental();
 
-        return real_peek();
+        return standard_peek();
     }
 #endif
 
+    /**
+     * The proper behavior (imo) of 'peek' is to permit blocking, so this non-standard
+     * method *always* is nonblocking version of peek.
+     * @return
+     */
 #ifdef FEATURE_IOS_EXPERIMENTAL_GETSOME
     int_type getsome()
     {
-        return real_peek();
+#ifdef FEATURE_IOS_SPEEKC
+        // TODO: change this to call non-standard this->rdbuf()->speekc();
+        return this->good() ? this->rdbuf()->speekc() : Traits::eof();
+#else
+        if(this->rdbuf()->in_avail())
+        {
+            return standard_peek();
+        }
+        else
+        {
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
+            return Traits::nodata();
+#else
+#warning "eof used to indicate non-eof lack of data condition.   Not advised!"
+            return Traits::eof();
+#endif
+        }
+#endif
     }
 #endif
 
+#ifdef FEATURE_IOS_TIMEOUT
+    /*
+    int_type peek(uint16_t timeout)
+    {
+        // block based on a hardware timer
+    } */
+#endif
 
     int_type peek()
     {
-        // TODO: don't call real_peek() anymore here
-        // put this line back:
-        //    return this->good() ? this->rdbuf()->sgetc() : Traits::eof();
-        return real_peek();
+        return standard_peek();
     }
 
     // delim test is disabled if delim is default value, which would be EOF

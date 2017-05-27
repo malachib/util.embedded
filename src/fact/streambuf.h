@@ -22,6 +22,8 @@
 #include <Arduino.h>
 #endif
 
+#include "features.h"
+
 #ifdef FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF
 #include "CircularBuffer.h"
 #endif
@@ -81,7 +83,7 @@ template <> struct char_traits<char>
         return nullptr;
     }
 
-#if defined(FEATURE_IOS_TIMEOUT) || defined(FEATURE_IOS_SPEEKC)
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
     // Non-standard timeout/data unavailable return value, since eof() suggests no more data EVER
     // we want a different error code
     static CONSTEXPR int_type nodata() { return -2; }
@@ -144,6 +146,10 @@ public:
     }
 
     int_type sgetc();
+
+#ifdef FEATURE_IOS_SPEEKC
+    int_type speekc();
+#endif
 
     // NOTE: this deviates from spec in that it won't wait for CR, for example,
     // to reflect characters are available

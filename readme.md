@@ -125,15 +125,14 @@ I won't lie, these libraries take space.  There are a slew of #defines to help c
 # Notes
 
 Remember, istream/ostream are (arguably) by design blocking I/O.  There is a lot of
-discussion about this on the internet.  Our lightweight iostream implementation follows suit, but deviates importantly with its "in_avail" and "peek" behavior.  
+discussion about this on the internet.  Our lightweight iostream implementation follows suit, but deviates importantly with its "in_avail" behavior.  
 
 "in_avail" for our implementation
 reliably reports available bytes in the stream and does not emulate the buffered behavior
 of official iostream libraries.  As such, one may use it for polling loops for an
 async-ish behavior.
 
-"peek" similar to standard behavior in that it does not extract the value from the stream
-but deviates in that it *never* blocks.
-
 "readsome" is the lone *standard* non-blocking-friendly call, and is implemented but not well
 tested.
+
+An experimental nonstandard "getsome" call is present which behaves just like "readsome" combined with "get" - "readsome" on a character by character level.  In other words, a more traditional "peek" operation which never blocks.
