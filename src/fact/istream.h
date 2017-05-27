@@ -171,6 +171,13 @@ public:
     }
 #endif
 
+#ifdef FEATURE_IOS_TIMEOUT
+    /*
+    int_type peek(uint16_t timeout)
+    {
+        // block based on a hardware timer
+    } */
+#endif
 
     int_type peek()
     {

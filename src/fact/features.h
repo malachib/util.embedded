@@ -66,13 +66,15 @@
 #ifndef FEATURE_IOSTREAM
 // Standard iostreams won't have this
 
-// Add 'inspect' method to istream for a blocking version of peek
-// Not fully decided if we want a semi-non-standard non-blocking 'peek' with a non-standard blocking 'inspect'
-// or
-// a semi-standard blocking 'peek' (docs suggest it's NOT blocking, but implementations are)
-// with a non-standard non-blocking 'anticipate' type of call
-//#define FEATURE_IOS_EXPERIMENTAL_INSPECT
+// Enables 'getsome' the character-oriented version of 'readsome' - NONSTANDARD
 #define FEATURE_IOS_EXPERIMENTAL_GETSOME
+
+// Enables timeouts on all blocking read operations for istream
+// Not activate-able until framework_abstraction libraries are in place
+// Will enable a 'set_timeout(int)' method on streambuf and/or a constexpr-flavor one to avoid needing the
+// allocation (how often do we need to vary the -system level- timeout?)
+// Will also enable 'peek(int)' which is a NONSTANDARD version of peek which observes a specified timeout
+//#define FEATURE_IOS_TIMEOUT
 #endif
 
 // Shouldn't hurt anything other than burning up a bit of memory as we test things
