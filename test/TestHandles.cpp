@@ -5,6 +5,8 @@
 
 #include "EventManager.h"
 
+using namespace FactUtilEmbedded;
+
 class _HandleManager : public HandleManager
 {
 public:
