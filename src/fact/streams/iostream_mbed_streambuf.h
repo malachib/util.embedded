@@ -6,6 +6,8 @@
 // TODO: change this to use FileHandle once more tested
 // TODO: once F() collision is remedied, enable Serial code
 
+// careful about including things here, as we are inside of a namespace
+
 class basic_streambuf_mbed
 {
 public:
@@ -105,14 +107,30 @@ protected:
     }
 
 
-    // blocking function
-    void wait_for_input()
+    /**
+     * blocking function until we get some input
+     *
+     * @return true if input is present, false otherwise
+     */
+    bool wait_for_input()
     {
 #ifdef FEATURE_IOS_TIMEOUT
-#error "Need FAL timer functions before this feature can be used"
-        //while(in_avail())
+#ifdef FEATURE_FRAB
+        uint32_t timeout = framework_abstraction::millis() + FEATURE_IOS_TIMEOUT;
+        while(framework_abstraction::millis() < timeout)
+        {
+            if(in_avail()) return true;
+            // TODO: put in yield statement here
+        }
+
+        return false;
+#else
+#warn "Need framework_abstraction enabled before timeout is usable"
+#endif
 #else
         while(in_avail() == 0);
+
+        return true;
 #endif
     }
 
@@ -224,7 +242,14 @@ public:
 
     int_type sgetc()
     {
-        wait_for_input();
+        bool input_present = wait_for_input();
+
+#ifdef FEATURE_IOS_TIMEOUT
+        if(!input_present)
+        {
+            return Traits::nodata();
+        }
+#endif
 
         // NOTE: should only be available when _sgetc is null
         // indicates we are using a simplistic one-character buffer mechanism

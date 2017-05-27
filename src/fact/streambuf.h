@@ -28,6 +28,10 @@
 #include "CircularBuffer.h"
 #endif
 
+#ifdef FEATURE_FRAB
+#include <frab/systime.h>
+#endif
+
 
 extern "C"
 {
