@@ -7,6 +7,10 @@
 
 #include <cassert>
 
+#ifdef FEATURE_FRAB
+#include <frab/systime.h>
+#endif
+
 // FIX: Re-include this if
 //  a) we're sure Arduino and other off-the-beaten-std path has it and
 //  b) we feel like fighting with the standard std namespace (which algorithm seems to auto include
@@ -56,6 +60,23 @@ class basic_istream :
 
         return true;
     }
+
+#if defined(FEATURE_FRAB)
+    /**
+     *
+     * @return true if character available, false if timeout and no character available
+     */
+    bool block_timeout(uint16_t timeout_ms)
+    {
+        uint32_t timeout_absolute =  framework_abstraction::millis() + timeout_ms;
+        while(framework_abstraction::millis() < timeout_absolute)
+        {
+            if(this->rdbuf()->in_avail()) return true;
+        }
+
+        return false;
+    }
+#endif
 
 #ifdef FEATURE_IOS_GCOUNT
     streamsize _gcount = 0;
@@ -133,15 +154,6 @@ public:
         return *this;
     }
 
-#ifdef FEATURE_IOS_EXPERIMENTAL_INSPECT
-    int_type inspect()
-    {
-        block_experimental();
-
-        return standard_peek();
-    }
-#endif
-
     /**
      * The proper behavior (imo) of 'peek' is to permit blocking, so this non-standard
      * method *always* is nonblocking version of peek.
@@ -171,12 +183,20 @@ public:
     }
 #endif
 
-#ifdef FEATURE_IOS_TIMEOUT
-    /*
+#if defined(FEATURE_FRAB) && defined(FEATURE_IOS_TIMEOUT)
     int_type peek(uint16_t timeout)
     {
         // block based on a hardware timer
-    } */
+        if(block_timeout(timeout))
+        {
+            // character available
+            return standard_peek();
+        }
+        else
+        {
+            return Traits::nodata();
+        }
+    }
 #endif
 
     int_type peek()

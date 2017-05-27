@@ -11,6 +11,8 @@
     VAWrapper va;     \
     va_start(va.argp, p) \
 
+namespace FactUtilEmbedded {
+
 class VAWrapper
 {
 public:
@@ -318,7 +320,7 @@ public:
 template <class T>
 class EventWrapper
 {
-  Event<T> events;
+  FactUtilEmbedded::Event<T> events;
 
 protected:
   // protected constructor makes re-assigning  more difficult
@@ -347,7 +349,7 @@ protected:
   }
 
 public:
-  operator Event<T>&() const
+  operator FactUtilEmbedded::Event<T>&() const
   {
     return events;
   }
@@ -432,3 +434,5 @@ public:
   PubSTR_Property(const char* value) : STR_Property(value) {}
   void setValue(const char* value) { STR_Property::setValue(value); }
 };
+
+}

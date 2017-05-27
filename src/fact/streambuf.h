@@ -14,7 +14,7 @@
 // redefine F here.  Kludgey for sure.  There will be situations where
 // F wants to be what Serial.h set it to
 #ifdef F_DEFINED
-#include "noduino_F.h"
+//#include "noduino_F.h"
 #undef F_DEFINED
 #endif
 

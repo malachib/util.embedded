@@ -11,6 +11,13 @@
 #include "lib.h"
 #include "../Console.h"
 
+// KLUDGE: mbed and Arduino have a collision on F macro and streambuf.h
+// when using mbed defines it as its own thing, so redefine it here
+#if !defined(ARDUINO)
+#undef F
+#include "fact/noduino_F.h"
+#endif
+
 namespace FactUtilEmbedded
 {
   namespace rpc
