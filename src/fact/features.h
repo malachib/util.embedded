@@ -63,6 +63,9 @@
 #define FEATURE_STDLIBCPP
 #endif
 
+#ifndef FEATURE_IOSTREAM
+// Standard iostreams won't have this
+
 // Add 'inspect' method to istream for a blocking version of peek
 // Not fully decided if we want a semi-non-standard non-blocking 'peek' with a non-standard blocking 'inspect'
 // or
@@ -70,6 +73,7 @@
 // with a non-standard non-blocking 'anticipate' type of call
 //#define FEATURE_IOS_EXPERIMENTAL_INSPECT
 #define FEATURE_IOS_EXPERIMENTAL_GETSOME
+#endif
 
 // Shouldn't hurt anything other than burning up a bit of memory as we test things
 // this turns out a circular buffer for streambuf which ultimately will enable putback and unget
@@ -79,8 +83,7 @@
 #endif
 #endif
 
-// Only for legacy behavior, phase this out
-#define FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
+#define FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
 
 #if defined(FEATURE_IOS_TIMEOUT) || defined(FEATURE_IOS_SPEEKC)
 // enable experimental nodata() traits and bit behaviors for istream

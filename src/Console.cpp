@@ -56,7 +56,11 @@ DummyStream _dummyStream;
 void Console::handler()
 {
     // FIX: isn't cross platform, make a global helper version of getsome for that
+#ifdef FEATURE_IOS_EXPERIMENTAL_GETSOME
     while (in.getsome() >= 0)
+#else
+    while (in.rdbuf()->in_avail() > 0)
+#endif
     {
         ostream &out = getOut();
         char received = in.get();

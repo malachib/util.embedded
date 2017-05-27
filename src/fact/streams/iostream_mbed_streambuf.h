@@ -224,16 +224,7 @@ public:
 
     int_type sgetc()
     {
-        /*
-#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
-        static constexpr int_type result_nodata = Traits::nodata();
-#else
-        static constexpr int_type result_nodata = Traits::eof();
-#endif */
-
-#ifndef FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
         wait_for_input();
-#endif
 
         // NOTE: should only be available when _sgetc is null
         // indicates we are using a simplistic one-character buffer mechanism

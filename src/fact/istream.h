@@ -46,33 +46,6 @@ class basic_istream :
     }
 
     /**
-     * The proper behavior of 'peek' is to permit blocking, so this helper
-     * method *always* is nonblocking version of peek.
-     * @return
-     */
-    inline int_type real_peek()
-    {
-#ifdef FEATURE_IOS_SPEEKC
-        // TODO: change this to call non-standard this->rdbuf()->speekc();
-        return this->good() ? this->rdbuf()->speekc() : Traits::eof();
-#else
-        if(this->rdbuf()->in_avail())
-        {
-            return standard_peek();
-        }
-        else
-        {
-#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
-            return Traits::nodata();
-#else
-#warning "eof used to indicate non-eof lack of data condition.   Not advised!"
-            return Traits::eof();
-#endif
-        }
-#endif
-    }
-
-    /**
      *
      * @return true if data available, false if timeout occured
      */
@@ -169,21 +142,39 @@ public:
     }
 #endif
 
+    /**
+     * The proper behavior (imo) of 'peek' is to permit blocking, so this non-standard
+     * method *always* is nonblocking version of peek.
+     * @return
+     */
 #ifdef FEATURE_IOS_EXPERIMENTAL_GETSOME
     int_type getsome()
     {
-        return real_peek();
+#ifdef FEATURE_IOS_SPEEKC
+        // TODO: change this to call non-standard this->rdbuf()->speekc();
+        return this->good() ? this->rdbuf()->speekc() : Traits::eof();
+#else
+        if(this->rdbuf()->in_avail())
+        {
+            return standard_peek();
+        }
+        else
+        {
+#ifdef FEATURE_IOS_EXPERIMENTAL_TRAIT_NODATA
+            return Traits::nodata();
+#else
+#warning "eof used to indicate non-eof lack of data condition.   Not advised!"
+            return Traits::eof();
+#endif
+        }
+#endif
     }
 #endif
 
 
     int_type peek()
     {
-#ifdef FEATURE_IOS_EXPERIMENTAL_NONBLOCKING_PEEK
-        return real_peek();
-#else
         return standard_peek();
-#endif
     }
 
     // delim test is disabled if delim is default value, which would be EOF

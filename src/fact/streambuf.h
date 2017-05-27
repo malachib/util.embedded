@@ -22,6 +22,8 @@
 #include <Arduino.h>
 #endif
 
+#include "features.h"
+
 #ifdef FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF
 #include "CircularBuffer.h"
 #endif
