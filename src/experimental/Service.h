@@ -4,6 +4,9 @@
 
 #include "Dependency.h"
 #include "../Service.h"
+#include "Tuple.h"
+
+namespace fstd = ::std;
 
 namespace FactUtilEmbedded { namespace experimental {
 
@@ -201,7 +204,7 @@ class ServiceManager : public DependencyManager<TArgs...>
 
             state_t state = TServiceContainer::service.state();
 
-            std::clog << "Checking status on service " << id << std::endl;
+            fstd::clog << "Checking status on service " << id << fstd::endl;
 
             switch(state)
             {
@@ -229,7 +232,7 @@ class ServiceManager : public DependencyManager<TArgs...>
             constexpr int parent_id = TParent::ID;
             constexpr int id = TServiceContainer::ID;
 
-            std::clog << "Entering service " << id << "(parent: " << parent_id << ")" << std::endl;
+            fstd::clog << "Entering service " << id << "(parent: " << parent_id << ")" << fstd::endl;
         }
     };
 
@@ -288,6 +291,12 @@ public:
 
 };
 
+template <class TService, class ...TServices>
+class ServiceManager2;
+
+template <class TService, class ...TServices>
+TService& get_service(ServiceManager2<TService, TServices...>& sm);
+
 // TODO: if we can, make this all use tuples instead
 // probably it's possible, I just don't know enough yet
 // (I know how to declare a tuple, but iterating thru the stuff the way I want is a bit beyond me)
@@ -295,9 +304,84 @@ public:
 template <class TService, class ...TServices>
 class ServiceManager2 : public ServiceManager2<TServices...>
 {
+    typedef ServiceManager2<TServices...> base_t;
 public:
     TService service;
     //std::tuple<TServices...> test;
+
+    template <typename CompletionHandler>
+    void dispatch(CompletionHandler handler)
+    {
+        handler(service);
+
+        base_t::dispatch(handler);
+    }
+
+    template <class ...TServicePtrs>
+    void get_service(TService*& output, TServicePtrs...ptrs)
+    {
+        output = &service;
+        base_t::get_service(ptrs...);
+    }
+
+    /*
+    template <typename CompletionHandler>
+    //template <typename CompletionHandler>
+    void dispatch2(CompletionHandler handler)
+    {
+        //TServicePtrs...service_ptrs;
+        //TService* svc1;
+        //TServices... svcs;
+
+        //get_service(svc1);
+
+        //handler(service);
+    } */
+
+    template <typename CompletionHandler, class ...TServicePtrs>
+    //template <typename CompletionHandler>
+    void dispatch2(CompletionHandler handler, TServicePtrs...service_ptrs)
+    {
+        base_t::dispatch2(handler, service_ptrs..., &service);
+        //TServicePtrs...service_ptrs;
+        //TService* svc1;
+        //TServices... svcs;
+
+        //get_service(svc1);
+
+        //handler(service);
+    }
+
+    template <typename CompletionHandler, class TInstance = void*>
+    void _dispatch2(CompletionHandler handler, TInstance* instance = nullptr)
+    {
+        dispatch2(handler);
+    }
+
+    template <typename CompletionHandler, class TServicePtr, class ...TServicePtrs>
+    void dispatch3(CompletionHandler handler)
+    {
+        TService* service_ptr = &service;
+
+        dispatch2(handler, service_ptr, &base_t::service);
+    }
+
+    template <typename CompletionHandler>
+    void dispatch3(CompletionHandler handler)
+    {
+        TService* service_ptr = &service;
+
+        dispatch3<TService, TServices...>(handler);
+    }
+
+
+    void dispatch4()
+    {
+        std::experimental::Tuple<const TService*, const TServices*...> services;
+
+        //std::experimental::get<0>(services) = nullptr;
+    }
+
 };
 
 
@@ -307,6 +391,44 @@ class ServiceManager2<TService>
 public:
     TService service;
     //std::tuple<TServices...> test;
+
+    template <typename CompletionHandler>
+    void dispatch(CompletionHandler handler)
+    {
+        handler(service);
+    }
+
+    template <typename CompletionHandler>
+    void dispatch2(CompletionHandler handler)
+    {
+        handler(service);
+    }
+
+    template <typename CompletionHandler, class ...TServicePtrs>
+    void __dispatch2(CompletionHandler handler, TServicePtrs...service_ptrs)
+    {
+        handler(service_ptrs...);
+    }
+
+
+    template <typename CompletionHandler, class ...TServicePtrs>
+    void dispatch2(CompletionHandler handler, TServicePtrs...service_ptrs)
+    {
+        __dispatch2(handler, service_ptrs..., &service);
+    }
+
+    void get_service(TService*& output)
+    {
+        output = &service;
+    }
+};
+
+
+// Copying from boost
+class io_service
+{
+public:
+    fstd::size_t run_one();
 };
 
 

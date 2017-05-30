@@ -108,6 +108,26 @@ ServiceManager<
                 ServiceContainer<MostImportantService>, ServiceContainer<FakeWifiService>>
         > sm;
 
+/*template <class TService>
+void dispatch_handler(TService service)
+{
+
+} */
+
+
+void dispatch_handler(MostImportantService* svc1, FakeWifiService* svc2)
+{
+
+}
+
+struct FakeService
+{
+    void start(MostImportantService* svc1, FakeWifiService* svc2)
+    {
+
+    }
+};
+
 SCENARIO( "Experimental service code", "[exp-service]" )
 {
     GIVEN("Test #1")
@@ -124,14 +144,33 @@ SCENARIO( "Experimental service code", "[exp-service]" )
     }
     GIVEN("ServiceManager2")
     {
+        FakeWifiService* svc1;
+        MostImportantService* svc2;
+
         ServiceManager2<MostImportantService, FakeWifiService> sm2;
 
         auto id1 = get_service<MostImportantService>(sm2).ID;
         auto id2 = get_service<FakeWifiService>(sm2).ID;
         //auto id3 = get_service<FakeRadioService>(sm2).ID;
 
+        FakeService fakeService;
+
+        sm2.get_service(svc2, svc1);
+        sm2._dispatch2(dispatch_handler);
+        //sm2._dispatch2([&]() -> { fakeService.start(); })
+        sm2.dispatch4();
+
         REQUIRE(id1 == 1);
         REQUIRE(id2 == 3);
+
+        /* needs C++14
+        auto _dispatch = [](auto service) {
+
+        }; */
+
+        //sm2.dispatch(_dispatch);
+        //sm2.dispatch(dispatch_handler);
+
         //REQUIRE(id3 == 4);
         //== 1);
         //REQUIRE(get_service<FakeWifiService>(sm2).ID == 3);

@@ -8,12 +8,18 @@ template<typename First, typename... Rest>
 struct Tuple: public Tuple<Rest...> {
   Tuple(First first, Rest... rest): Tuple<Rest...>(rest...), first(first) {}
 
+  // MB: Adding this experimentally
+  Tuple() {}
+
   First first;
 };
 
 template<typename First>
 struct Tuple<First> {
   Tuple(First first): first(first) {}
+
+  // MB: Adding this experimentally
+  Tuple() {}
 
   First first;
 };
