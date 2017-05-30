@@ -157,6 +157,7 @@ SCENARIO( "Experimental service code", "[exp-service]" )
 
         sm2.get_service(svc2, svc1);
         sm2._dispatch2(dispatch_handler);
+        sm2._dispatch2_inst(&FakeService::start, &fakeService);
         //sm2._dispatch2([&]() -> { fakeService.start(); })
         sm2.dispatch4();
 

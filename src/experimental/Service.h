@@ -338,25 +338,30 @@ public:
         //handler(service);
     } */
 
+    template <typename TInstance, typename CompletionHandler, class ...TServicePtrs>
+    void dispatch2_inst(TInstance* instance, CompletionHandler handler, TServicePtrs...service_ptrs)
+    {
+        base_t::dispatch2_inst(instance, handler, service_ptrs..., &service);
+    }
+
     template <typename CompletionHandler, class ...TServicePtrs>
-    //template <typename CompletionHandler>
     void dispatch2(CompletionHandler handler, TServicePtrs...service_ptrs)
     {
         base_t::dispatch2(handler, service_ptrs..., &service);
-        //TServicePtrs...service_ptrs;
-        //TService* svc1;
-        //TServices... svcs;
-
-        //get_service(svc1);
-
-        //handler(service);
     }
 
-    template <typename CompletionHandler, class TInstance = void*>
-    void _dispatch2(CompletionHandler handler, TInstance* instance = nullptr)
+    template <typename CompletionHandler, class TInstance>
+    void _dispatch2_inst(CompletionHandler handler, TInstance* instance)
+    {
+        dispatch2_inst(instance, handler);
+    }
+
+    template <typename CompletionHandler>
+    void _dispatch2(CompletionHandler handler)
     {
         dispatch2(handler);
     }
+
 
     template <typename CompletionHandler, class TServicePtr, class ...TServicePtrs>
     void dispatch3(CompletionHandler handler)
@@ -404,12 +409,33 @@ public:
         handler(service);
     }
 
+
+    template<typename T>
+    struct tovoidptr { typedef void* type; };
+
     template <typename CompletionHandler, class ...TServicePtrs>
     void __dispatch2(CompletionHandler handler, TServicePtrs...service_ptrs)
     {
         handler(service_ptrs...);
     }
 
+    template <typename TInstance, typename CompletionHandler, class ...TServicePtrs>
+    void __dispatch2_inst(TInstance* instance, CompletionHandler handler, TServicePtrs...service_ptrs)
+    {
+        //typedef decltype(&TInstance) i_t;
+        //typedef void (TInstance::callback_t)(TServicePtrs...);
+
+        //callback_t c = handler;
+
+        ((*instance).*handler)(service_ptrs...);
+    }
+
+
+    template <typename TInstance, typename CompletionHandler, class ...TServicePtrs>
+    void dispatch2_inst(TInstance* instance, CompletionHandler handler, TServicePtrs...service_ptrs)
+    {
+        __dispatch2_inst(instance, handler, service_ptrs..., &service);
+    }
 
     template <typename CompletionHandler, class ...TServicePtrs>
     void dispatch2(CompletionHandler handler, TServicePtrs...service_ptrs)
