@@ -1,5 +1,7 @@
 #pragma once
 
+//#include <tuple>
+
 #include "Dependency.h"
 #include "../Service.h"
 
@@ -263,5 +265,56 @@ public:
         loop<TService::ID>();
     }
 };
+
+
+template <class TValue>
+class Singleton
+{
+public:
+    static TValue service;
+
+};
+
+
+template <class ...TArgs>
+class SingletonVector
+{
+public:
+    template <class T>
+    T get()
+    {
+
+    }
+
+};
+
+// TODO: if we can, make this all use tuples instead
+// probably it's possible, I just don't know enough yet
+// (I know how to declare a tuple, but iterating thru the stuff the way I want is a bit beyond me)
+
+template <class TService, class ...TServices>
+class ServiceManager2 : public ServiceManager2<TServices...>
+{
+public:
+    TService service;
+    //std::tuple<TServices...> test;
+};
+
+
+template <class TService>
+class ServiceManager2<TService>
+{
+public:
+    TService service;
+    //std::tuple<TServices...> test;
+};
+
+
+template <class TService, class ...TServices>
+TService& get_service(ServiceManager2<TService, TServices...>& sm)
+{
+    return sm.service;
+}
+
 
 }}
