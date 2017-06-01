@@ -1,5 +1,9 @@
 #pragma once
 
+extern "C" {
+#include <stdint.h>
+}
+
 namespace FactUtilEmbedded { namespace std { namespace experimental {
 
 struct locale
