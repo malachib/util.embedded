@@ -11,7 +11,7 @@ struct ctype_base
 {
     typedef uint8_t mask;
 
-    static constexpr max space = 0x01;
+    static constexpr mask space = 0x01;
 };
 
 

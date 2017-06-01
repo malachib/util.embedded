@@ -23,6 +23,7 @@
 #endif
 
 #include "features.h"
+#include "locale.h"
 
 #ifdef FEATURE_IOS_EXPERIMENTAL_STREAMBUFBUF
 #include "CircularBuffer.h"
