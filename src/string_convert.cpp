@@ -96,7 +96,7 @@ template<> char* toString(char* output, int input)
     return itoa(input, output, 10);
 }
 
-template<> char* toString(char* output, unsigned int input)
+template<> char* toString(char* output, uint32_t input)
 {
     return utoa(input, output, 10);
 }
