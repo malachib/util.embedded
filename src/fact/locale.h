@@ -23,14 +23,38 @@ struct ctype_base
 template <class TChar>
 class ctype : public ctype_base
 {
+#ifdef ENABLE_LOCALE_MULTI
+    // TODO: determine if we want to roll with the virtual function do_is
+    // and friends or branch out into further templating
+#else
+    TChar do_tolower(TChar ch);
+    TChar do_toupper(TChar ch);
+#endif
 public:
     bool is(mask m, TChar ch) const { return false; }
     const TChar* is(const TChar* low, const TChar* high, mask* vec) const { return nullptr; }
-};
 
+    TChar toupper(TChar ch) { return do_toupper(ch); }
+    TChar tolower(TChar ch) { return do_tolower(ch); }
+};
 
 struct locale
 {
+#ifdef ENABLE_LOCALE_MULTI
+    struct facet
+    {
+
+    };
+
+    typedef int id;
+
+    // FIX: 40 arbitrary number, could be more or less
+    // NOTE: seems kind of like a fake-rtti system a bit
+    facet* facets[40];
+
+    locale(const locale& other);
+    explicit locale(const char* std_name);
+#else
     struct facet
     {
 
@@ -40,6 +64,18 @@ struct locale
     {
 
     };
+#endif
+
+    typedef int category;
+
+    static constexpr category none = 0x0000;
+    static constexpr category ctype = 0x0001;
+    static constexpr category numeric = 0x0002;
+
+    // TODO: deviates in that standard version uses a std::string
+    // I want my own std::string (beginnings of which are in experimental::layer3::string)
+    // but does memory allocation out of our own GC-pool
+    const char* name() const { return "*"; }
 };
 
 
