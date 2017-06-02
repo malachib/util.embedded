@@ -5,7 +5,7 @@
 #include "ios.h"
 #include "features.h"
 
-#include <cassert>
+//#include <cassert>
 
 #ifdef FEATURE_FRAB
 #include <frab/systime.h>
