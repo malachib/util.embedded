@@ -49,6 +49,7 @@ public:
     SinglyLinkedList free;
     SinglyLinkedList allocated;
 
+#ifdef UNUSEDXXX
     size_t used() const
     {
         auto gcobjects = static_cast<GCObject*>(buffer.getData());
@@ -58,6 +59,7 @@ public:
             gcobjects++;
         }
     }
+#endif
 
     void addfree(const uint8_t* location, size_t len)
     {
