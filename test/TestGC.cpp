@@ -6,10 +6,10 @@ using namespace FactUtilEmbedded::experimental;
 
 SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
 {
+    GC<1000> gc;
+
     GIVEN("Synthetic test")
     {
-        GC<1000> gc;
-
         auto gco = gc.alloc(100);
 
         REQUIRE(gc._allocated() == 100);
@@ -31,5 +31,16 @@ SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
 
         REQUIRE(gc._allocated() == 0);
         REQUIRE(gc.available() == 1000);
+    }
+    GIVEN("Synthetic test 2")
+    {
+        auto gco = gc.alloc(100);
+        auto gco2 = gc.alloc(50);
+
+        gc._free(gco);
+        gc._free(gco2);
+
+        // this crashes
+        //gc.recombine_all();
     }
 }

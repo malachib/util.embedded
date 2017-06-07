@@ -30,6 +30,13 @@ public:
         this->size -= size;
     }
 
+
+    // Shrinks free_gco by a specified amount, leaving pointer intact
+    void shrink_down(size_t size)
+    {
+        this->size -= size;
+    }
+
 #ifdef UNUSEDXXX
     /**
      * @brief is_free - see if slot used by this GCObject is available *and* no other GCObjects follow it
@@ -57,27 +64,6 @@ public:
 
     SinglyLinkedList free;
     SinglyLinkedList allocated;
-};
-
-template <size_t size>
-class GC : public GC_base
-{
-#ifdef UNIT_TEST
-public:
-#endif
-    layer1::MemoryContainer<size> buffer;
-
-#ifdef UNUSEDXXX
-    size_t used() const
-    {
-        auto gcobjects = static_cast<GCObject*>(buffer.getData());
-
-        while(gcobjects->is_free())
-        {
-            gcobjects++;
-        }
-    }
-#endif
 
 #ifdef GC_DEBUG
     void walk_free(const char* msg)
@@ -105,13 +91,64 @@ public:
      * @param gco_primary
      * @param gco_secondary
      */
-    void recombine(free_gco_t* gco_primary, free_gco_t* gco_secondary)
+    inline void recombine(free_gco_t* gco_primary, free_gco_t* gco_secondary)
     {
+#ifdef GC_DEBUG
+        if(gco_secondary != gco_primary->getNext())
+            printf("recombine failure: expected contiguous linked nodes\r\n");
+
+        if(gco_primary->data + gco_primary->size != gco_secondary->data)
+            printf("recombine failure: incorrect sizes\r\n");
+#endif
+
         gco_primary->size += gco_secondary->size;
         // TODO: make a free.removeNext() call for compatibility with
         // lists with tails
         gco_primary->removeNext();
+
     }
+
+    void recombine_all()
+    {
+        ll_iterator_t i(free);
+
+        while(i())
+        {
+            free_gco_t* current = i;
+            auto next = static_cast<free_gco_t*>(current->getNext());
+
+            if(current->data + current->size == next->data)
+            {
+                recombine(current, next);
+                walk_free("recombined");
+            }
+
+            i++;
+        }
+    }
+};
+
+template <size_t size>
+class GC : public GC_base
+{
+#ifdef UNIT_TEST
+public:
+#endif
+    layer1::MemoryContainer<size> buffer;
+
+#ifdef UNUSEDXXX
+    size_t used() const
+    {
+        auto gcobjects = static_cast<GCObject*>(buffer.getData());
+
+        while(gcobjects->is_free())
+        {
+            gcobjects++;
+        }
+    }
+#endif
+
+
 
     /**
      * @brief addfree_sorted - stuff free_gco back into free-linkedlist, sorted by data ptr
@@ -185,17 +222,24 @@ public:
 
         addfree_sorted(free_gco);
 
-        walk_free("add_free");
+#ifdef GC_DEBUG
+        printf("Freeing memory location: %lu\r\n", location);
+#endif
 
-        return;
+        walk_free("add_free");
 
         if(free_gco->getNext())
         {
             GCObject* next = static_cast<GCObject*>(free_gco->getNext());
 
+#ifdef GC_DEBUG
+            if(location != free_gco->data)
+                printf("addfree failure: location ptr mismatch");
+#endif
             if(location + free_gco->size == next->data)
             {
                 recombine(free_gco, next);
+                walk_free("recombined");
             }
 //#ifdef DEBUG
             else if(location + free_gco->size > next->data)
@@ -207,6 +251,7 @@ public:
         }
     }
 
+#define __ALLOC2
 
     uint8_t* __alloc(size_t& len)
     {
@@ -225,10 +270,11 @@ public:
             {
                 uint8_t* location = node->data;
 
+#ifndef __ALLOC2
                 // then remove the node from the free memory
                 // list
                 free.remove(node);
-
+#endif
                 // If free memory chunk size - request len size
                 // < size of new free_gco_t to be created,
                 // then we expand our request length slightly
@@ -239,14 +285,19 @@ public:
                 {
                     len = node->size;
 
-                    // free.remove(node)
+#ifdef __ALLOC2
+                    free.remove(node);
+#endif
                 }
                 else
                 {
-                    //node->shrink_up(len);
-
+#ifdef __ALLOC2
+                    location += len;
+                    node->shrink_down(len);
+#else
                     // re-add the node with adjusted parameters
                     addfree(node->data + len, node->size - len);
+#endif
                 }
 
                 // return the previous free node data ptr
@@ -315,6 +366,9 @@ public:
 
         if(gco.data)
         {
+#ifdef GC_DEBUG
+            printf("alloc: buffer = %lu / size = %u\r\n", gco.data, len);
+#endif
             allocated.insertAtBeginning(&gco);
             gco.size = len;
         }
