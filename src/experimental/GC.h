@@ -61,6 +61,7 @@ public:
 
     typedef GCObject free_gco_t;
     typedef layer1::LinkedListIterator<GCObject> ll_iterator_t;
+    typedef layer1::LinkedListIterator<free_gco_t> ll_free_iterator_t;
 
     SinglyLinkedList free;
     SinglyLinkedList allocated;
@@ -68,7 +69,7 @@ public:
 #ifdef GC_DEBUG
     void walk_free(const char* msg)
     {
-        ll_iterator_t i(free);
+        ll_free_iterator_t i(free);
 
         printf("%s\r\n", msg);
 
@@ -251,18 +252,20 @@ public:
         }
     }
 
+// This does fancy in-place free node resizing rather than deallocating and reallocating
+// the free node.  Faster but results in somewhat confusing allocation pointers
 #define __ALLOC2
 
     uint8_t* __alloc(size_t& len)
     {
         //auto node = free.getHead();
-        layer1::LinkedListIterator<GCObject> i(free);
+        ll_free_iterator_t i(free);
 
         // TODO: overload i bool operator so that
         // we can properly do while(i)
-        while(i() != nullptr)
+        while(i())
         {
-            GCObject* node = i.getCurrent();
+            free_gco_t* node = i;
 
             // If we can fit this allocation into the inspected
             // node
@@ -292,7 +295,11 @@ public:
                 else
                 {
 #ifdef __ALLOC2
-                    location += len;
+                    // this funky technique means our data ptrs are near the end of
+                    // the free available memory chunk instead of the beginning,
+                    // but lets us leave the free node ptr in place (since the free node
+                    // data lives IN the same memory chunk to which it points)
+                    location += node->size - len;
                     node->shrink_down(len);
 #else
                     // re-add the node with adjusted parameters
