@@ -4,9 +4,17 @@
 
 using namespace FactUtilEmbedded::experimental;
 
+GC<1000> __gc;
+
+namespace FactUtilEmbedded { namespace experimental {
+GC_base& _gc = ::__gc;
+
+}}
+
 SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
 {
     GC<1000> gc;
+
 
     GIVEN("Synthetic test")
     {
@@ -41,6 +49,11 @@ SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
         gc._free(gco2);
 
         // this crashes
-        //gc.recombine_all();
+        gc.recombine_all();
+    }
+    GIVEN("GCPointer test")
+    {
+        auto gco = gc.alloc(100);
+        GCPointer<char> gcp(&gco);
     }
 }

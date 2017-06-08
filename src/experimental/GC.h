@@ -10,13 +10,19 @@
 
 namespace FactUtilEmbedded { namespace experimental {
 
+class GC_base;
+
+extern GC_base& _gc;
+
+
 class GCObject : public SinglyLinkedNode
 {
+public:
     // NOTE: probably is a performance penalty, not aligning
     // to word boundaries.  If we like the GC overall,
     // revisit this
     typedef uint8_t* ptr_t;
-public:
+
     // TODO: Put this behavior into underlying SinglyLinkedNode
     GCObject() { next = nullptr; }
 
@@ -127,28 +133,6 @@ public:
             i++;
         }
     }
-};
-
-template <size_t size>
-class GC : public GC_base
-{
-#ifdef UNIT_TEST
-public:
-#endif
-    layer1::MemoryContainer<size> buffer;
-
-#ifdef UNUSEDXXX
-    size_t used() const
-    {
-        auto gcobjects = static_cast<GCObject*>(buffer.getData());
-
-        while(gcobjects->is_free())
-        {
-            gcobjects++;
-        }
-    }
-#endif
-
 
 
     /**
@@ -251,6 +235,76 @@ public:
 //#endif
         }
     }
+
+    void _free(GCObject& gco)
+    {
+        addfree(gco.data, gco.size);
+        allocated.remove(&gco);
+    }
+
+
+    uint8_t* lock(GCObject& gco)
+    {
+        return gco.data;
+    }
+
+
+    void unlock(GCObject& gco)
+    {
+
+    }
+};
+
+
+template <class T> //, GC_base& gc = _gc>
+class GCPointer
+{
+    GCObject* gco;
+
+public:
+    GCPointer(GCObject* gco) : gco(gco)
+    {
+    }
+
+    const T* lock() { return _gc.lock(*gco); }
+    void unlock()   { _gc.unlock(*gco); }
+    operator const T* () { return _gc.lock(*gco); }
+};
+
+template <class T>
+class GCPointer2 : public GCPointer<T>
+{
+    GCObject _gco;
+public:
+    GCPointer2() : GCPointer<T>(&_gco) {}
+    GCPointer2(const GCPointer2&& moveFrom) : GCPointer<T>(&_gco)
+    {
+        _gco.data = moveFrom._gco.data;
+        _gco.size = moveFrom._gco.size;
+    }
+};
+
+
+template <size_t size>
+class GC : public GC_base
+{
+#ifdef UNIT_TEST
+public:
+#endif
+    layer1::MemoryContainer<size> buffer;
+
+#ifdef UNUSEDXXX
+    size_t used() const
+    {
+        auto gcobjects = static_cast<GCObject*>(buffer.getData());
+
+        while(gcobjects->is_free())
+        {
+            gcobjects++;
+        }
+    }
+#endif
+
 
 // This does fancy in-place free node resizing rather than deallocating and reallocating
 // the free node.  Faster but results in somewhat confusing allocation pointers
@@ -384,35 +438,13 @@ public:
     }
 
 
-    void _free(GCObject& gco)
+    /*
+    template <class T>
+    GCPointer2<T> alloc()
     {
-        addfree(gco.data, gco.size);
-        allocated.remove(&gco);
-    }
-
-
-    uint8_t* lock(GCObject& gco)
-    {
-        return gco.data;
-    }
-
-
-    void unlock(GCObject& gco)
-    {
-
-    }
+    } */
 };
 
-
-template <class T, GC_base& gc>
-class GCPointer
-{
-    GCObject* gco;
-
-public:
-
-    //operator T* () { return }
-};
 
 
 
