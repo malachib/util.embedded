@@ -109,6 +109,7 @@ public:
 };
 
 
+// TODO: Add begin/end "standard" iterator behaviors
 namespace layer1
 {
 template <class TNode>
