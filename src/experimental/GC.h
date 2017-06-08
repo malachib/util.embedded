@@ -77,7 +77,7 @@ public:
         {
             free_gco_t* current = i;
 
-            printf("Node: addr = %lu, size = %u, next = %x\r\n", current->data, current->size, current->getNext());
+            printf("Node: addr = %p, size = %lu, next = %p\r\n", current->data, current->size, current->getNext());
             //std::clog << "TEST";
 
             i++;
@@ -224,7 +224,7 @@ public:
         addfree_sorted(free_gco);
 
 #ifdef GC_DEBUG
-        printf("Freeing memory location: %lu\r\n", location);
+        printf("Freeing memory location: %p\r\n", location);
 #endif
 
         walk_free("add_free");
@@ -374,7 +374,7 @@ public:
         if(gco.data)
         {
 #ifdef GC_DEBUG
-            printf("alloc: buffer = %lu / size = %u\r\n", gco.data, len);
+            printf("alloc: buffer = %p / size = %lu\r\n", gco.data, len);
 #endif
             allocated.insertAtBeginning(&gco);
             gco.size = len;
@@ -402,6 +402,19 @@ public:
 
     }
 };
+
+
+template <class T, GC_base& gc>
+class GCPointer
+{
+    GCObject* gco;
+
+public:
+
+    //operator T* () { return }
+};
+
+
 
 #include "GC.hpp"
 
