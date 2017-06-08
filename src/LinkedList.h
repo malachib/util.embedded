@@ -11,68 +11,74 @@ class SinglyLinkedListWithTail;
 
 class SinglyLinkedNode
 {
-  friend SinglyLinkedList;
-  friend SinglyLinkedListWithTail;
-  friend DoublyLinkedList;
+    friend SinglyLinkedList;
+    friend SinglyLinkedListWithTail;
+    friend DoublyLinkedList;
 
 protected:
-  SinglyLinkedNode* next = nullptr;
+    SinglyLinkedNode *next = nullptr;
 
 public:
-  SinglyLinkedNode* getNext() const { return next; }
-  void insertBetween(SinglyLinkedNode* referenceNodePrev, SinglyLinkedNode* referenceNode);
-  void removeAfter(SinglyLinkedNode* referenceNode);
-  void removeNext();
+    SinglyLinkedNode *getNext() const { return next; }
+    void insertBetween(SinglyLinkedNode *referenceNodePrev, SinglyLinkedNode *referenceNode);
+    void removeAfter(SinglyLinkedNode *referenceNode);
+    void removeNext();
 };
 
 // beware: when using double-linked list , nodes assume next
 // node is also a doubly-linked node
 class DoublyLinkedNode : public SinglyLinkedNode
 {
-  friend DoublyLinkedList;
+    friend DoublyLinkedList;
 
 protected:
-  DoublyLinkedNode* prev;
+    DoublyLinkedNode *prev;
 public:
-  DoublyLinkedNode* getNext() const { return (DoublyLinkedNode*) this->next; }
-  DoublyLinkedNode* getPrev() const { return prev; }
+    DoublyLinkedNode *getNext() const { return (DoublyLinkedNode *) this->next; }
+    DoublyLinkedNode *getPrev() const { return prev; }
 
-  void insert(DoublyLinkedNode* referenceNode);
-  void remove();
+    void insert(DoublyLinkedNode *referenceNode);
+    void remove();
 };
 
-template <class T>
+template<class T>
 class LinkedNode : public DoublyLinkedNode
 {
 public:
-  T* getNext() const { return next; }
-  T* getPrev() const { return prev; }
+    T *getNext() const { return next; }
+    T *getPrev() const { return prev; }
 };
 
 
 class SinglyLinkedList
 {
 protected:
-  SinglyLinkedNode* head = nullptr;
+    SinglyLinkedNode *head = nullptr;
 
 public:
-  SinglyLinkedNode* getHead() const { return head; }
+    SinglyLinkedNode *getHead() const
+    { return head; }
 
-  void insertAtBeginning(SinglyLinkedNode* node);
-  void insertBetween(SinglyLinkedNode* referenceNodePrev, SinglyLinkedNode* referenceNode, SinglyLinkedNode* nodeToInsert);
-  void insert(SinglyLinkedNode* referenceNode, SinglyLinkedNode* nodeToInsert);
-  void add(SinglyLinkedNode* node);
-  void remove(SinglyLinkedNode* node);
+    void insertAtBeginning(SinglyLinkedNode *node);
 
-  uint16_t count() const
-  {
-    uint16_t counter = 0;
+    void
+    insertBetween(SinglyLinkedNode *referenceNodePrev, SinglyLinkedNode *referenceNode, SinglyLinkedNode *nodeToInsert);
 
-    for(SinglyLinkedNode* node = head; node != nullptr; node = node->next)
-      counter++;
+    void insert(SinglyLinkedNode *referenceNode, SinglyLinkedNode *nodeToInsert);
 
-    return counter;
-  }
+    void add(SinglyLinkedNode *node);
+
+    void remove(SinglyLinkedNode *node);
+
+    uint16_t count() const
+    {
+        uint16_t counter = 0;
+
+        for (SinglyLinkedNode *node = head; node != nullptr; node = node->next)
+            counter++;
+
+        return counter;
+    }
 };
 
 class SinglyLinkedListWithTail : public SinglyLinkedList
@@ -94,18 +100,19 @@ public:
   DoublyLinkedNode* getTail() const { return (DoublyLinkedNode*) tail; }
 };
 
-template <class T>
+// TODO: make a std::list flavor of this
+template<class T>
 class LinkedList : public DoublyLinkedList
 {
-  struct Special : T
-  {
-    Special* getNext() { return (Special*) DoublyLinkedNode::getNext(); }
-    Special* getPrev() { return (Special*) DoublyLinkedNode::getPrev(); }
-  };
+    struct Special : T
+    {
+        Special *getNext() { return (Special *) DoublyLinkedNode::getNext(); }
+        Special *getPrev() { return (Special *) DoublyLinkedNode::getPrev(); }
+    };
 
 public:
-  Special* getHead() { return (Special*) DoublyLinkedList::getHead(); }
-  Special* getTail() { return (Special*) DoublyLinkedList::getTail(); }
+    Special *getHead() { return (Special *) DoublyLinkedList::getHead(); }
+    Special *getTail() { return (Special *) DoublyLinkedList::getTail(); }
 };
 
 
