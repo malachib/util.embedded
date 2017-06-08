@@ -53,7 +53,14 @@ SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
     }
     GIVEN("GCPointer test")
     {
-        auto gco = gc.alloc(100);
-        GCPointer<char> gcp(&gco);
+        auto gcp = gc.alloc2<char>(100);
+
+        char* str = gcp.lock();
+
+        strcpy(str, "Hi2u");
+
+        gcp.unlock();
+
+        REQUIRE(gc.available() == 900);
     }
 }

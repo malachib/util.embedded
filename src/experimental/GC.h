@@ -28,6 +28,7 @@ public:
 
     ptr_t data;
     size_t size;
+    bool pinned;
 
     // Shrinks free_gco by a specified amount, moving pointer upwards
     void shrink_up(size_t size)
@@ -284,6 +285,25 @@ public:
     }
 };
 
+//template <size_t size>
+//class GC;
+
+template <class T>
+class GCPointer3
+{
+    //uint16_t refCount = 0;
+
+public:
+    GC_base& gc;
+    GCObject gco;
+
+    GCPointer3(GC_base& gc) : gc(gc) {}
+
+    T* lock() { return (T*)gc.lock(gco); }
+    void unlock()   { gc.unlock(gco); }
+    operator T* ()  { return gc.lock(gco); }
+};
+
 
 template <size_t size>
 class GC : public GC_base
@@ -419,30 +439,37 @@ public:
     }
 
 
+    void alloc(GCObject* gco, size_t len)
+    {
+        gco->data = __alloc(len);
+
+        if(gco->data)
+        {
+#ifdef GC_DEBUG
+            printf("alloc: buffer = %p / size = %lu\r\n", gco->data, len);
+#endif
+            allocated.insertAtBeginning(gco);
+            gco->size = len;
+        }
+    }
+
     GCObject alloc(size_t len)
     {
         GCObject gco;
-
-        gco.data = __alloc(len);
-
-        if(gco.data)
-        {
-#ifdef GC_DEBUG
-            printf("alloc: buffer = %p / size = %lu\r\n", gco.data, len);
-#endif
-            allocated.insertAtBeginning(&gco);
-            gco.size = len;
-        }
-
+        alloc(&gco, len);
         return gco;
     }
 
 
-    /*
     template <class T>
-    GCPointer2<T> alloc()
+    GCPointer3<T> alloc2(size_t count = 1)
     {
-    } */
+        GCPointer3<T> gcp(*this);
+
+        alloc(&gcp.gco, sizeof(T) * count);
+
+        return gcp;
+    }
 };
 
 
