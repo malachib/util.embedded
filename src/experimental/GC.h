@@ -44,6 +44,9 @@ public:
         this->size -= size;
     }
 
+    void lock() { pinned = true; }
+    void unlock() { pinned = false; }
+
 #ifdef UNUSEDXXX
     /**
      * @brief is_free - see if slot used by this GCObject is available *and* no other GCObjects follow it
@@ -67,7 +70,8 @@ public:
 #endif
 
     typedef GCObject free_gco_t;
-    typedef layer1::LinkedListIterator<GCObject> ll_iterator_t;
+    typedef GCObject allocated_gco_t;
+    typedef layer1::LinkedListIterator<allocated_gco_t> ll_iterator_t;
     typedef layer1::LinkedListIterator<free_gco_t> ll_free_iterator_t;
 
     SinglyLinkedList free;
@@ -133,6 +137,28 @@ public:
 
             i++;
         }
+    }
+
+
+    /**
+     * Moves allocated region backwards into a preceding free region
+     * and moves the free region forward
+     * @param a
+     * @param free
+     * @param free_prior required so that 'next' pointer is updated properly
+     */
+    void swap(allocated_gco_t* a, free_gco_t* free, free_gco_t* free_prior)
+    {
+        // TODO: assert free->prior->next == free
+
+
+    }
+
+    // Moves an allocated chunk to the specified free block
+    void move(allocated_gco_t* allocated, free_gco_t* free, free_gco_t* free_prior)
+    {
+        // TODO: assert free->size is big enough
+        // TODO: assert free->prior->next == free
     }
 
 
