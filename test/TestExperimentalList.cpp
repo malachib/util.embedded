@@ -16,17 +16,17 @@ public:
     int value;
 };
 
+namespace util = FactUtilEmbedded;
 
-template <>
-struct fstd::experimental::node_allocator<TestNode2>
+class dynamic_node_allocator_base
 {
-    struct PtrNode : public SinglyLinkedNode
+    struct PtrNode : public util::SinglyLinkedNode
     {
-        TestNode2* value;
+        void* value;
     };
 
 public:
-    SinglyLinkedNode* allocate(TestNode2 *reference)
+    util::SinglyLinkedNode* allocate(void *reference)
     {
         auto node = new PtrNode;
 
@@ -35,17 +35,33 @@ public:
         return node;
     }
 
-    void deallocate(SinglyLinkedNode* node)
+    void deallocate(util::SinglyLinkedNode* node)
     {
         // Maybe setting node->next to null here would be prudent?
         delete node;
     }
 
-    TestNode2* get_associated_value(SinglyLinkedNode* node, const void* hint)
+    void* get_associated_value(util::SinglyLinkedNode* node, const void* hint)
     {
         if(node == nullptr) return nullptr;
 
         return static_cast<PtrNode*>(node)->value;
+    }
+
+};
+
+template <class T>
+struct dynamic_node_allocator : public dynamic_node_allocator_base
+{
+public:
+    inline util::SinglyLinkedNode* allocate(T *reference)
+    {
+        return dynamic_node_allocator_base::allocate(reference);
+    }
+
+    inline T* get_associated_value(util::SinglyLinkedNode* node, const void* hint)
+    {
+        return static_cast<T*>(dynamic_node_allocator_base::get_associated_value(node, hint));
     }
 };
 
@@ -54,7 +70,8 @@ public:
 SCENARIO( "Experimental std::list code", "[exp-list]" )
 {
     fstd::experimental::forward_list<TestNode> list;
-    fstd::experimental::forward_list<TestNode2, fstd::experimental::node_allocator<TestNode2>> list2;
+    //fstd::experimental::forward_list<TestNode2, fstd::experimental::node_allocator<TestNode2>> list2;
+    fstd::experimental::forward_list<TestNode2, dynamic_node_allocator<TestNode2>> list2;
 
     int counter = 0;
 
