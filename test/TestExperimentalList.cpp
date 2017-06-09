@@ -2,6 +2,8 @@
 
 #include "experimental/list.h"
 
+#include <list>
+
 namespace fstd = FactUtilEmbedded::std;
 
 namespace util = FactUtilEmbedded;
@@ -93,6 +95,10 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
         }
 
         REQUIRE(list.front().value == 10);
+
+        TestNode& copy = *list.begin();
+
+        REQUIRE(copy.value == node1.value);
     }
     WHEN("adding nodes - specialized allocator")
     {
@@ -112,5 +118,29 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
         }
 
         REQUIRE(list2.front().value == 10);
+    }
+    WHEN("Trying primitive types")
+    {
+        //std::list<int> list3 = { 1, 2, 3, 4, 5 };
+        fstd::experimental::forward_list<int, dynamic_node_allocator<int>> list3;
+
+        int node1 = 10;
+        int node2 = 20;
+        int node3 = 30;
+
+        list3.push_front(node3);
+        list3.push_front(node1);
+        list3.insert_after(list3.begin(), node2);
+
+        for(auto i: list3)
+        {
+            REQUIRE(i == (counter += 10));
+        }
+
+        REQUIRE(list3.front() == 10);
+
+        auto i2 = list3.begin();
+
+        i2++;
     }
 }

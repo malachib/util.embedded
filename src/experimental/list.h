@@ -52,6 +52,9 @@ struct forward_iterator_tag {};
 
 struct InputIterator {};
 
+// NOTE: Not sure what to do about std::initializer_list
+// It's a "special" class which the compiler knows about and depends on.  Now sure if I
+// can interact with it/make my own(that will get picked up) in an embedded environment
 template <class T, class TNodeAllocator = node_allocator<T>>
 class forward_list
 {
@@ -62,15 +65,6 @@ class forward_list
 
     struct ForwardIterator : public special_singly_forward_iterator
     {
-        //node_type* current;
-
-        //node_type* getCurrent() const { return current; }
-
-        ForwardIterator(const SinglyLinkedList& ll)
-        {
-            current = ll.getHead();
-        }
-
         ForwardIterator(const ForwardIterator& source)
         {
             current = source.getCurrent();
@@ -102,6 +96,17 @@ class forward_list
             TNodeAllocator allocator;
             return allocator.get_associated_value(current, nullptr);
         }
+
+        /*
+        friend bool operator==(const ForwardIterator& lhs, const ForwardIterator& rhs)
+        {
+            return *((value_type*)lhs) == *((value_type*)rhs);
+        }
+
+        friend bool operator!=(const ForwardIterator& lhs, const ForwardIterator& rhs)
+        {
+            return !(lhs == rhs);
+        } */
     };
 
     typedef ForwardIterator         iterator;
@@ -132,8 +137,7 @@ public:
     iterator insert_after(const_iterator pos, value_type& value)
     {
         TNodeAllocator allocator;
-        //value_type* pos_value = pos;
-        //node_type* pos_node = allocator.get_associated_node(pos_value, nullptr);
+
         node_type* pos_node = pos.getCurrent();
         node_type* node = allocator.allocate(&value);
 
@@ -148,7 +152,6 @@ public:
     {
         TNodeAllocator allocator;
 
-        //node_type* pos_node = allocator.get_associated_node(pos, nullptr);
         node_type* pos_node = pos.getCurrent();
         node_type* node_to_erase = pos_node->getNext();
 
@@ -157,12 +160,7 @@ public:
         return iterator(pos_node->getNext());
     }
 
-    reference front()
-    {
-        TNodeAllocator allocator;
-        value_type* value = allocator.get_associated_value(list.getHead(), nullptr);
-        return *value;
-    }
+    reference front() { return *begin(); }
 
     bool empty() { return list.getHead(); }
 };
