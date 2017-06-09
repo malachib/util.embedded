@@ -7,15 +7,18 @@
 namespace util = FactUtilEmbedded;
 namespace fstd = util::std;
 
+template <class TNode>
 class dynamic_node_allocator_base
 {
-    struct PtrNode : public util::SinglyLinkedNode
+    struct PtrNode : public TNode
     {
         void* value;
     };
 
 public:
-    util::SinglyLinkedNode* allocate(void *reference)
+    typedef TNode node_type;
+
+    node_type* allocate(void *reference)
     {
         auto node = new PtrNode;
 
@@ -24,13 +27,13 @@ public:
         return node;
     }
 
-    void deallocate(util::SinglyLinkedNode* node)
+    void deallocate(node_type* node)
     {
         // Maybe setting node->next to null here would be prudent?
         delete node;
     }
 
-    void* get_associated_value(util::SinglyLinkedNode* node, const void* hint)
+    static void* get_associated_value(node_type* node, const void* hint)
     {
         if(node == nullptr) return nullptr;
 
@@ -40,15 +43,17 @@ public:
 };
 
 template <class T>
-struct dynamic_node_allocator : public dynamic_node_allocator_base
+struct dynamic_node_allocator : public dynamic_node_allocator_base<util::SinglyLinkedNode>
 {
 public:
-    inline util::SinglyLinkedNode* allocate(T *reference)
+    typedef T value_type;
+
+    inline node_type* allocate(T *reference)
     {
         return dynamic_node_allocator_base::allocate(reference);
     }
 
-    inline T* get_associated_value(util::SinglyLinkedNode* node, const void* hint)
+    static inline T* get_associated_value(node_type* node, const void* hint)
     {
         return static_cast<T*>(dynamic_node_allocator_base::get_associated_value(node, hint));
     }
