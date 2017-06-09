@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "fact/algorithm.h"
+#include <string.h>
 
 namespace fstd = FactUtilEmbedded::std;
 
