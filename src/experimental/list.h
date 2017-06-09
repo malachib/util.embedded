@@ -114,21 +114,17 @@ class forward_list
 
     SinglyLinkedList list;
 
+    TNodeAllocator node_allocator;
+
 public:
-    iterator begin()
-    {
-        node_type* head = list.getHead();
-        return iterator(head);
-    }
+    iterator begin() { return iterator(list.getHead()); }
     iterator end() { return iterator(nullptr); }
 
     // not a const like in standard because we expect to actually modify
     // the prev/next parts of value
     void push_front(value_type& value)
     {
-        TNodeAllocator allocator;
-        node_type* node = allocator.allocate(&value);
-        //node_type* node = TNodeAllocator::allocate(&value);
+        node_type* node = node_allocator.allocate(&value);
 
         list.insertAtBeginning(node);
     }
@@ -136,10 +132,8 @@ public:
 
     iterator insert_after(const_iterator pos, value_type& value)
     {
-        TNodeAllocator allocator;
-
         node_type* pos_node = pos.getCurrent();
-        node_type* node = allocator.allocate(&value);
+        node_type* node = node_allocator.allocate(&value);
 
         // FIX: insertBetween is overcompliated, the insert_after is cleaner and better
         // (the getNext() is always the value used, so why bother making it an explicit param)
@@ -150,13 +144,11 @@ public:
 
     iterator erase_after(const_iterator pos)
     {
-        TNodeAllocator allocator;
-
         node_type* pos_node = pos.getCurrent();
         node_type* node_to_erase = pos_node->getNext();
 
         pos_node->removeNext();
-        allocator.deallocate(node_to_erase);
+        node_allocator.deallocate(node_to_erase);
         return iterator(pos_node->getNext());
     }
 

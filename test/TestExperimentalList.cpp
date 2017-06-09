@@ -55,6 +55,12 @@ public:
     }
 };
 
+class TestNode2;
+
+namespace FactUtilEmbedded { namespace std { namespace experimental {
+template <>
+struct node_allocator<TestNode2> : public dynamic_node_allocator<TestNode2> {};
+}}}
 
 
 SCENARIO( "Experimental std::list code", "[exp-list]" )
@@ -73,6 +79,7 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
 
 
     fstd::experimental::forward_list<TestNode> list;
+    //fstd::experimental::forward_list<TestNode2> list2; // this *does* work if TestNode2 is outside the function scope
     fstd::experimental::forward_list<TestNode2, dynamic_node_allocator<TestNode2>> list2;
 
     int counter = 0;
