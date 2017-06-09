@@ -272,13 +272,14 @@ public:
 
     uint8_t* lock(GCObject& gco)
     {
+        gco.pinned = true;
         return gco.data;
     }
 
 
     void unlock(GCObject& gco)
     {
-
+        gco.pinned = false;
     }
 };
 
@@ -317,17 +318,44 @@ public:
 template <class T>
 class GCPointer3
 {
-    //uint16_t refCount = 0;
+    uint16_t refCount;
 
 public:
     GC_base& gc;
     GCObject gco;
 
-    GCPointer3(GC_base& gc) : gc(gc) {}
+    GCPointer3(GC_base& gc) : gc(gc)
+    {
+        //refCount = 0;
+    }
+
+    // Can only be moved, never copied
+    // Not working quite though... commenting out destructor doesnt help
+    GCPointer3(GCPointer3&& gcp) : gc(gcp.gc) //, refCount(gcp.refCount)
+    {
+        // FIX: A move means the gco address is changing,
+        // which means we need to adjust the preceding gco's
+        // next pointer
+        //gco = gcp.gco;
+        gco.size = -1;
+        //printf("!!!! GOT HERE !!!!");
+    }
+
+
+    /*
+    GCPointer3(const GCPointer3& gcp) : gc(gcp.gc)
+    {
+
+    } */
 
     T* lock() { return (T*)gc.lock(gco); }
     void unlock()   { gc.unlock(gco); }
     operator T* ()  { return gc.lock(gco); }
+
+    ~GCPointer3()
+    {
+        unlock();
+    }
 };
 
 

@@ -36,12 +36,6 @@ public:
     }
 };
 
-template <>
-struct node_allocator<SinglyLinkedNode>
-{
-public:
-};
-
 template<class T>
 class list
 {

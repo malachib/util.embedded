@@ -11,6 +11,11 @@ GC_base& _gc = ::__gc;
 
 }}
 
+GCPointer3<int> test_gc1()
+{
+    return __gc.alloc2<int>();
+}
+
 SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
 {
     GC<1000> gc;
@@ -62,5 +67,10 @@ SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
         gcp.unlock();
 
         REQUIRE(gc.available() == 900);
+
+        auto gcp2 = test_gc1();
+
+        // FIX: move constructor not happening
+        //REQUIRE(gcp2.gco.size == -1);
     }
 }

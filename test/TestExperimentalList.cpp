@@ -4,9 +4,8 @@
 
 #include <list>
 
-namespace fstd = FactUtilEmbedded::std;
-
 namespace util = FactUtilEmbedded;
+namespace fstd = util::std;
 
 class dynamic_node_allocator_base
 {
