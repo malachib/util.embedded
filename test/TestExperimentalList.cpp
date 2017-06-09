@@ -4,18 +4,6 @@
 
 namespace fstd = FactUtilEmbedded::std;
 
-class TestNode : public FactUtilEmbedded::SinglyLinkedNode
-{
-public:
-    int value;
-};
-
-class TestNode2
-{
-public:
-    int value;
-};
-
 namespace util = FactUtilEmbedded;
 
 class dynamic_node_allocator_base
@@ -69,8 +57,20 @@ public:
 
 SCENARIO( "Experimental std::list code", "[exp-list]" )
 {
+    class TestNode : public FactUtilEmbedded::SinglyLinkedNode
+    {
+    public:
+        int value;
+    };
+
+    class TestNode2
+    {
+    public:
+        int value;
+    };
+
+
     fstd::experimental::forward_list<TestNode> list;
-    //fstd::experimental::forward_list<TestNode2, fstd::experimental::node_allocator<TestNode2>> list2;
     fstd::experimental::forward_list<TestNode2, dynamic_node_allocator<TestNode2>> list2;
 
     int counter = 0;
