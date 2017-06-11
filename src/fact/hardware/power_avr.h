@@ -269,7 +269,11 @@ namespace FactUtilEmbedded
     // be sure to choose the specific mode for the MPU at hand, as they
     // all vary slightly.  For example 32u4 & 328P have SLEEP_MODE_STANDBY, but
     // attiny85 does not
+#if defined (__AVR_ATtiny85__)
+    static void sleep(uint8_t mode = SLEEP_MODE_PWR_DOWN
+#else
     static void sleep(uint8_t mode = SLEEP_MODE_PWR_SAVE
+#endif
 #ifdef AVR_PICOPOWER
       // it is assumed bod is on by default, and also assumed bod should be
       // switched back on after sleep

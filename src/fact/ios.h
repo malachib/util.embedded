@@ -104,6 +104,15 @@ public:
     { return (basic_streambuf_t *) &_rdbuf; }
 
 #endif
+public:
+    // NOTE: spec calls for this actually in ios_base, but for now putting it
+    // here so that it can reach into streambuf to grab it.  A slight but notable
+    // deviation from standard C++
+    experimental::locale getloc() const
+    {
+        experimental::locale l;
+        return l;
+    }
 };
 
 

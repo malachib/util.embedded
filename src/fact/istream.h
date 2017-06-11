@@ -5,7 +5,7 @@
 #include "ios.h"
 #include "features.h"
 
-#include <cassert>
+//#include <cassert>
 
 #ifdef FEATURE_FRAB
 #include <frab/systime.h>
@@ -224,6 +224,12 @@ public:
         return *this;
     }
 
+    basic_istream& operator>>(basic_istream& (*__pf)(basic_istream&))
+    {
+        return __pf(*this);
+    }
+
+
 #ifndef FEATURE_IOS_STREAMBUF_FULL
     typedef typename base_t::stream_t stream_t;
 
@@ -253,14 +259,25 @@ inline basic_istream<char>& operator >>(basic_istream<char>& in, short& value)
  * @tparam TChar
  * @param __os
  * @return
+ *
+ * Compiles but not runtime tested
  */
 template <class TChar>
 inline basic_istream<TChar>& ws(basic_istream<TChar>& __is)
 {
-    static_assert(&__is != nullptr, "Feature not yet ready");
+    auto loc = __is.getloc();
 
-    return __is;
-    //isspace(' ');
+    // isspace will automatically fall out if it's an EOF (or nodata)
+    for(;;)
+    {
+        int ch = __is.peek();
+        if(isspace((char)ch, loc))
+        {
+            __is.ignore();
+        }
+        else
+            return __is;
+    }
 }
 #endif
 
