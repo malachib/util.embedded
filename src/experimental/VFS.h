@@ -42,6 +42,38 @@ public:
 };
 
 
+template <class TKey, class TMeta>
+class Factory
+{
+public:
+    virtual bool contains(TKey key, TMeta meta = nullptr) = 0;
+
+    virtual bool create(TKey key, TMeta meta = nullptr) = 0;
+
+    //template <class TOptions>
+    //virtual bool create(TKey key, TOptions options, TMeta meta = nullptr) = 0;
+};
+
+template <class TKey, class TMeta>
+class AggregateFactory : public Factory<TKey, TMeta>
+{
+    FactUtilEmbedded::layer3::Array<Factory<TKey, TMeta>*> factories;
+
+public:
+    virtual bool contains(TKey key, TMeta meta = nullptr)
+    {
+        for(auto f : factories)
+        {
+            if(f->contains(key))
+            {
+                
+            }
+        }
+    }
+
+};
+
+
 template <typename TPath>
 class AggregateVFS : public VFS<TPath>
 {
