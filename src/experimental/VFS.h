@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../fact/iostream.h"
+#include "../fact/buffer.h"
 
 namespace FactUtilEmbedded { namespace experimental {
 
@@ -31,6 +32,8 @@ class VFS
     typedef FactUtilEmbedded::std::ios_base ios_base;
 
 public:
+    virtual bool exists(TPath path) = 0;
+
     virtual FactUtilEmbedded::std::basic_iostream<char>& open(TPath path,
                                                               ios_base::openmode openmode = ios_base::in) = 0;
     virtual FactUtilEmbedded::std::ostream& create(TPath path) = 0;
@@ -39,12 +42,55 @@ public:
 };
 
 
+template <typename TPath>
+class AggregateVFS : public VFS<TPath>
+{
+    FactUtilEmbedded::layer3::Array<VFS<TPath>*>& vfs_list;
+
+    typedef FactUtilEmbedded::std::ios_base ios_base;
+
+public:
+    AggregateVFS(FactUtilEmbedded::layer3::Array<VFS<TPath>*>& vfs_list) : vfs_list(vfs_list) {}
+
+    // TODO: split out Aggregator logic ala apprentice style Factory aggregator
+    virtual bool exists(TPath path)
+    {
+        for(auto vfs : vfs_list)
+        {
+            vfs->exists(path);
+        }
+    }
+
+    virtual FactUtilEmbedded::std::basic_iostream<char>& open(TPath path,
+                                                              ios_base::openmode openmode = ios_base::in)
+    {
+
+    }
+
+    virtual FactUtilEmbedded::std::ostream& create(TPath path)
+    {
+
+    }
+
+    virtual void close(ios_base& stream)
+    {
+
+    }
+};
+
+
+
+
+
+
 template <typename TPath = const char*>
 class MemoryVFS : public VFS<TPath>
 {
     typedef FactUtilEmbedded::std::ios_base ios_base;
 
 public:
+    virtual bool exists(TPath path);
+
     virtual FactUtilEmbedded::std::basic_iostream<char>& open(TPath path,
                                                               ios_base::openmode openmode = ios_base::in);
     virtual FactUtilEmbedded::std::ostream& create(TPath path);
