@@ -12,6 +12,12 @@ MemoryVFS<> _vfs1, _vfs2;
 MemoryVFS<> _vfs3, _vfs4;
 int location;
 
+
+static void responder(uint16_t id, uint16_t parent_id)
+{
+    printf("Digging: current = %u, parent = %u\r\n", id, parent_id);
+}
+
 SCENARIO( "Virtual File System tests", "[vfs]" )
 {
     GIVEN("Test 1")
@@ -53,6 +59,8 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
         id = tree.get_child(1, 1);
 
         count = tree.child_count(1);
+
+        tree.walk<responder>(1);
     }
     GIVEN("Node from pointers")
     {

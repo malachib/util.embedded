@@ -116,6 +116,23 @@ public:
     {
         return _child_count<true, TNodes...>(id);
     }
+
+    typedef void (*fn_responder_t)(uint16_t id, uint16_t parent_id) ;
+
+    template <fn_responder_t responder>
+    static void walk(uint16_t start_id)
+    {
+        //responder(start_id, get_parent(start_id));
+
+        uint16_t count = child_count(start_id);
+
+        for(uint16_t i = 0; i < count; i++)
+        {
+            uint16_t child_id = get_child(start_id, i);
+            responder(child_id, start_id);
+            walk<responder>(child_id);
+        }
+    }
 };
 
 
