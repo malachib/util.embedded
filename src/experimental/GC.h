@@ -31,6 +31,10 @@ public:
     bool pinned;
     bool busy; // means we can't pin this (likely being moved)
 
+    // means we can never pin this, and instead have to use read/write commands on it
+    // NOT implemented yet
+    bool fragmentable;
+
     // Shrinks free_gco by a specified amount, moving pointer upwards
     void shrink_up(size_t size)
     {
@@ -65,6 +69,115 @@ public:
 
 class GC_base
 {
+
+#ifdef UNIT_TEST
+public:
+#endif
+
+#ifdef UNUSEDXXX
+    size_t used() const
+    {
+        auto gcobjects = static_cast<GCObject*>(buffer.getData());
+
+        while(gcobjects->is_free())
+        {
+            gcobjects++;
+        }
+    }
+#endif
+
+
+// This does fancy in-place free node resizing rather than deallocating and reallocating
+// the free node.  Faster but results in somewhat confusing allocation pointers
+#define __ALLOC2
+
+    uint8_t* __alloc(size_t& len)
+    {
+        //auto node = free.getHead();
+        ll_free_iterator_t i(free);
+
+        // TODO: overload i bool operator so that
+        // we can properly do while(i)
+        while(i())
+        {
+            free_gco_t* node = i;
+
+            // If we can fit this allocation into the inspected
+            // node
+            if(node->size > len)
+            {
+                uint8_t* location = node->data;
+
+#ifndef __ALLOC2
+                // then remove the node from the free memory
+                // list
+                free.remove(node);
+#endif
+                // If free memory chunk size - request len size
+                // < size of new free_gco_t to be created,
+                // then we expand our request length slightly
+                // and burn up that memory.  Otherwise,
+                // we use leftover memory and create a new
+                // free_gco_t in there
+                if((node->size - len) < sizeof(free_gco_t))
+                {
+                    len = node->size;
+
+#ifdef __ALLOC2
+                    free.remove(node);
+#endif
+                }
+                else
+                {
+#ifdef __ALLOC2
+                    // this funky technique means our data ptrs are near the end of
+                    // the free available memory chunk instead of the beginning,
+                    // but lets us leave the free node ptr in place (since the free node
+                    // data lives IN the same memory chunk to which it points)
+                    location += node->size - len;
+                    node->shrink_down(len);
+#else
+                    // re-add the node with adjusted parameters
+                    addfree(node->data + len, node->size - len);
+#endif
+                }
+
+                // return the previous free node data ptr
+                return location;
+            }
+            else if(node->size == len)
+            {
+
+            }
+
+            i++;
+        }
+
+        return nullptr;
+    }
+
+    size_t _allocated() const
+    {
+        layer1::LinkedListIterator<GCObject> i(allocated);
+
+        size_t total = 0;
+
+        while(i())
+        {
+            total += i.getCurrent()->size;
+            i++;
+        }
+
+        return total;
+    }
+
+
+    void defragment()
+    {
+
+    }
+
+
 protected:
 #ifdef UNIT_TEST
 public:
@@ -282,6 +395,79 @@ public:
     {
         gco.pinned = false;
     }
+
+
+    size_t available() const
+    {
+        layer1::LinkedListIterator<GCObject> i(free);
+
+        size_t total = 0;
+
+        while(i())
+        {
+            total += i.getCurrent()->size;
+            i++;
+        }
+
+        return total;
+    }
+
+
+    void alloc(GCObject* gco, size_t len)
+    {
+        gco->data = __alloc(len);
+
+        if(gco->data)
+        {
+#ifdef GC_DEBUG
+            printf("alloc: buffer = %p / size = %lu\r\n", gco->data, len);
+#endif
+            allocated.insertAtBeginning(gco);
+            gco->size = len;
+        }
+    }
+
+    GCObject alloc(size_t len)
+    {
+        GCObject gco;
+        alloc(&gco, len);
+        return gco;
+    }
+
+    //
+    void grow(GCObject& gco, size_t len_to_grow)
+    {
+        // TODO: see if we can EZ grow the thing and if not,
+        // a) see if we can move it somewhere to grow it there
+        // b) see if we can compact things down
+    }
+
+
+    void shrink(GCObject& gco, size_t len_to_shrink)
+    {
+        // shrinking is always easier than growing
+    }
+
+
+    // these fragment functions are special because you don't have to issue lock()
+    // before using them.  Right now fragment feature is not implemented, so
+    // this is just a pass thru
+    size_t read_fragment(GCObject& gco, size_t pos, uint8_t* buffer, size_t length)
+    {
+        uint8_t* in_buffer = lock(gco);
+        memcpy(buffer, in_buffer + pos, length);
+        unlock(gco);
+        return length;
+    }
+
+
+    size_t write_fragment(GCObject& gco, size_t pos, const uint8_t* buffer, size_t length)
+    {
+        uint8_t* out_buffer = lock(gco);
+        memcpy(out_buffer + pos, buffer, length);
+        unlock(gco);
+        return length;
+    }
 };
 
 
@@ -372,152 +558,11 @@ class GC : public GC_base
 public:
 #endif
     layer1::MemoryContainer<size> buffer;
-
-#ifdef UNUSEDXXX
-    size_t used() const
-    {
-        auto gcobjects = static_cast<GCObject*>(buffer.getData());
-
-        while(gcobjects->is_free())
-        {
-            gcobjects++;
-        }
-    }
-#endif
-
-
-// This does fancy in-place free node resizing rather than deallocating and reallocating
-// the free node.  Faster but results in somewhat confusing allocation pointers
-#define __ALLOC2
-
-    uint8_t* __alloc(size_t& len)
-    {
-        //auto node = free.getHead();
-        ll_free_iterator_t i(free);
-
-        // TODO: overload i bool operator so that
-        // we can properly do while(i)
-        while(i())
-        {
-            free_gco_t* node = i;
-
-            // If we can fit this allocation into the inspected
-            // node
-            if(node->size > len)
-            {
-                uint8_t* location = node->data;
-
-#ifndef __ALLOC2
-                // then remove the node from the free memory
-                // list
-                free.remove(node);
-#endif
-                // If free memory chunk size - request len size
-                // < size of new free_gco_t to be created,
-                // then we expand our request length slightly
-                // and burn up that memory.  Otherwise,
-                // we use leftover memory and create a new
-                // free_gco_t in there
-                if((node->size - len) < sizeof(free_gco_t))
-                {
-                    len = node->size;
-
-#ifdef __ALLOC2
-                    free.remove(node);
-#endif
-                }
-                else
-                {
-#ifdef __ALLOC2
-                    // this funky technique means our data ptrs are near the end of
-                    // the free available memory chunk instead of the beginning,
-                    // but lets us leave the free node ptr in place (since the free node
-                    // data lives IN the same memory chunk to which it points)
-                    location += node->size - len;
-                    node->shrink_down(len);
-#else
-                    // re-add the node with adjusted parameters
-                    addfree(node->data + len, node->size - len);
-#endif
-                }
-
-                // return the previous free node data ptr
-                return location;
-            }
-            else if(node->size == len)
-            {
-
-            }
-
-            i++;
-        }
-
-        return nullptr;
-    }
-
-    size_t _allocated() const
-    {
-        layer1::LinkedListIterator<GCObject> i(allocated);
-
-        size_t total = 0;
-
-        while(i())
-        {
-            total += i.getCurrent()->size;
-            i++;
-        }
-
-        return total;
-    }
-
-
-    void defragment()
-    {
-
-    }
-
 public:
     GC()
     {
         // FIX: getData should not return a const uint8*... should it?
         addfree(buffer.getData(), size);
-    }
-
-    size_t available() const
-    {
-        layer1::LinkedListIterator<GCObject> i(free);
-
-        size_t total = 0;
-
-        while(i())
-        {
-            total += i.getCurrent()->size;
-            i++;
-        }
-
-        return total;
-    }
-
-
-    void alloc(GCObject* gco, size_t len)
-    {
-        gco->data = __alloc(len);
-
-        if(gco->data)
-        {
-#ifdef GC_DEBUG
-            printf("alloc: buffer = %p / size = %lu\r\n", gco->data, len);
-#endif
-            allocated.insertAtBeginning(gco);
-            gco->size = len;
-        }
-    }
-
-    GCObject alloc(size_t len)
-    {
-        GCObject gco;
-        alloc(&gco, len);
-        return gco;
     }
 
 
@@ -550,7 +595,7 @@ class GCHandleManager
 
     gc_handle_t array_size() { return gc_object_array.size / sizeof(GCObject); }
 
-    gc_handle_t alloc(GCObject* gc_object_array, GCObject &gco)
+    int alloc(GCObject* gc_object_array, GCObject &gco)
     {
         for(gc_handle_t i = 0; i < array_size(); i++)
         {
@@ -576,7 +621,11 @@ class GCHandleManager
 public:
     GCHandleManager()
     {
-        //gc_object_array = _gc.
+        // Start with room for 6 items, but we can grow it if needed
+        // NOTE that although we can kinda shrink it, THIS is somewhat
+        // subject to fragmentation.  Yet another reason to avoid handles
+        // if possible
+        gc_object_array = _gc.alloc(sizeof(GCObject) * 6);
     }
 
     /**
@@ -589,7 +638,13 @@ public:
     gc_handle_t alloc(GCObject& gco)
     {
         GCPointer3<GCObject> array(_gc, gc_object_array);
-        gc_handle_t handle = alloc(array, gco);
+        int handle = alloc(array, gco);
+        if(handle == -1)
+        {
+            array.unlock();
+            // if we're out of handles, grow it and try again
+            _gc.grow(gco, sizeof(GCObject) * 4);
+        }
         return handle;
     }
 
@@ -597,7 +652,6 @@ public:
     {
         GCPointer3<GCObject> array(_gc, gc_object_array);
         free(array, handle);
-        _gc.unlock(gc_object_array);
     }
 };
 
