@@ -73,4 +73,12 @@ SCENARIO( "Garbage Collection/Virtual memory tests", "[gc]" )
         // FIX: move constructor not happening
         //REQUIRE(gcp2.gco.size == -1);
     }
+    GIVEN("Handle manager")
+    {
+        GCHandleManager hm;
+
+        auto gcp = gc.alloc2<char>(100);
+
+        auto handle = hm.alloc(gcp.gco);
+    }
 }

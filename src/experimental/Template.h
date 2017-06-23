@@ -83,6 +83,8 @@ public:
         StreamPipeline pout;
 
         ProcessState result = process(pin, pout);
+
+        return result;
     }
 };
 

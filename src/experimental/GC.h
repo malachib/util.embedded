@@ -29,6 +29,7 @@ public:
     ptr_t data;
     size_t size;
     bool pinned;
+    bool busy; // means we can't pin this (likely being moved)
 
     // Shrinks free_gco by a specified amount, moving pointer upwards
     void shrink_up(size_t size)
@@ -329,6 +330,11 @@ public:
         //refCount = 0;
     }
 
+    GCPointer3(GC_base& gc, GCObject& gco) : gc(gc), gco(gco)
+    {
+        //refCount = 0;
+    }
+
     // Can only be moved, never copied
     // Not working quite though... commenting out destructor doesnt help
     GCPointer3(GCPointer3&& gcp) : gc(gcp.gc) //, refCount(gcp.refCount)
@@ -350,7 +356,7 @@ public:
 
     T* lock() { return (T*)gc.lock(gco); }
     void unlock()   { gc.unlock(gco); }
-    operator T* ()  { return gc.lock(gco); }
+    operator T* ()  { return lock(); }
 
     ~GCPointer3()
     {
@@ -524,9 +530,76 @@ public:
 
         return gcp;
     }
+
+    template <class T>
+    GCPointer3<T> auto_ptr(GCObject& gco)
+    {
+        GCPointer3<T> gcp(*this);
+        gcp.gco = gco;
+        return gcp;
+    }
 };
 
+// GC Handles are OPTIONAL, and are not preferred (copying GCObjects around is ideal)
+// - but acceptable and sometimes necessary
+typedef uint8_t gc_handle_t;
 
+class GCHandleManager
+{
+    GCObject gc_object_array;
+
+    gc_handle_t array_size() { return gc_object_array.size / sizeof(GCObject); }
+
+    gc_handle_t alloc(GCObject* gc_object_array, GCObject &gco)
+    {
+        for(gc_handle_t i = 0; i < array_size(); i++)
+        {
+            GCObject& g = gc_object_array[i];
+            if(g.data == nullptr)
+            {
+                g = gco;
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    void free(GCObject* gc_object_array, gc_handle_t handle)
+    {
+        // FIX: make sure it's not busy or pinned
+        // block if busy
+        // warn if pinned
+        gc_object_array[handle].data = nullptr;
+    }
+
+public:
+    GCHandleManager()
+    {
+        //gc_object_array = _gc.
+    }
+
+    /**
+     * Copies specified gco into our global tracker and spits out a global-friendly
+     * handle
+     * @brief alloc
+     * @param gco
+     * @return
+     */
+    gc_handle_t alloc(GCObject& gco)
+    {
+        GCPointer3<GCObject> array(_gc, gc_object_array);
+        gc_handle_t handle = alloc(array, gco);
+        return handle;
+    }
+
+    void free(gc_handle_t handle)
+    {
+        GCPointer3<GCObject> array(_gc, gc_object_array);
+        free(array, handle);
+        _gc.unlock(gc_object_array);
+    }
+};
 
 
 #include "GC.hpp"
