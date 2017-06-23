@@ -655,7 +655,66 @@ public:
     }
 };
 
+namespace exp_std {
+
+template <class TAllocator>
+struct allocator_traits
+{
+
+};
+
+
+template <class TPtr> struct pointer_traits;
+template <class T> struct pointer_traits<T*>;
+
+template <class T>
+struct GCAllocator
+{
+    class GCPointer
+    {
+        GCObject gco;
+
+    public:
+        typedef T   value_type;
+
+        GCPointer(GCObject gco) : gco(gco)
+        {
+        }
+
+        const T* lock() { return _gc.lock(gco); }
+        void unlock()   { _gc.unlock(gco); }
+        operator const T* () { return _gc.lock(gco); }
+    };
+
+    typedef GCPointer        pointer;
+    typedef const pointer   const_pointer;
+    typedef T               value_type;
+
+    // FIX: Need a GCObject pointer wrapper for this to work right (and still maybe not work right even then)
+    pointer allocate(size_t n)
+    {
+        return _gc.alloc(n);
+    }
+
+    void deallocate(pointer p, size_t)
+    {
+        _gc._free(p);
+    }
+};
+
+
+template <>
+struct allocator_traits<GCAllocator<void*>>
+{
+
+};
+
+
+}
+
+
 
 #include "GC.hpp"
+
 
 }}
