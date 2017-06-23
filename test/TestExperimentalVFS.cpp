@@ -80,7 +80,7 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
 
         count = tree.child_count(1);
 
-        tree.walk<nullptr, responder>(1);
+        tree.walk(1, [](int, int) {}, responder);
     }
     GIVEN("Node from pointers")
     {

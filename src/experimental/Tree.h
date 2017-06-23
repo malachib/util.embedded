@@ -119,10 +119,11 @@ public:
 
     typedef void (*fn_responder_t)(uint16_t id, uint16_t parent_id) ;
 
-    template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
-    static void walk(uint16_t start_id)
+    //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
+    template <class  TResponderFunc, class TResponderFuncUp, bool top = true>
+    static inline void walk(uint16_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
     {
-        //if(!top && responder) responder(start_id, get_parent(start_id));
+        if(top && responder) responder(start_id, get_parent(start_id));
 
         uint16_t count = child_count(start_id);
 
@@ -130,11 +131,11 @@ public:
         {
             uint16_t child_id = get_child(start_id, i);
             if(responder != nullptr) responder(child_id, start_id);
-            walk<responder, responder_up, false>(child_id);
+            walk<TResponderFunc, TResponderFuncUp, false>(child_id, responder, responder_up);
             if(responder_up != nullptr) responder_up(child_id, start_id);
         }
 
-        //if(!top && responder_up) responder_up(start_id, get_parent(start_id));
+        if(top && responder_up) responder_up(start_id, get_parent(start_id));
     }
 };
 
