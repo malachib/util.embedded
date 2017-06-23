@@ -45,9 +45,15 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
 {
     GIVEN("Test 1")
     {
+        INFO("Allocating a vfs");
+
         MemoryVFS<> vfs;
 
+        INFO("Calling the VFS");
+
         vfs.open("test");
+
+        INFO("Completing VFS test");
     }
     GIVEN("Aggregate")
     {
