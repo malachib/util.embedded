@@ -61,7 +61,7 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
     {
         namespace exp = FactUtilEmbedded::experimental::layer1;
 
-        exp::Tree<
+        exp::Tree<uint16_t,
                 exp::Node<1, 0>,
                 exp::Node<2, 1>,
                 exp::Node<3, 1>,
@@ -115,12 +115,26 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
         typedef exp::GenericNode2<nullptr, ptr1> test1;
         typedef exp::GenericNode<int*, nullptr, &location> test2;
         constexpr VFS<>& ptr2 = _vfs1;
+        constexpr MemoryVFS<const char*>* ptr3 = &_vfs1;
         _vfs1.exists("test");
         ptr2.exists("test2");
         //typedef exp::GenericNode<VFS<>&, ptr2, ptr2> test3;
+        //typedef exp::GenericNode<MemoryVFS<const char*>*, ptr3, ptr3> test3_3;
+        typedef exp::GenericNode<MemoryVFS<const char*>*, &_vfs1, &_vfs2> test3_3;
+        //typedef exp::GenericNode<MemoryVFS<const char*>&, _vfs1, _vfs1> test3_3;
         typedef exp::GenericNode<blah&, blah1, blah1> test4;
         typedef exp::GenericNode<blah2<int>&, blah3, blah3> test5;
         //typedef exp::GenericNode<blah_base<int>&, blah3, blah3> test5; // this one doesn't work
+
+        exp::Tree<VFS<>*, test3_3> tree;
+        VFS<>* parent = tree.get_parent(&_vfs1);
+        constexpr VFS<>* __vfs2 = &_vfs2;
+
+        REQUIRE(parent == __vfs2);
+
+
+        //REQUIRE(parent == &_vfs2);
+
         // tons of compile errors... why ?
         /*
         //constexpr void* ptr1 = &_vfs3;
@@ -133,5 +147,6 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
                 //exp::GenericNode<VFS*, &vfs3, &vfs1>,
                 exp::GenericNode2<&ptr1, ptr2>>
                 tree; */
+
     }
 }

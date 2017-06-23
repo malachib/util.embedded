@@ -44,18 +44,39 @@ public:
     static constexpr void* _parent_id = parent_id;
 };
 
+template <class TKey>
+struct TreeKeyTraits
+{
+    static TKey null_node() { return nullptr; }
+};
 
-template <class ...TNodes>
+template <>
+struct TreeKeyTraits<uint16_t>
+{
+    static uint16_t null_node() { return -1; }
+};
+
+/*
+template <>
+struct TreeKeyTraits<void*>
+{
+    static void* null_node() { return nullptr; }
+}; */
+
+template <class TKey, class ...TNodes>
 class Tree
 {
+    typedef TKey key_t;
+    typedef TreeKeyTraits<TKey> key_traits_t;
+
     template <bool dummy>
-    static uint16_t _get_parent(uint16_t id)
+    static key_t _get_parent(key_t id)
     {
-        return -1;
+        return key_traits_t::null_node();
     }
 
     template <bool dummy, class TNode, class ...TNodes2>
-    static uint16_t _get_parent(uint16_t id)
+    static key_t _get_parent(key_t id)
     {
         if(TNode::_id == id) return TNode::_parent_id;
 
@@ -63,13 +84,13 @@ class Tree
     }
 
     template <bool dummy>
-    static uint16_t _get_child(uint16_t id, uint16_t index)
+    static key_t _get_child(key_t id, key_t index)
     {
-        return -1;
+        return key_traits_t::null_node();
     }
 
     template <bool dummy, class TNode, class ...TNodes2>
-    static uint16_t _get_child(uint16_t id, uint16_t index)
+    static key_t _get_child(key_t id, key_t index)
     {
         if(TNode::_parent_id == id)
         {
@@ -83,13 +104,13 @@ class Tree
 
 
     template <bool dummy>
-    static uint16_t _child_count(uint16_t id)
+    static size_t _child_count(key_t id)
     {
         return 0;
     }
 
     template <bool dummy, class TNode, class ...TNodes2>
-    static uint16_t _child_count(uint16_t id)
+    static size_t _child_count(key_t id)
     {
         if(TNode::_parent_id == id)
         {
@@ -99,31 +120,31 @@ class Tree
             return _child_count<true, TNodes2...>(id);
     }
 
-    inline static void dummy(uint16_t, uint16_t) {}
+    inline static void dummy(key_t, key_t) {}
 
 public:
-    static inline uint16_t get_parent(uint16_t id)
+    static inline key_t get_parent(key_t id)
     {
         return _get_parent<true, TNodes...>(id);
     }
 
 
-    static inline uint16_t get_child(uint16_t id, uint16_t index)
+    static inline key_t get_child(key_t id, key_t index)
     {
         return _get_child<true, TNodes...>(id, index);
     }
 
 
-    static inline size_t child_count(uint16_t id)
+    static inline size_t child_count(key_t id)
     {
         return _child_count<true, TNodes...>(id);
     }
 
-    typedef void (*fn_responder_t)(uint16_t id, uint16_t parent_id) ;
+    typedef void (*fn_responder_t)(key_t id, key_t parent_id) ;
 
     //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
     template <class  TResponderFunc, class TResponderFuncUp, bool top = true>
-    static inline void walk(uint16_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
+    static inline void walk(key_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
     {
         if(top)
         //if(top && responder)
@@ -145,13 +166,13 @@ public:
 
     //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
     template <class  TResponderFunc>
-    static inline void walk(uint16_t start_id, TResponderFunc responder)
+    static inline void walk(key_t start_id, TResponderFunc responder)
     {
         walk(start_id, responder, dummy);
     };
 
     template <class  TResponderFunc>
-    static inline void walk_up(uint16_t start_id, TResponderFunc responder)
+    static inline void walk_up(key_t start_id, TResponderFunc responder)
     {
         walk(start_id, dummy, responder);
     };
