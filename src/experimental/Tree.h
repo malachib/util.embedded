@@ -70,13 +70,15 @@ class Tree
     typedef TreeKeyTraits<TKey> key_traits_t;
 
     template <bool dummy>
-    static key_t _get_parent(key_t id)
+    static constexpr key_t _get_parent(key_t id)
     {
         return key_traits_t::null_node();
     }
 
+    // TODO: maybe change all this to return TNode itself
+    // so that we can then resolve out _parent_id actual type
     template <bool dummy, class TNode, class ...TNodes2>
-    static key_t _get_parent(key_t id)
+    static auto _get_parent(key_t id) -> key_t
     {
         if(TNode::_id == id) return TNode::_parent_id;
 
@@ -84,7 +86,7 @@ class Tree
     }
 
     template <bool dummy>
-    static key_t _get_child(key_t id, key_t index)
+    static constexpr key_t _get_child(key_t id, key_t index)
     {
         return key_traits_t::null_node();
     }
@@ -123,13 +125,15 @@ class Tree
     inline static void dummy(key_t, key_t) {}
 
 public:
-    static inline key_t get_parent(key_t id)
+    // TODO: change so that we return decltype of found node parent id type
+    static inline constexpr key_t get_parent(key_t id)
     {
         return _get_parent<true, TNodes...>(id);
     }
 
 
-    static inline key_t get_child(key_t id, key_t index)
+    // TODO: change so that we return decltype of found node child id type
+    static inline constexpr key_t get_child(key_t id, key_t index)
     {
         return _get_child<true, TNodes...>(id, index);
     }

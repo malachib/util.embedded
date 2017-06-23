@@ -29,6 +29,9 @@ struct blah2 : public blah_base<T>
 MemoryVFS<> _vfs1, _vfs2;
 MemoryVFS<> _vfs3, _vfs4;
 
+FactUtilEmbedded::layer3::Array<VFS<>*> dummy_vfs_list(nullptr, 1);
+AggregateVFS<const char*> _avfs(dummy_vfs_list);
+
 int location;
 blah blah1;
 blah2<int> blah3;
@@ -124,6 +127,10 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
         //typedef exp::GenericNode<MemoryVFS<const char*>&, _vfs1, _vfs1> test3_3;
         typedef exp::GenericNode<blah&, blah1, blah1> test4;
         typedef exp::GenericNode<blah2<int>&, blah3, blah3> test5;
+
+        // NOTE: this is an issue, we need to be able to utilize a base class OR
+        // have a GenericNode whose id and id_parent can be different types from each other
+        //typedef exp::GenericNode<VFS<>*, &_vfs1, &_vfs2> test6;
         //typedef exp::GenericNode<blah_base<int>&, blah3, blah3> test5; // this one doesn't work
 
         exp::Tree<VFS<>*, test3_3> tree;
