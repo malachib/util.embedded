@@ -8,6 +8,10 @@ using namespace FactUtilEmbedded::experimental::layer5;
 namespace util = FactUtilEmbedded;
 
 
+MemoryVFS<> _vfs1, _vfs2;
+MemoryVFS<> _vfs3, _vfs4;
+int location;
+
 SCENARIO( "Virtual File System tests", "[vfs]" )
 {
     GIVEN("Test 1")
@@ -49,5 +53,37 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
         id = tree.get_child(1, 1);
 
         count = tree.child_count(1);
+    }
+    GIVEN("Node from pointers")
+    {
+        namespace exp = FactUtilEmbedded::experimental::layer1;
+
+        /*
+        exp::Tree<
+                //exp::GenericNode<VFS*, &vfs1, nullptr>,
+                //exp::GenericNode<VFS*, &vfs2, &vfs1>,
+                //exp::GenericNode<VFS*, &vfs3, &vfs1>,
+                exp::GenericNode<VFS<>*, (VFS<>*)(&_vfs4), (VFS<>*)(&_vfs3)>>
+                tree; */
+    }
+    GIVEN("Node from pointers2")
+    {
+        namespace exp = FactUtilEmbedded::experimental::layer1;
+        //constexpr void* ptr1 = &_vfs3;
+        //constexpr const void* ptr1 = "hello";
+        constexpr void* ptr1 = nullptr;
+        typedef exp::GenericNode2<nullptr, ptr1> test1;
+        // tons of compile errors... why ?
+        /*
+        //constexpr void* ptr1 = &_vfs3;
+        constexpr VFS<>& ptr1 = _vfs3;
+        constexpr VFS<>* ptr2 = &_vfs4;
+
+        exp::Tree<
+                //exp::GenericNode<VFS*, &vfs1, nullptr>,
+                //exp::GenericNode<VFS*, &vfs2, &vfs1>,
+                //exp::GenericNode<VFS*, &vfs3, &vfs1>,
+                exp::GenericNode2<&ptr1, ptr2>>
+                tree; */
     }
 }

@@ -27,6 +27,24 @@ public:
 };
 
 
+template <class T, T id, T parent_id>
+class GenericNode
+{
+public:
+    static constexpr T _id = id;
+    static constexpr T _parent_id = parent_id;
+};
+
+
+template <void* id, void* parent_id>
+class GenericNode2
+{
+public:
+    static constexpr void* _id = id;
+    static constexpr void* _parent_id = parent_id;
+};
+
+
 template <class ...TNodes>
 class Tree
 {
