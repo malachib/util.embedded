@@ -168,12 +168,12 @@ class forward_list : public forward_list_base
         }
     };
 
-    typedef ForwardIterator         iterator;
-    typedef const ForwardIterator   const_iterator;
-
     TNodeAllocator node_allocator;
 
 public:
+    typedef ForwardIterator         iterator;
+    typedef const ForwardIterator   const_iterator;
+
     iterator begin() { return iterator(list.getHead()); }
     iterator end() { return iterator(nullptr); }
 
