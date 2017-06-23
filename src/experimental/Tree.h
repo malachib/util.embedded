@@ -99,6 +99,8 @@ class Tree
             return _child_count<true, TNodes2...>(id);
     }
 
+    inline static void dummy(uint16_t, uint16_t) {}
+
 public:
     static inline uint16_t get_parent(uint16_t id)
     {
@@ -123,20 +125,36 @@ public:
     template <class  TResponderFunc, class TResponderFuncUp, bool top = true>
     static inline void walk(uint16_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
     {
-        if(top && responder) responder(start_id, get_parent(start_id));
+        if(top)
+        //if(top && responder)
+            responder(start_id, get_parent(start_id));
 
         uint16_t count = child_count(start_id);
 
         for(uint16_t i = 0; i < count; i++)
         {
             uint16_t child_id = get_child(start_id, i);
-            if(responder != nullptr) responder(child_id, start_id);
+            //if(responder)
+                responder(child_id, start_id);
             walk<TResponderFunc, TResponderFuncUp, false>(child_id, responder, responder_up);
-            if(responder_up != nullptr) responder_up(child_id, start_id);
+            if(responder_up) responder_up(child_id, start_id);
         }
 
         if(top && responder_up) responder_up(start_id, get_parent(start_id));
     }
+
+    //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
+    template <class  TResponderFunc>
+    static inline void walk(uint16_t start_id, TResponderFunc responder)
+    {
+        walk(start_id, responder, dummy);
+    };
+
+    template <class  TResponderFunc>
+    static inline void walk_up(uint16_t start_id, TResponderFunc responder)
+    {
+        walk(start_id, dummy, responder);
+    };
 };
 
 

@@ -80,7 +80,19 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
 
         count = tree.child_count(1);
 
-        tree.walk(1, [](int, int) {}, responder);
+        int expected_results_id[] = { 1, 2, 5, 3, 4 };
+        int expected_results_id_parent[] = { 0, 1, 2, 1, 1 };
+        int counter = 0;
+
+        tree.walk(1, [&](int id, int id_parent)
+        {
+            INFO("Processing count " << counter)
+
+            REQUIRE(expected_results_id[counter] == id);
+            REQUIRE(expected_results_id_parent[counter] == id_parent);
+
+            counter++;
+        });
     }
     GIVEN("Node from pointers")
     {
