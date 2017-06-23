@@ -7,11 +7,31 @@
 using namespace FactUtilEmbedded::experimental::layer5;
 namespace util = FactUtilEmbedded;
 
+struct blah
+{
+    int blah;
+};
+
+
+
+template <class T>
+struct blah_base
+{
+
+};
+
+template <class T>
+struct blah2 : public blah_base<T>
+{
+    virtual bool test() { return true; }
+};
 
 MemoryVFS<> _vfs1, _vfs2;
 MemoryVFS<> _vfs3, _vfs4;
-int location;
 
+int location;
+blah blah1;
+blah2<int> blah3;
 
 static void responder(uint16_t id, uint16_t parent_id)
 {
@@ -81,6 +101,14 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
         //constexpr const void* ptr1 = "hello";
         constexpr void* ptr1 = nullptr;
         typedef exp::GenericNode2<nullptr, ptr1> test1;
+        typedef exp::GenericNode<int*, nullptr, &location> test2;
+        constexpr VFS<>& ptr2 = _vfs1;
+        _vfs1.exists("test");
+        ptr2.exists("test2");
+        //typedef exp::GenericNode<VFS<>&, ptr2, ptr2> test3;
+        typedef exp::GenericNode<blah&, blah1, blah1> test4;
+        typedef exp::GenericNode<blah2<int>&, blah3, blah3> test5;
+        //typedef exp::GenericNode<blah_base<int>&, blah3, blah3> test5; // this one doesn't work
         // tons of compile errors... why ?
         /*
         //constexpr void* ptr1 = &_vfs3;
