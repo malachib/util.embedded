@@ -56,6 +56,9 @@ protected:
     SinglyLinkedNode *head = nullptr;
 
 public:
+    // Only exists to fuel experimental list code.  Otherwise, DO NOT USE
+    void experimental_set_head(SinglyLinkedNode* node) { head = node; }
+
     SinglyLinkedNode *getHead() const
     { return head; }
 

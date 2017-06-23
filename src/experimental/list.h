@@ -116,8 +116,16 @@ public:
 protected:
     list_type list;
 
+    node_type* pop_front()
+    {
+        node_type* node = list.getHead();
+        list.experimental_set_head(node->getNext());
+        return node;
+    }
+
 public:
     bool empty() { return list.getHead(); }
+
 };
 
 // NOTE: Not sure what to do about std::initializer_list
@@ -176,6 +184,13 @@ public:
         node_type* node = node_allocator.allocate(&value);
 
         list.insertAtBeginning(node);
+    }
+
+
+    void pop_front()
+    {
+        node_type* node = forward_list_base::pop_front();
+        node_allocator.deallocate(node);
     }
 
 
