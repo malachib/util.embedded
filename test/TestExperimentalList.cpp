@@ -81,6 +81,12 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
         int value;
     };
 
+    class TestNode3 : public FactUtilEmbedded::DoublyLinkedNode
+    {
+    public:
+        int value;
+    };
+
 
     fstd::experimental::forward_list<TestNode> list;
     //fstd::experimental::forward_list<TestNode2> list2; // this *does* work if TestNode2 is outside the function scope
@@ -153,5 +159,31 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
         auto i2 = list3.begin();
 
         i2++;
+    }
+    WHEN("Trying doubly linked")
+    {
+        TestNode3 node1, node2, node3;
+
+        node1.value = 10;
+        node2.value = 20;
+        node3.value = 30;
+
+        fstd::experimental::list<TestNode3> list4;
+
+        list4.push_front(node3);
+        list4.push_front(node2);
+        list4.push_front(node1);
+
+        auto i = list4.begin();
+
+        REQUIRE((*i++).value == 10);
+        REQUIRE((*i++).value == 20);
+        REQUIRE((*i).value == 30);
+
+
+        for(auto n : list4)
+        {
+
+        }
     }
 }
