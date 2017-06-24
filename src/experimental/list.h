@@ -356,6 +356,22 @@ public:
     }
 
     reference front() { return *begin(); }
+
+    // non-standard:
+    // removes/deallocate node at pos and splices in value
+    iterator replace_after(const_iterator pos, value_type& value)
+    {
+        auto node_allocator = get_node_allocator();
+
+        node_type* pos_node = pos.getCurrent();
+        node_type* node_to_erase = pos_node->getNext();
+        node_type* new_node = node_allocator.allocate(&value);
+
+        // TODO: set pos_node->next to be &value
+        new_node->insertBetween(pos_node, node_to_erase->getNext());
+
+        node_allocator.deallocate(node_to_erase);
+    }
 };
 
 

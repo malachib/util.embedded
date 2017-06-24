@@ -52,6 +52,7 @@ public:
     void lock() { pinned = true; }
     void unlock() { pinned = false; }
 
+
 #ifdef UNUSEDXXX
     /**
      * @brief is_free - see if slot used by this GCObject is available *and* no other GCObjects follow it
@@ -540,8 +541,17 @@ public:
 
     } */
 
-    T* lock() { return (T*)gc.lock(gco); }
-    void unlock()   { gc.unlock(gco); }
+    T* lock()
+    {
+        refCount++;
+        return (T*)gc.lock(gco);
+    }
+    void unlock()
+    {
+        refCount--;
+        gc.unlock(gco);
+    }
+
     operator T* ()  { return lock(); }
 
     ~GCPointer3()
@@ -551,13 +561,15 @@ public:
 };
 
 
-template <size_t size>
+template <size_t size, size_t max_handlers = 0>
 class GC : public GC_base
 {
 #ifdef UNIT_TEST
 public:
 #endif
     layer1::MemoryContainer<size> buffer;
+    layer1::Array<void*, max_handlers> handlers;
+
 public:
     GC()
     {
