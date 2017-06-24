@@ -153,7 +153,7 @@ public:
     // flatten out.  Not sure, need to look at disassemblies
     //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
     template <class  TResponderFunc, class TResponderFuncUp, bool top = true>
-    static constexpr inline void walk(const key_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
+    static inline void walk(const key_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
     {
         // using autos in here so that constexpr gets a fair share
         // NOT sure if it really matters
@@ -178,13 +178,13 @@ public:
 
     //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
     template <class  TResponderFunc>
-    static inline constexpr void walk(key_t start_id, TResponderFunc responder)
+    static inline void walk(key_t start_id, TResponderFunc responder)
     {
         walk(start_id, responder, dummy);
     };
 
     template <class  TResponderFunc>
-    static inline constexpr void walk_up(key_t start_id, TResponderFunc responder)
+    static inline void walk_up(key_t start_id, TResponderFunc responder)
     {
         walk(start_id, dummy, responder);
     };
