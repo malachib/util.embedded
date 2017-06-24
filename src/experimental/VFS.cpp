@@ -8,7 +8,7 @@ template <>
 fstd::basic_iostream<char>&
     MemoryVFS < const char*>::open(const char* name, ios_base::openmode mode)
 {
-
+    printf("Got here\r\n"); // Temporary, only to diagnose clang stuff
 }
 
 template <>
