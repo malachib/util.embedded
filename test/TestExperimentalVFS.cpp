@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "experimental/VFS.h"
 #include "experimental/Tree.h"
+#include "experimental/Tuple.h"
 #include "fact/buffer.h"
 #include <string.h>
 
@@ -70,6 +71,8 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
     {
         namespace exp = FactUtilEmbedded::experimental::layer1;
 
+        FactUtilEmbedded::std::experimental::Tuple<float> tuple(100.0);
+
         exp::Tree<uint16_t,
                 exp::Node<1, 0>,
                 exp::Node<2, 1>,
@@ -88,6 +91,9 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
         id = tree.get_child(1, 1);
 
         count = tree.child_count(1);
+
+        constexpr uint16_t cid = tree.get_parent(2);
+        //FactUtilEmbedded::std::experimental::get<cid>(tuple);
 
         int expected_results_id[] = { 1, 2, 5, 3, 4 };
         int expected_results_id_parent[] = { 0, 1, 2, 1, 1 };

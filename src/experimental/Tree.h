@@ -78,11 +78,14 @@ class Tree
     // TODO: maybe change all this to return TNode itself
     // so that we can then resolve out _parent_id actual type
     template <bool dummy, class TNode, class ...TNodes2>
-    static auto _get_parent(key_t id) -> key_t
+    static constexpr key_t _get_parent(key_t id)
     {
+        // Making it one line allows return value to be constexpr
+        return TNode::_id == id ? TNode::_parent_id : _get_parent<true, TNodes2...>(id);
+        /*
         if(TNode::_id == id) return TNode::_parent_id;
 
-        return _get_parent<true, TNodes2...>(id);
+        return _get_parent<true, TNodes2...>(id); */
     }
 
     template <bool dummy>
@@ -92,8 +95,12 @@ class Tree
     }
 
     template <bool dummy, class TNode, class ...TNodes2>
-    static key_t _get_child(key_t id, key_t index)
+    static constexpr key_t _get_child(key_t id, key_t index)
     {
+        return (TNode::_parent_id == id && index-- == 0) ?
+               TNode::_id :
+               _get_child<true, TNodes2...>(id, index);
+        /*
         if(TNode::_parent_id == id)
         {
             // Decrement index counter to "move up" the indexes
@@ -101,25 +108,21 @@ class Tree
             if(index-- == 0) return TNode::_id;
         }
 
-        return _get_child<true, TNodes2...>(id, index);
+        return _get_child<true, TNodes2...>(id, index); */
     }
 
 
     template <bool dummy>
-    static size_t _child_count(key_t id)
+    static constexpr size_t _child_count(key_t id)
     {
         return 0;
     }
 
     template <bool dummy, class TNode, class ...TNodes2>
-    static size_t _child_count(key_t id)
+    static constexpr size_t _child_count(key_t id)
     {
-        if(TNode::_parent_id == id)
-        {
-            return _child_count<true, TNodes2...>(id) + 1;
-        }
-        else
-            return _child_count<true, TNodes2...>(id);
+        // One return-line permits constexpr
+        return _child_count<true, TNodes2...>(id) + (TNode::_parent_id == id ? 1 : 0);
     }
 
     inline static void dummy(key_t, key_t) {}
@@ -139,26 +142,31 @@ public:
     }
 
 
-    static inline size_t child_count(key_t id)
+    static inline constexpr size_t child_count(key_t id)
     {
         return _child_count<true, TNodes...>(id);
     }
 
     typedef void (*fn_responder_t)(key_t id, key_t parent_id) ;
 
+    // might need a 2nd version of this which takes a templated start_id to really get it to
+    // flatten out.  Not sure, need to look at disassemblies
     //template <fn_responder_t responder, fn_responder_t responder_up = nullptr, bool top = true>
     template <class  TResponderFunc, class TResponderFuncUp, bool top = true>
-    static inline void walk(key_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
+    static inline void walk(const key_t start_id, TResponderFunc responder, TResponderFuncUp responder_up)
     {
+        // using autos in here so that constexpr gets a fair share
+        // NOT sure if it really matters
+
         if(top)
         //if(top && responder)
             responder(start_id, get_parent(start_id));
 
-        uint16_t count = child_count(start_id);
+        size_t count = child_count(start_id);
 
         for(uint16_t i = 0; i < count; i++)
         {
-            uint16_t child_id = get_child(start_id, i);
+            const key_t child_id = get_child(start_id, i);
             //if(responder)
                 responder(child_id, start_id);
             walk<TResponderFunc, TResponderFuncUp, false>(child_id, responder, responder_up);
