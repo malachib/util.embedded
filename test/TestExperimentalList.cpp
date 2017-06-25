@@ -63,7 +63,7 @@ class TestNode2;
 
 namespace FactUtilEmbedded { namespace std { namespace experimental {
 template <>
-struct node_allocator<TestNode2> : public dynamic_node_allocator<TestNode2> {};
+struct node_allocator<TestNode2, SinglyLinkedNode> : public dynamic_node_allocator<TestNode2> {};
 }}}
 
 

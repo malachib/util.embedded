@@ -12,16 +12,22 @@ template <class TNode> struct node_traits;
 template <>
 struct node_traits<SinglyLinkedNode>
 {
-    static SinglyLinkedNode* null_node() { return nullptr; }
-    static SinglyLinkedNode* get_next(SinglyLinkedNode* node) { return node->getNext(); }
+    typedef SinglyLinkedNode node_type;
+    typedef SinglyLinkedList list_type;
+
+    static node_type* null_node() { return nullptr; }
+    static node_type* get_next(node_type* node) { return node->getNext(); }
 };
 
 template <>
 struct node_traits<DoublyLinkedNode>
 {
-    static DoublyLinkedNode* null_node() { return nullptr; }
-    static DoublyLinkedNode* get_next(DoublyLinkedNode* node) { return node->getNext(); }
-    static DoublyLinkedNode* get_prev(DoublyLinkedNode* node) { return node->getPrev(); }
+    typedef DoublyLinkedNode node_type;
+    typedef DoublyLinkedList list_type;
+
+    static node_type* null_node() { return nullptr; }
+    static node_type* get_next(node_type* node) { return node->getNext(); }
+    static node_type* get_prev(node_type* node) { return node->getPrev(); }
 };
 
 
@@ -55,7 +61,7 @@ public:
 
 
 
-template <class T, class TNode = SinglyLinkedNode>
+template <class T, class TNode>
 struct node_allocator
 {
 public:
@@ -214,23 +220,25 @@ struct BidirectionalIterator : public ForwardIterator<TNodeAllocator, TBase>
 };
 
 
-#ifdef UNUSEDXXX
-template <class TList, class TNode, class TNodeAllocator>
-class list_base : public test_list_base<TNodeAllocator>
+template <class TNodeAllocator, class TIterator>
+class list_base2
 {
 public:
-    typedef TNode node_type;
-    typedef TList list_type;
+    typedef typename TNodeAllocator::node_type node_type;
+    typedef node_traits<node_type> node_traits_t;
+    typedef typename node_traits_t::list_type list_type;
+    typedef typename TNodeAllocator::value_type value_type;
 
-    typedef typename test_list_base<TNodeAllocator>::ForwardIterator         iterator;
+    typedef TIterator         iterator;
     typedef const iterator   const_iterator;
 
 protected:
     list_type list;
+    TNodeAllocator node_allocator;
 
     TNodeAllocator& get_node_allocator()
     {
-        return test_list_base<TNodeAllocator>::node_allocator;
+        return node_allocator;
     }
 
     node_type* _pop_front()
@@ -260,12 +268,12 @@ public:
         get_node_allocator().deallocate(node);
     }
 };
-#endif
+
 
 // NOTE: Not sure what to do about std::initializer_list
 // It's a "special" class which the compiler knows about and depends on.  Now sure if I
 // can interact with it/make my own(that will get picked up) in an embedded environment
-template <class T, class TNodeAllocator = node_allocator<T>>
+template <class T, class TNodeAllocator = node_allocator<T, SinglyLinkedNode>>
 class forward_list :
         public forward_list_base
 {
@@ -375,24 +383,29 @@ public:
 
 template <class T, class TNodeAllocator = node_allocator<T, DoublyLinkedNode>>
 class list :
-        public list_base
+        public list_base2<TNodeAllocator, BidirectionalIterator<TNodeAllocator>>
 {
     typedef T                   value_type;
     typedef value_type&         reference;
     typedef const value_type&   const_reference;
 
-    TNodeAllocator node_allocator;
+    typedef list_base2<TNodeAllocator, BidirectionalIterator<TNodeAllocator>> base_t;
+
+    typedef typename base_t::node_type   node_type;
+
+    /*
+    TNodeAllocator node_allocator; */
 
     TNodeAllocator& get_node_allocator()
     {
-        return node_allocator;
+        return base_t::node_allocator;
     }
 
 public:
     typedef BidirectionalIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
-    iterator begin() { return iterator(list_base::list.getHead()); }
+    iterator begin() { return iterator(base_t::list.getHead()); }
     iterator end() { return iterator(nullptr); }
 
     // not a const like in standard because we expect to actually modify
@@ -401,16 +414,17 @@ public:
     {
         node_type* node = get_node_allocator().allocate(&value);
 
-        list_base::list.insertAtBeginning(node);
+        base_t::list.insertAtBeginning(node);
     }
 
 
+    /*
     void pop_front()
     {
         // FIX: almost definitely this isn't gonna work right (not accounting for tail)
-        node_type* node = list_base::pop_front();
+        node_type* node = base_t::pop_front();
         get_node_allocator().deallocate(node);
-    }
+    } */
 
 
     iterator insert_after(const_iterator pos, value_type& value)
@@ -420,7 +434,7 @@ public:
 
         // FIX: insertBetween is overcompliated, the insert_after is cleaner and better
         // (the getNext() is always the value used, so why bother making it an explicit param)
-        list_base::list.insertBetween(pos_node, pos_node->getNext(), node);
+        base_t::list.insertBetween(pos_node, pos_node->getNext(), node);
 
         return iterator(node);
     }
