@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../LinkedList.h"
+#include "memory.h"
 
 namespace FactUtilEmbedded { namespace std {
 
@@ -280,55 +281,6 @@ struct BidirectionalIterator : public ForwardIterator<TNodeAllocator, TBase>
 };
 
 
-
-// FIX: naming = bad
-// Manages allocator and basic iterators
-template <class TNodeAllocator>
-class test_list_base
-{
-protected:
-    typedef typename TNodeAllocator::node_type   node_type;
-    typedef typename TNodeAllocator::value_type  value_type;
-
-    typedef value_type&                 reference;
-    typedef const value_type&           const_reference;
-
-    /*
-
-    struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr,
-            special_singly_forward_iterator<node_type>>
-    {
-        typedef OutputIterator<TNodeAllocator> base;
-
-        ForwardIterator(const ForwardIterator& source) :
-                base(source)
-        {
-        }
-
-        ForwardIterator(node_type* node) :
-                base(node)
-        {
-        }
-
-
-        ForwardIterator& operator++()
-        {
-            base::advance();
-            return *this;
-        }
-
-        // postfix version
-        ForwardIterator operator++(int)
-        {
-            ForwardIterator temp(*this);
-            operator++();
-            return temp;
-        }
-    }; */
-
-    TNodeAllocator node_allocator;
-};
-
 #ifdef UNUSEDXXX
 template <class TList, class TNode, class TNodeAllocator>
 class list_base : public test_list_base<TNodeAllocator>
@@ -382,16 +334,18 @@ public:
 // can interact with it/make my own(that will get picked up) in an embedded environment
 template <class T, class TNodeAllocator = node_allocator<T>>
 class forward_list :
-        public forward_list_base,
-        public test_list_base<TNodeAllocator>
+        public forward_list_base
 {
     typedef T                   value_type;
     typedef value_type&         reference;
     typedef const value_type&   const_reference;
 
+protected:
+    TNodeAllocator node_allocator;
+
     TNodeAllocator& get_node_allocator()
     {
-        return test_list_base<TNodeAllocator>::node_allocator;
+        return node_allocator;
     }
 
 public:
@@ -488,20 +442,21 @@ public:
 
 template <class T, class TNodeAllocator = node_allocator<T, DoublyLinkedNode>>
 class list :
-        public list_base,
-        public test_list_base<TNodeAllocator>
+        public list_base
 {
     typedef T                   value_type;
     typedef value_type&         reference;
     typedef const value_type&   const_reference;
 
+    TNodeAllocator node_allocator;
+
     TNodeAllocator& get_node_allocator()
     {
-        return test_list_base<TNodeAllocator>::node_allocator;
+        return node_allocator;
     }
 
 public:
-    typedef ForwardIterator<TNodeAllocator>         iterator;
+    typedef BidirectionalIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
     iterator begin() { return iterator(list_base::list.getHead()); }

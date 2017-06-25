@@ -3,6 +3,8 @@
 #include "../fact/buffer.h"
 #include "../LinkedList.h"
 
+#include "memory.h"
+
 #define GC_DEBUG
 
 // The point of the GC experiment is not automatic freeing,
@@ -667,17 +669,6 @@ public:
     }
 };
 
-namespace exp_std {
-
-template <class TAllocator>
-struct allocator_traits
-{
-
-};
-
-
-template <class TPtr> struct pointer_traits;
-template <class T> struct pointer_traits<T*>;
 
 template <class T>
 struct GCAllocator
@@ -715,18 +706,20 @@ struct GCAllocator
 };
 
 
+#include "GC.hpp"
+
+
+}
+
+namespace std { namespace experimental {
+
 template <>
-struct allocator_traits<GCAllocator<void*>>
+struct allocator_traits<::FactUtilEmbedded::experimental::GCAllocator<void*>>
 {
 
 };
 
 
+}}
 }
 
-
-
-#include "GC.hpp"
-
-
-}}

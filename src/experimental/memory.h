@@ -1,8 +1,39 @@
 #pragma once
 
-namespace FactUtilEmbedded { namespace experimental {
+namespace FactUtilEmbedded {
 namespace std {
+namespace experimental {
 
+// 100% generic allocator
+template <class T>
+struct Allocator
+{
+    typedef T value_type;
+    typedef value_type* pointer;
+};
+
+template <class TAllocator>
+struct allocator_traits
+{
+    typedef TAllocator                          allocator_type;
+    typedef typename TAllocator::value_type     value_type;
+    typedef typename TAllocator::pointer        pointer;
+    typedef size_t                              size_type;
+
+    static pointer allocate(allocator_type& a, size_type n)
+    {
+        return a.allocate(n);
+    }
+
+    static void deallocate(allocator_type& a, size_type n)
+    {
+        return a.deallocate(n);
+    }
+};
+
+
+template <class TPtr> struct pointer_traits;
+template <class T> struct pointer_traits<T*>;
 
 
 }}}
