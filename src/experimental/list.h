@@ -29,6 +29,13 @@ struct node_next_extractor
 };
 
 
+template <class TNode>
+struct node_prev_extractor
+{
+    static TNode* getPrev(TNode* current);
+};
+
+
 template <>
 struct node_next_extractor<SinglyLinkedNode>
 {
@@ -41,27 +48,75 @@ struct node_next_extractor<DoublyLinkedNode>
     static inline DoublyLinkedNode* getNext(DoublyLinkedNode* current) { return current->getNext(); }
 };
 
+template <>
+struct node_prev_extractor<DoublyLinkedNode>
+{
+    static inline DoublyLinkedNode* getPrev(DoublyLinkedNode* current) { return current->getPrev(); }
+};
 
-template <class TNode = SinglyLinkedNode>
-class special_singly_forward_iterator
+
+template <class TNode>
+class node_iterator_base
 {
 protected:
     typedef TNode node_type;
+    typedef node_iterator_base<node_type> this_t;
 
     node_type* current;
 
-    node_type* getNext() const { return node_next_extractor<TNode>::getNext(current); }
+    node_iterator_base(node_type* current) : current(current) {}
+
+public:
+    node_type* getCurrent() const { return current; }
+
+    bool operator==(const this_t& rhs)
+    {
+        return current == rhs.getCurrent();
+    }
+
+    bool operator!=(const this_t& rhs)
+    {
+        return current != rhs.getCurrent();
+    }
+};
+
+
+template <class TNode = SinglyLinkedNode>
+class special_singly_forward_iterator : public node_iterator_base<TNode>
+{
+protected:
+    typedef TNode node_type;
+    typedef node_iterator_base<node_type> base_t;
+
+    node_type* getNext() const { return node_next_extractor<node_type>::getNext(base_t::current); }
 
     void advance()
     {
-        current = getNext();
+        base_t::current = getNext();
     }
 
-    special_singly_forward_iterator(node_type* node) : current(node) {}
+    special_singly_forward_iterator(node_type* node) : base_t(node) {}
+};
+
+
+template <class TNode=DoublyLinkedNode>
+class doubly_reverse_iterator : public special_singly_forward_iterator<TNode>
+{
+    typedef TNode node_type;
+    typedef special_singly_forward_iterator<TNode> base_t;
+
+    node_type* getPrev() const { return node_prev_extractor<TNode>::getPrev(base_t::current); }
+
+protected:
+    doubly_reverse_iterator(TNode* node) : base_t(node) {}
+
+    void retreat()
+    {
+        base_t::current = getPrev();
+    }
 
 public:
 
-    node_type* getCurrent() const { return current; }
 };
 
 
@@ -95,64 +150,21 @@ struct forward_iterator_tag {};
 struct InputIterator {};
 
 
-template <class TNodeAllocator, const void* hint = nullptr>
-struct ForwardIteratorBase : public special_singly_forward_iterator<typename TNodeAllocator::node_type>
+template <class TNodeAllocator, const void* hint = nullptr,
+        class TBase = special_singly_forward_iterator<typename TNodeAllocator::node_type>>
+struct OutputIterator : public TBase
 {
     typedef typename TNodeAllocator::value_type value_type;
     typedef typename TNodeAllocator::node_type node_type;
-    typedef special_singly_forward_iterator<node_type> base_t;
+    typedef TBase base_t;
 
-    ForwardIteratorBase(const ForwardIteratorBase& source) : base_t(source.getCurrent()) {}
+    OutputIterator(node_type* node) : base_t(node) {}
 
-    ForwardIteratorBase(node_type* node) : base_t(node) {}
-
-
-
-    /*
-    operator value_type* () const
-    {
-        return TNodeAllocator::get_associated_value(base_t::getCurrent(), hint);
-    } */
 
     value_type& operator*()
     {
         return *TNodeAllocator::get_associated_value(base_t::getCurrent(), hint);
     }
-
-    bool operator==(const base_t& rhs)
-    {
-        return this->getCurrent() == rhs.getCurrent();
-    }
-
-    bool operator!=(const base_t& rhs)
-    {
-        return this->getCurrent() != rhs.getCurrent();
-    }
-
-    /*
-    friend bool operator==(const base_t& lhs, const base_t& rhs)
-    {
-        return lhs.getCurrent() == rhs.getCurrent();
-    } */
-
-    /*
-    friend bool operator!=(const base_t& lhs, const base_t& rhs)
-    {
-        return lhs.getCurrent() == rhs.getCurrent();
-    } */
-
-
-
-    /*
-    friend bool operator==(const base_t& lhs, const base_t& rhs)
-    {
-        return *((value_type*)lhs) == *((value_type*)rhs);
-    }
-
-    friend bool operator!=(const base_t& lhs, const base_t& rhs)
-    {
-        return !(lhs == rhs);
-    }*/
 };
 
 
@@ -199,6 +211,76 @@ public:
 
 };
 
+
+template <class TNodeAllocator, class TBase = special_singly_forward_iterator<typename TNodeAllocator::node_type>>
+struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr, TBase>
+{
+    typedef typename TNodeAllocator::node_type   node_type;
+    typedef typename TNodeAllocator::value_type  value_type;
+    typedef OutputIterator<TNodeAllocator, nullptr, TBase> base;
+
+    ForwardIterator(const ForwardIterator& source) :
+            base(source)
+    {
+    }
+
+    ForwardIterator(node_type* node) :
+            base(node)
+    {
+    }
+
+
+    ForwardIterator& operator++()
+    {
+        base::advance();
+        return *this;
+    }
+
+    // postfix version
+    ForwardIterator operator++(int)
+    {
+        ForwardIterator temp(*this);
+        operator++();
+        return temp;
+    }
+};
+
+
+template <class TNodeAllocator, class TBase = doubly_reverse_iterator<typename TNodeAllocator::node_type>>
+struct BidirectionalIterator : public ForwardIterator<TNodeAllocator, TBase>
+{
+    typedef typename TNodeAllocator::node_type   node_type;
+    typedef typename TNodeAllocator::value_type  value_type;
+    typedef ForwardIterator<TNodeAllocator, TBase> base_t;
+
+    BidirectionalIterator(const BidirectionalIterator& source) :
+        base_t(source)
+    {
+    }
+
+    BidirectionalIterator(node_type* node) :
+        base_t(node)
+    {
+    }
+
+
+    BidirectionalIterator& operator--()
+    {
+        base_t::retreat();
+        return *this;
+    }
+
+    // postfix version
+    BidirectionalIterator operator--(int)
+    {
+        BidirectionalIterator temp(*this);
+        operator--();
+        return temp;
+    }
+};
+
+
+
 // FIX: naming = bad
 // Manages allocator and basic iterators
 template <class TNodeAllocator>
@@ -211,9 +293,12 @@ protected:
     typedef value_type&                 reference;
     typedef const value_type&           const_reference;
 
-    struct ForwardIterator : public ForwardIteratorBase<TNodeAllocator>
+    /*
+
+    struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr,
+            special_singly_forward_iterator<node_type>>
     {
-        typedef ForwardIteratorBase<TNodeAllocator> base;
+        typedef OutputIterator<TNodeAllocator> base;
 
         ForwardIterator(const ForwardIterator& source) :
                 base(source)
@@ -239,7 +324,7 @@ protected:
             operator++();
             return temp;
         }
-    };
+    }; */
 
     TNodeAllocator node_allocator;
 };
@@ -310,7 +395,7 @@ class forward_list :
     }
 
 public:
-    typedef typename test_list_base<TNodeAllocator>::ForwardIterator         iterator;
+    typedef ForwardIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
     iterator begin() { return iterator(list.getHead()); }
@@ -416,7 +501,7 @@ class list :
     }
 
 public:
-    typedef typename test_list_base<TNodeAllocator>::ForwardIterator         iterator;
+    typedef ForwardIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
     iterator begin() { return iterator(list_base::list.getHead()); }
