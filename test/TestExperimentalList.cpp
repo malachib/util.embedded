@@ -186,4 +186,30 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
 
         }
     }
+    GIVEN("Replacement functions")
+    {
+        TestNode node1, node2, node3;
+        TestNode node4;
+
+        node1.value = 10;
+        node2.value = 20;
+        node3.value = 30;
+        node4.value = 40;
+
+        list.push_front(node3);
+        list.push_front(node1);
+        list.insert_after(list.begin(), node2);
+
+        auto i = list.begin();
+
+        i++;
+
+        list.replace_after(i, node4);
+
+        i = list.begin();
+
+        REQUIRE((*i++).value == 10);
+        REQUIRE((*i++).value == 20);
+        REQUIRE((*i).value == 40);
+    }
 }

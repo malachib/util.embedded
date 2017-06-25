@@ -359,19 +359,44 @@ public:
 
     // non-standard:
     // removes/deallocate node at pos and splices in value
-    iterator replace_after(const_iterator pos, value_type& value)
+    const_iterator replace_after(const_iterator pos, value_type& value)
     {
         auto node_allocator = get_node_allocator();
 
         node_type* pos_node = pos.getCurrent();
+        // old 'next' node prep it for erase
         node_type* node_to_erase = pos_node->getNext();
+        // new 'next' node allocate node portion, if necessary
         node_type* new_node = node_allocator.allocate(&value);
 
         // TODO: set pos_node->next to be &value
+        // inset new 'next' node after current node and before old 'next''s next
+        // node
         new_node->insertBetween(pos_node, node_to_erase->getNext());
 
+        //
         node_allocator.deallocate(node_to_erase);
+
+        return pos;
     }
+
+
+    // Non-standard
+    void replace_front(value_type& value)
+    {
+        auto node_allocator = get_node_allocator();
+
+        node_type* front_node = list.getHead();
+
+        node_type* new_front_node = node_allocator.allocate(value);
+
+        new_front_node->insertBetween(nullptr, front_node->getNext());
+
+        list.experimental_set_head(new_front_node);
+
+    }
+
+
 };
 
 
