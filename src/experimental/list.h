@@ -7,65 +7,35 @@ namespace FactUtilEmbedded { namespace std {
 
 namespace experimental {
 
-// NOTE: May very well be overkill, node_traits
 template <class TNode> struct node_traits;
 
 template <>
 struct node_traits<SinglyLinkedNode>
 {
     static SinglyLinkedNode* null_node() { return nullptr; }
+    static SinglyLinkedNode* get_next(SinglyLinkedNode* node) { return node->getNext(); }
 };
 
 template <>
 struct node_traits<DoublyLinkedNode>
 {
     static DoublyLinkedNode* null_node() { return nullptr; }
+    static DoublyLinkedNode* get_next(DoublyLinkedNode* node) { return node->getNext(); }
+    static DoublyLinkedNode* get_prev(DoublyLinkedNode* node) { return node->getPrev(); }
 };
+
 
 
 template <class TNode>
-struct node_next_extractor
-{
-    static TNode* getNext(TNode* current);
-};
-
-
-template <class TNode>
-struct node_prev_extractor
-{
-    static TNode* getPrev(TNode* current);
-};
-
-
-template <>
-struct node_next_extractor<SinglyLinkedNode>
-{
-    static inline SinglyLinkedNode* getNext(SinglyLinkedNode* current) { return current->getNext(); }
-};
-
-template <>
-struct node_next_extractor<DoublyLinkedNode>
-{
-    static inline DoublyLinkedNode* getNext(DoublyLinkedNode* current) { return current->getNext(); }
-};
-
-template <>
-struct node_prev_extractor<DoublyLinkedNode>
-{
-    static inline DoublyLinkedNode* getPrev(DoublyLinkedNode* current) { return current->getPrev(); }
-};
-
-
-template <class TNode>
-class node_iterator_base
+class node_pointer
 {
 protected:
     typedef TNode node_type;
-    typedef node_iterator_base<node_type> this_t;
+    typedef node_pointer<node_type> this_t;
 
     node_type* current;
 
-    node_iterator_base(node_type* current) : current(current) {}
+    node_pointer(node_type* current) : current(current) {}
 
 public:
     node_type* getCurrent() const { return current; }
@@ -82,43 +52,7 @@ public:
 };
 
 
-template <class TNode = SinglyLinkedNode>
-class special_singly_forward_iterator : public node_iterator_base<TNode>
-{
-protected:
-    typedef TNode node_type;
-    typedef node_iterator_base<node_type> base_t;
 
-    node_type* getNext() const { return node_next_extractor<node_type>::getNext(base_t::current); }
-
-    void advance()
-    {
-        base_t::current = getNext();
-    }
-
-    special_singly_forward_iterator(node_type* node) : base_t(node) {}
-};
-
-
-template <class TNode=DoublyLinkedNode>
-class doubly_reverse_iterator : public special_singly_forward_iterator<TNode>
-{
-    typedef TNode node_type;
-    typedef special_singly_forward_iterator<TNode> base_t;
-
-    node_type* getPrev() const { return node_prev_extractor<TNode>::getPrev(base_t::current); }
-
-protected:
-    doubly_reverse_iterator(TNode* node) : base_t(node) {}
-
-    void retreat()
-    {
-        base_t::current = getPrev();
-    }
-
-public:
-
-};
 
 
 template <class T, class TNode = SinglyLinkedNode>
@@ -146,13 +80,12 @@ public:
     }
 };
 
-struct forward_iterator_tag {};
 
 struct InputIterator {};
 
 
 template <class TNodeAllocator, const void* hint = nullptr,
-        class TBase = special_singly_forward_iterator<typename TNodeAllocator::node_type>>
+        class TBase = node_pointer<typename TNodeAllocator::node_type>>
 struct OutputIterator : public TBase
 {
     typedef typename TNodeAllocator::value_type value_type;
@@ -213,27 +146,27 @@ public:
 };
 
 
-template <class TNodeAllocator, class TBase = special_singly_forward_iterator<typename TNodeAllocator::node_type>>
+template <class TNodeAllocator, class TBase = node_pointer<typename TNodeAllocator::node_type>>
 struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr, TBase>
 {
     typedef typename TNodeAllocator::node_type   node_type;
     typedef typename TNodeAllocator::value_type  value_type;
-    typedef OutputIterator<TNodeAllocator, nullptr, TBase> base;
+    typedef OutputIterator<TNodeAllocator, nullptr, TBase> base_t;
 
     ForwardIterator(const ForwardIterator& source) :
-            base(source)
+            base_t(source)
     {
     }
 
     ForwardIterator(node_type* node) :
-            base(node)
+            base_t(node)
     {
     }
 
 
     ForwardIterator& operator++()
     {
-        base::advance();
+        base_t::current = node_traits<node_type>::get_next(base_t::current);
         return *this;
     }
 
@@ -247,7 +180,7 @@ struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr, TBase>
 };
 
 
-template <class TNodeAllocator, class TBase = doubly_reverse_iterator<typename TNodeAllocator::node_type>>
+template <class TNodeAllocator, class TBase = node_pointer<typename TNodeAllocator::node_type>>
 struct BidirectionalIterator : public ForwardIterator<TNodeAllocator, TBase>
 {
     typedef typename TNodeAllocator::node_type   node_type;
@@ -267,7 +200,7 @@ struct BidirectionalIterator : public ForwardIterator<TNodeAllocator, TBase>
 
     BidirectionalIterator& operator--()
     {
-        base_t::retreat();
+        base_t::current = node_traits<node_type>::get_prev(base_t::current);
         return *this;
     }
 
