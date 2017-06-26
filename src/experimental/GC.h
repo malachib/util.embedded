@@ -84,9 +84,9 @@ public:
 class GCOperationManager
 {
 public:
-    virtual void lock(GCObject& gco);
-    virtual void move(GCObject& gco);
-    virtual void housekeep(GCObject& gco);
+    virtual void lock(GCObject& gco) = 0;
+    virtual void move(GCObject& gco) = 0;
+    virtual void housekeep(GCObject& gco) = 0;
 };
 
 
@@ -720,6 +720,27 @@ public:
 class GCHandleManager : public GCPoolManager<GCObject>
 {
 public:
+};
+
+
+class GCHandleOperationManager : public GCOperationManager
+{
+public:
+    virtual void lock(GCObject& gco)
+    {
+
+    }
+
+    virtual void move(GCObject& gco)
+    {
+        // TODO: ensure
+        // GCObject*->next pointers get updated appropriately
+    }
+
+    virtual void housekeep(GCObject& gco)
+    {
+
+    }
 };
 
 
