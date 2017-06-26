@@ -32,19 +32,21 @@ struct node_traits<DoublyLinkedNode>
 
 
 
-template <class TNode>
+template <class TNode, class TAllocatorTraits = allocator_traits<Allocator<TNode>>>
 class node_pointer
 {
 protected:
     typedef TNode node_type;
+    typedef TAllocatorTraits node_allocator_traits;
     typedef node_pointer<node_type> this_t;
+    typedef typename node_allocator_traits::pointer _node_pointer;
 
-    node_type* current;
+    _node_pointer current;
 
     node_pointer(node_type* current) : current(current) {}
 
 public:
-    node_type* getCurrent() const { return current; }
+    _node_pointer getCurrent() const { return current; }
 
     bool operator==(const this_t& rhs)
     {
@@ -61,28 +63,36 @@ public:
 
 
 
-template <class T, class TNode>
+template <class T, class TNode,
+        class TNodeAllocatorTraits = allocator_traits<Allocator<TNode>>>
 struct node_allocator
 {
 public:
     typedef T value_type;
     typedef TNode node_type;
+    typedef TNodeAllocatorTraits node_allocator_traits;
+    typedef allocator_traits<Allocator<value_type>> value_allocator_traits;
 
-    node_type* allocate(value_type *reference)
+    typedef typename node_allocator_traits::pointer node_pointer;
+    typedef typename value_allocator_traits::pointer value_pointer;
+
+    typedef typename value_allocator_traits::const_void_pointer const_void_pointer;
+
+    node_pointer allocate(value_pointer reference)
     {
         return reference;
     }
 
-    void deallocate(node_type* node)
+    void deallocate(node_pointer node)
     {
         // Maybe setting node->next to null here would be prudent?
     }
 
     // hint helps us track down what the associated value is
     // perhaps the node * is not in our control
-    static value_type* get_associated_value(node_type* node, const void* hint)
+    static value_pointer get_associated_value(node_pointer node, const_void_pointer hint)
     {
-        return static_cast<value_type*>(node);
+        return static_cast<value_pointer>(node);
     }
 };
 
