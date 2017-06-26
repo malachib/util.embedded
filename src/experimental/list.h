@@ -17,6 +17,7 @@ struct node_traits<SinglyLinkedNode>
 
     static node_type* null_node() { return nullptr; }
     static node_type* get_next(node_type* node) { return node->getNext(); }
+    static node_type* get_head(list_type* list) { return list->getHead(); }
 };
 
 template <>
@@ -28,6 +29,7 @@ struct node_traits<DoublyLinkedNode>
     static node_type* null_node() { return nullptr; }
     static node_type* get_next(node_type* node) { return node->getNext(); }
     static node_type* get_prev(node_type* node) { return node->getPrev(); }
+    static node_type* get_head(list_type* list) { return list->getHead(); }
 };
 
 
@@ -238,8 +240,9 @@ public:
     typedef node_traits<node_type> node_traits_t;
     typedef typename node_traits_t::list_type list_type;
     typedef typename TNodeAllocator::value_type value_type;
+    typedef typename TNodeAllocator::node_pointer node_pointer;
 
-    typedef TIterator         iterator;
+    typedef TIterator        iterator;
     typedef const iterator   const_iterator;
 
 protected:
@@ -251,22 +254,26 @@ protected:
         return node_allocator;
     }
 
+    inline node_pointer get_head()
+    {
+        return node_traits_t::get_head(list);
+    }
+
     node_type* _pop_front()
     {
-        node_type* node = list.getHead();
-        list.experimental_set_head(node->getNext());
+        node_pointer node = get_head();
+        list.experimental_set_head(node_traits_t::get_next(node));
         return node;
     }
 
 public:
-    bool empty() { return list.getHead(); }
+    bool empty() { return get_head(); }
 
-    template <class TValue>
     // not a const like in standard because we expect to actually modify
     // the prev/next parts of value
-    void push_front(TValue& value)
+    void push_front(value_type& value)
     {
-        node_type* node = get_node_allocator().allocate(&value);
+        node_pointer node = get_node_allocator().allocate(&value);
 
         list.insertAtBeginning(node);
     }
