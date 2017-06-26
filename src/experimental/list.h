@@ -241,9 +241,12 @@ public:
     typedef typename node_traits_t::list_type list_type;
     typedef typename TNodeAllocator::value_type value_type;
     typedef typename TNodeAllocator::node_pointer node_pointer;
+    typedef typename TNodeAllocator::value_pointer value_pointer;
 
     typedef TIterator        iterator;
     typedef const iterator   const_iterator;
+
+    typedef value_type&     reference;
 
 protected:
     list_type list;
@@ -256,7 +259,7 @@ protected:
 
     inline node_pointer get_head()
     {
-        return node_traits_t::get_head(list);
+        return node_traits_t::get_head(&list);
     }
 
     node_type* _pop_front()
@@ -268,6 +271,10 @@ protected:
 
 public:
     bool empty() { return get_head(); }
+
+    iterator begin() { return iterator(get_head()); }
+
+    reference front() { return *begin(); }
 
     // not a const like in standard because we expect to actually modify
     // the prev/next parts of value
@@ -407,11 +414,10 @@ class list :
     typedef const value_type&   const_reference;
 
     typedef list_base2<TNodeAllocator, BidirectionalIterator<TNodeAllocator>> base_t;
+    typedef typename base_t::node_traits_t  node_traits_t;
 
-    typedef typename base_t::node_type   node_type;
-
-    /*
-    TNodeAllocator node_allocator; */
+    typedef typename base_t::node_type      node_type;
+    typedef typename base_t::node_pointer   node_pointer;
 
     TNodeAllocator& get_node_allocator()
     {
@@ -422,14 +428,13 @@ public:
     typedef BidirectionalIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
-    iterator begin() { return iterator(base_t::list.getHead()); }
     iterator end() { return iterator(nullptr); }
 
     // not a const like in standard because we expect to actually modify
     // the prev/next parts of value
-    void push_front(value_type& value)
+    void push_front(reference value)
     {
-        node_type* node = get_node_allocator().allocate(&value);
+        node_pointer node = get_node_allocator().allocate(&value);
 
         base_t::list.insertAtBeginning(node);
     }
@@ -444,7 +449,7 @@ public:
     } */
 
 
-    iterator insert_after(const_iterator pos, value_type& value)
+    iterator insert_after(const_iterator pos, reference value)
     {
         node_type* pos_node = pos.getCurrent();
         node_type* node = get_node_allocator().allocate(&value);
@@ -458,15 +463,13 @@ public:
 
     iterator erase_after(const_iterator pos)
     {
-        node_type* pos_node = pos.getCurrent();
-        node_type* node_to_erase = pos_node->getNext();
+        node_pointer pos_node = pos.getCurrent();
+        node_pointer node_to_erase = pos_node->getNext();
 
         pos_node->removeNext();
         get_node_allocator().deallocate(node_to_erase);
         return iterator(pos_node->getNext());
     }
-
-    reference front() { return *begin(); }
 };
 
 }
