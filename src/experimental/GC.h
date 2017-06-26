@@ -29,30 +29,37 @@ public:
     GCObject() { next = nullptr; }
 
     ptr_t data;
-    size_t size;
-    bool pinned;
-    bool busy; // means we can't pin this (likely being moved)
+    struct
+    {
+        uint32_t size : 16;
+        uint32_t pinned : 1;
+        uint32_t busy : 1; // means we can't pin this (likely being moved)
+        // means we can never pin this, and instead have to use read/write commands on it
+        // NOT implemented yet
+        uint32_t fragmentable : 1;
+        uint32_t handler : 3; // which operation manager are we using (0 for none/no special)
 
-    // means we can never pin this, and instead have to use read/write commands on it
-    // NOT implemented yet
-    bool fragmentable;
+    } attr;
+
+    size_t size() { return attr.size; }
+    uint8_t handler() { return attr.handler; }
 
     // Shrinks free_gco by a specified amount, moving pointer upwards
     void shrink_up(size_t size)
     {
         data += size;
-        this->size -= size;
+        attr.size -= size;
     }
 
 
     // Shrinks free_gco by a specified amount, leaving pointer intact
     void shrink_down(size_t size)
     {
-        this->size -= size;
+        attr.size -= size;
     }
 
-    void lock() { pinned = true; }
-    void unlock() { pinned = false; }
+    void lock() { attr.pinned = true; }
+    void unlock() { attr.pinned = false; }
 
 
 #ifdef UNUSEDXXX
@@ -69,6 +76,20 @@ public:
     bool is_reusable() { return size == 0; }
 #endif
 };
+
+
+// For specialized GCObjects.  Here we can extend core funcionality for things like:
+// a) virtual memory behavior
+// b) GCHandleManager GCObject->next reordering
+class GCOperationManager
+{
+public:
+    virtual void lock(GCObject& gco);
+    virtual void move(GCObject& gco);
+    virtual void housekeep(GCObject& gco);
+};
+
+
 
 class GC_base
 {
@@ -107,7 +128,7 @@ public:
 
             // If we can fit this allocation into the inspected
             // node
-            if(node->size > len)
+            if(node->size() > len)
             {
                 uint8_t* location = node->data;
 
@@ -122,9 +143,9 @@ public:
                 // and burn up that memory.  Otherwise,
                 // we use leftover memory and create a new
                 // free_gco_t in there
-                if((node->size - len) < sizeof(free_gco_t))
+                if((node->size() - len) < sizeof(free_gco_t))
                 {
-                    len = node->size;
+                    len = node->size();
 
 #ifdef __ALLOC2
                     free.remove(node);
@@ -137,7 +158,7 @@ public:
                     // the free available memory chunk instead of the beginning,
                     // but lets us leave the free node ptr in place (since the free node
                     // data lives IN the same memory chunk to which it points)
-                    location += node->size - len;
+                    location += node->size() - len;
                     node->shrink_down(len);
 #else
                     // re-add the node with adjusted parameters
@@ -148,7 +169,7 @@ public:
                 // return the previous free node data ptr
                 return location;
             }
-            else if(node->size == len)
+            else if(node->size() == len)
             {
 
             }
@@ -167,7 +188,7 @@ public:
 
         while(i())
         {
-            total += i.getCurrent()->size;
+            total += i.getCurrent()->size();
             i++;
         }
 
@@ -205,7 +226,7 @@ public:
         {
             free_gco_t* current = i;
 
-            printf("Node: addr = %p, size = %lu, next = %p\r\n", current->data, current->size, current->getNext());
+            printf("Node: addr = %p, size = %lu, next = %p\r\n", current->data, current->size(), current->getNext());
             //std::clog << "TEST";
 
             i++;
@@ -226,11 +247,11 @@ public:
         if(gco_secondary != gco_primary->getNext())
             printf("recombine failure: expected contiguous linked nodes\r\n");
 
-        if(gco_primary->data + gco_primary->size != gco_secondary->data)
+        if(gco_primary->data + gco_primary->size() != gco_secondary->data)
             printf("recombine failure: incorrect sizes\r\n");
 #endif
 
-        gco_primary->size += gco_secondary->size;
+        gco_primary->attr.size += gco_secondary->size();
         // TODO: make a free.removeNext() call for compatibility with
         // lists with tails
         gco_primary->removeNext();
@@ -246,7 +267,7 @@ public:
             free_gco_t* current = i;
             auto next = static_cast<free_gco_t*>(current->getNext());
 
-            if(current->data + current->size == next->data)
+            if(current->data + current->size() == next->data)
             {
                 recombine(current, next);
                 walk_free("recombined");
@@ -347,7 +368,7 @@ public:
         free_gco_t* free_gco = new ((void*)location) free_gco_t();
 
         free_gco->data = (uint8_t*)location;
-        free_gco->size = len;
+        free_gco->attr.size = len;
 
         addfree_sorted(free_gco);
 
@@ -365,13 +386,13 @@ public:
             if(location != free_gco->data)
                 printf("addfree failure: location ptr mismatch");
 #endif
-            if(location + free_gco->size == next->data)
+            if(location + free_gco->size() == next->data)
             {
                 recombine(free_gco, next);
                 walk_free("recombined");
             }
 //#ifdef DEBUG
-            else if(location + free_gco->size > next->data)
+            else if(location + free_gco->size() > next->data)
             {
                 // ERROR: free memory spots should not overlap
 
@@ -382,21 +403,21 @@ public:
 
     void _free(GCObject& gco)
     {
-        addfree(gco.data, gco.size);
+        addfree(gco.data, gco.size());
         allocated.remove(&gco);
     }
 
 
     uint8_t* lock(GCObject& gco)
     {
-        gco.pinned = true;
+        gco.attr.pinned = true;
         return gco.data;
     }
 
 
     void unlock(GCObject& gco)
     {
-        gco.pinned = false;
+        gco.attr.pinned = false;
     }
 
 
@@ -408,7 +429,7 @@ public:
 
         while(i())
         {
-            total += i.getCurrent()->size;
+            total += i.getCurrent()->size();
             i++;
         }
 
@@ -426,7 +447,7 @@ public:
             printf("alloc: buffer = %p / size = %lu\r\n", gco->data, len);
 #endif
             allocated.insertAtBeginning(gco);
-            gco->size = len;
+            gco->attr.size = len;
         }
     }
 
@@ -535,7 +556,7 @@ public:
         // which means we need to adjust the preceding gco's
         // next pointer
         //gco = gcp.gco;
-        gco.size = -1;
+        gco.attr.size = -1;
         //printf("!!!! GOT HERE !!!!");
     }
 
@@ -573,7 +594,7 @@ class GC : public GC_base
 public:
 #endif
     layer1::MemoryContainer<size> buffer;
-    layer1::Array<void*, max_handlers> handlers;
+    layer1::Array<GCOperationManager*, max_handlers> handlers;
 
 public:
     GC()
@@ -610,13 +631,13 @@ typedef uint8_t gc_handle_t;
 class GCPoolManagerBase
 {
 protected:
-    template <class T, bool (*item_is_null)(T&)>
-    static int alloc(T* pool_array, gc_handle_t array_size, T& new_item)
+    template <class T, bool (*item_is_unallocated)(T&)>
+    static int alloc(T* pool_array, gc_handle_t array_size, const T& new_item)
     {
         for(gc_handle_t i = 0; i < array_size; i++)
         {
             T& g = pool_array[i];
-            if(item_is_null(g))
+            if(item_is_unallocated(g))
             {
                 g = new_item;
                 return i;
@@ -625,16 +646,6 @@ protected:
 
         return -1;
     }
-
-    template <class T>
-    static void free(T* pool_array, int handle)
-    {
-        // FIX: make sure it's not busy or pinned
-        // block if busy
-        // warn if pinned
-        pool_array[handle].data = nullptr;
-    }
-
 };
 
 
@@ -645,8 +656,8 @@ struct gc_pool_traits;
 template<>
 struct gc_pool_traits<GCObject>
 {
-    bool is_free(GCObject& gco) { return gco.data == nullptr; }
-    void free(GCObject& gco) { gco.data = nullptr; }
+    static bool is_free(GCObject& gco) { return gco.data == nullptr; }
+    static void free(GCObject& gco) { gco.data = nullptr; }
 };
 
 template <class T, class TPoolTraits = gc_pool_traits<T>>
@@ -658,9 +669,10 @@ protected:
 
     GCObject gc_pool_array;
 
-    gc_handle_t array_size() { return gc_pool_array.size / sizeof(value_type); }
+    gc_handle_t array_size() { return gc_pool_array.size() / sizeof(value_type); }
 
 
+public:
     // Start with room for 6 items, but we can grow it if needed
     // NOTE that although we can kinda shrink it, THIS is somewhat
     // subject to fragmentation.  Yet another reason to avoid handles
@@ -679,7 +691,7 @@ protected:
      */
     gc_handle_t alloc(T& new_item)
     {
-        auto array = static_cast<value_type*>(_gc.lock(gc_pool_array));
+        auto array = reinterpret_cast<value_type*>(_gc.lock(gc_pool_array));
         int handle = GCPoolManagerBase::alloc<value_type, pool_traits::is_free>(array, array_size(), new_item);
         if(handle == -1)
         {
@@ -703,70 +715,11 @@ protected:
     }
 };
 
-class GCHandleManager
+// TODO: need special handler which if memory is moved for this pool,
+// GCObject*->next pointers get updated appropriately
+class GCHandleManager : public GCPoolManager<GCObject>
 {
-    GCObject gc_object_array;
-
-    gc_handle_t array_size() { return gc_object_array.size / sizeof(GCObject); }
-
-    int alloc(GCObject* gc_object_array, GCObject &gco)
-    {
-        for(gc_handle_t i = 0; i < array_size(); i++)
-        {
-            GCObject& g = gc_object_array[i];
-            if(g.data == nullptr)
-            {
-                g = gco;
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    void free(GCObject* gc_object_array, gc_handle_t handle)
-    {
-        // FIX: make sure it's not busy or pinned
-        // block if busy
-        // warn if pinned
-        gc_object_array[handle].data = nullptr;
-    }
-
 public:
-    GCHandleManager()
-    {
-        // Start with room for 6 items, but we can grow it if needed
-        // NOTE that although we can kinda shrink it, THIS is somewhat
-        // subject to fragmentation.  Yet another reason to avoid handles
-        // if possible
-        gc_object_array = _gc.alloc(sizeof(GCObject) * 6);
-    }
-
-    /**
-     * Copies specified gco into our global tracker and spits out a global-friendly
-     * handle
-     * @brief alloc
-     * @param gco
-     * @return
-     */
-    gc_handle_t alloc(GCObject& gco)
-    {
-        GCPointer3<GCObject> array(_gc, gc_object_array);
-        int handle = alloc(array, gco);
-        if(handle == -1)
-        {
-            array.unlock();
-            // if we're out of handles, grow it and try again
-            _gc.grow(gco, sizeof(GCObject) * 4);
-        }
-        return handle;
-    }
-
-    void free(gc_handle_t handle)
-    {
-        GCPointer3<GCObject> array(_gc, gc_object_array);
-        free(array, handle);
-    }
 };
 
 
