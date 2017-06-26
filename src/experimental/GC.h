@@ -437,7 +437,10 @@ public:
         return gco;
     }
 
-    //
+    /*
+     * FIX: document whether we need to lock down gco before we can grow it and
+     * conversly whether being locked down is allowed
+     */
     void grow(GCObject& gco, size_t len_to_grow)
     {
         // TODO: see if we can EZ grow the thing and if not,
@@ -602,6 +605,103 @@ public:
 // GC Handles are OPTIONAL, and are not preferred (copying GCObjects around is ideal)
 // - but acceptable and sometimes necessary
 typedef uint8_t gc_handle_t;
+
+
+class GCPoolManagerBase
+{
+protected:
+    template <class T, bool (*item_is_null)(T&)>
+    static int alloc(T* pool_array, gc_handle_t array_size, T& new_item)
+    {
+        for(gc_handle_t i = 0; i < array_size; i++)
+        {
+            T& g = pool_array[i];
+            if(item_is_null(g))
+            {
+                g = new_item;
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    template <class T>
+    static void free(T* pool_array, int handle)
+    {
+        // FIX: make sure it's not busy or pinned
+        // block if busy
+        // warn if pinned
+        pool_array[handle].data = nullptr;
+    }
+
+};
+
+
+template <class T>
+struct gc_pool_traits;
+
+
+template<>
+struct gc_pool_traits<GCObject>
+{
+    bool is_free(GCObject& gco) { return gco.data == nullptr; }
+    void free(GCObject& gco) { gco.data = nullptr; }
+};
+
+template <class T, class TPoolTraits = gc_pool_traits<T>>
+class GCPoolManager : public GCPoolManagerBase
+{
+protected:
+    typedef T value_type;
+    typedef TPoolTraits pool_traits;
+
+    GCObject gc_pool_array;
+
+    gc_handle_t array_size() { return gc_pool_array.size / sizeof(value_type); }
+
+
+    // Start with room for 6 items, but we can grow it if needed
+    // NOTE that although we can kinda shrink it, THIS is somewhat
+    // subject to fragmentation.  Yet another reason to avoid handles
+    // if possible
+    GCPoolManager() : gc_pool_array(_gc.alloc(sizeof(value_type) * 6))
+    {
+    }
+
+
+    /**
+     * Copies specified gco into our global tracker and spits out a global-friendly
+     * handle
+     * @brief alloc
+     * @param gco
+     * @return
+     */
+    gc_handle_t alloc(T& new_item)
+    {
+        auto array = static_cast<value_type*>(_gc.lock(gc_pool_array));
+        int handle = GCPoolManagerBase::alloc<value_type, pool_traits::is_free>(array, array_size(), new_item);
+        if(handle == -1)
+        {
+            // if we're out of handles, grow it and try again
+            _gc.grow(gc_pool_array, sizeof(value_type) * 4);
+        }
+
+        _gc.unlock(gc_pool_array);
+
+        return handle;
+    }
+
+
+    void free(gc_handle_t handle)
+    {
+        auto array = static_cast<value_type*>(_gc.lock(gc_pool_array));
+
+        pool_traits::free(array[handle]);
+
+        _gc.unlock(gc_pool_array);
+    }
+};
 
 class GCHandleManager
 {
