@@ -21,7 +21,7 @@ struct node_traits<SinglyLinkedNode>
 
     static void remove_next(node_type* node) { node->removeNext(); }
 
-    static bool has_tail() { return false; }
+    static constexpr bool has_tail() { return false; }
 };
 
 template <>
@@ -42,7 +42,7 @@ struct node_traits<DoublyLinkedNode>
 
     static void remove_next(node_pointer node) { node->removeNext(); }
 
-    static bool has_tail() { return true; }
+    static constexpr bool has_tail() { return true; }
 };
 
 
@@ -112,18 +112,18 @@ public:
 };
 
 
-struct InputIterator {};
+struct OutputIterator {};
 
 
 template <class TNodeAllocator, const void* hint = nullptr,
         class TBase = node_pointer<typename TNodeAllocator::node_type>>
-struct OutputIterator : public TBase
+struct InputIterator : public TBase
 {
     typedef typename TNodeAllocator::value_type value_type;
     typedef typename TNodeAllocator::node_type node_type;
     typedef TBase base_t;
 
-    OutputIterator(node_type* node) : base_t(node) {}
+    InputIterator(node_type* node) : base_t(node) {}
 
 
     // FIX: doing for(auto i : list) seems to do a *copy* operation
@@ -136,57 +136,13 @@ struct OutputIterator : public TBase
 };
 
 
-#ifdef UNUSEDXXX
-class forward_list_base
-{
-public:
-    typedef SinglyLinkedNode node_type;
-    typedef SinglyLinkedList list_type;
-
-protected:
-    list_type list;
-
-    node_type* pop_front()
-    {
-        node_type* node = list.getHead();
-        list.experimental_set_head(node->getNext());
-        return node;
-    }
-
-public:
-    bool empty() { return list.getHead() == nullptr; }
-
-};
-
-
-class list_base
-{
-public:
-    typedef DoublyLinkedNode node_type;
-    typedef DoublyLinkedList list_type;
-
-protected:
-    list_type list;
-
-    node_type* pop_front()
-    {
-        node_type* node = list.getHead();
-        list.experimental_set_head(node->getNext());
-        return node;
-    }
-
-public:
-    bool empty() { return list.getHead() == nullptr; }
-
-};
-#endif
 
 template <class TNodeAllocator, class TBase = node_pointer<typename TNodeAllocator::node_type>>
-struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr, TBase>
+struct ForwardIterator : public InputIterator<TNodeAllocator, nullptr, TBase>
 {
     typedef typename TNodeAllocator::node_type   node_type;
     typedef typename TNodeAllocator::value_type  value_type;
-    typedef OutputIterator<TNodeAllocator, nullptr, TBase> base_t;
+    typedef InputIterator<TNodeAllocator, nullptr, TBase> base_t;
 
     ForwardIterator(const ForwardIterator& source) :
             base_t(source)
@@ -249,8 +205,16 @@ struct BidirectionalIterator : public ForwardIterator<TNodeAllocator, TBase>
 };
 
 
+// TODO: move these to type_traits.h
+template<bool B, class T = void>
+struct enable_if {};
+
+template<class T>
+struct enable_if<true, T> { typedef T type; };
+
+
 template <class TNodeAllocator, class TIterator>
-class list_base2
+class list_base
 {
 public:
     typedef typename TNodeAllocator::node_type node_type;
@@ -259,6 +223,7 @@ public:
     typedef typename TNodeAllocator::value_type value_type;
     typedef typename TNodeAllocator::node_pointer node_pointer;
     typedef typename TNodeAllocator::value_pointer value_pointer;
+    typedef list_base<TNodeAllocator, TIterator> this_t;
 
     typedef TIterator        iterator;
     typedef const iterator   const_iterator;
@@ -310,6 +275,27 @@ public:
         get_node_allocator().deallocate(node);
     }
 
+    friend struct helper;
+
+    template <class T>
+    struct helper
+    {
+        template <class Q = T>
+        static typename enable_if<Q::has_tail() == true>::type
+        handle_tail(this_t* t)
+        {
+            node_traits_t::get_tail(&t->list);
+        }
+
+
+        template <class Q = T>
+        static typename enable_if<Q::has_tail() == false>::type
+        handle_tail(this_t* t)
+        {
+        }
+    };
+
+
 
     // TODO: determine if this works properly for double-linked as well
     // FIX: need to add "tail" awareness probably with SFINAE
@@ -320,10 +306,10 @@ public:
 
         node_traits_t::remove_next(pos_node);
 
-        if(node_traits_t::has_tail())
-        {
-            // FIX: check here for 'tail' removal
-        }
+        // FIX: if node_to_erase == tail, we need to bump tail down by one,
+        // effectively a pop_back
+        helper<node_traits_t>::handle_tail(this);
+
         get_node_allocator().deallocate(node_to_erase);
         return iterator(node_traits_t::get_next(pos_node));
     }
@@ -331,13 +317,13 @@ public:
 
 template <class T, class TNodeAllocator = node_allocator<T, SinglyLinkedNode>>
 class forward_list :
-        public list_base2<TNodeAllocator, ForwardIterator<TNodeAllocator>>
+        public list_base<TNodeAllocator, ForwardIterator<TNodeAllocator>>
 {
     typedef T value_type;
     typedef value_type &reference;
     typedef const value_type &const_reference;
 
-    typedef list_base2<TNodeAllocator, ForwardIterator<TNodeAllocator>> base_t;
+    typedef list_base<TNodeAllocator, ForwardIterator<TNodeAllocator>> base_t;
     typedef typename base_t::node_traits_t node_traits_t;
 
     typedef typename base_t::node_type node_type;
@@ -413,147 +399,17 @@ public:
 
 };
 
-#ifdef UNUSEDXXX
-// NOTE: Not sure what to do about std::initializer_list
-// It's a "special" class which the compiler knows about and depends on.  Now sure if I
-// can interact with it/make my own(that will get picked up) in an embedded environment
-template <class T, class TNodeAllocator = node_allocator<T, SinglyLinkedNode>>
-class forward_list_old :
-        public forward_list_base
-{
-    typedef T                   value_type;
-    typedef value_type&         reference;
-    typedef const value_type&   const_reference;
-
-protected:
-    TNodeAllocator node_allocator;
-
-    TNodeAllocator& get_node_allocator()
-    {
-        return node_allocator;
-    }
-
-public:
-    typedef ForwardIterator<TNodeAllocator>         iterator;
-    typedef const iterator   const_iterator;
-
-    iterator begin() const { return iterator(list.getHead()); }
-    iterator end() const { return iterator(nullptr); }
-
-    // not a const like in standard because we expect to actually modify
-    // the prev/next parts of value
-    void push_front(value_type& value)
-    {
-        node_type* node = get_node_allocator().allocate(&value);
-
-        list.insertAtBeginning(node);
-    }
-
-
-    void pop_front()
-    {
-        node_type* node = forward_list_base::pop_front();
-        get_node_allocator().deallocate(node);
-    }
-
-
-    iterator insert_after(const_iterator pos, value_type& value)
-    {
-        node_type* pos_node = pos.getCurrent();
-        node_type* node = get_node_allocator().allocate(&value);
-
-        // FIX: insertBetween is overcompliated, the insert_after is cleaner and better
-        // (the getNext() is always the value used, so why bother making it an explicit param)
-        list.insertBetween(pos_node, pos_node->getNext(), node);
-
-        return iterator(node);
-    }
-
-    iterator erase_after(const_iterator pos)
-    {
-        node_type* pos_node = pos.getCurrent();
-        node_type* node_to_erase = pos_node->getNext();
-
-        pos_node->removeNext();
-        get_node_allocator().deallocate(node_to_erase);
-        return iterator(pos_node->getNext());
-    }
-
-    reference front() { return *begin(); }
-
-    // non-standard:
-    // removes/deallocate node at pos and splices in value
-    const_iterator replace_after(const_iterator pos, value_type& value)
-    {
-        auto node_allocator = get_node_allocator();
-
-        node_type* pos_node = pos.getCurrent();
-        // old 'next' node prep it for erase
-        node_type* node_to_erase = pos_node->getNext();
-        // new 'next' node allocate node portion, if necessary
-        node_type* new_node = node_allocator.allocate(&value);
-
-        // TODO: set pos_node->next to be &value
-        // inset new 'next' node after current node and before old 'next''s next
-        // node
-        new_node->insertBetween(pos_node, node_to_erase->getNext());
-
-        //
-        node_allocator.deallocate(node_to_erase);
-
-        return pos;
-    }
-
-
-    // Non-standard
-    void replace_front(value_type& value)
-    {
-        auto node_allocator = get_node_allocator();
-
-        node_type* front_node = list.getHead();
-
-        node_type* new_front_node = node_allocator.allocate(value);
-
-        new_front_node->insertBetween(nullptr, front_node->getNext());
-
-        list.experimental_set_head(new_front_node);
-
-    }
-
-
-    // Non-standard, eliminate this call in favor of more manual pop_front/etc
-    void remove(reference r)
-    {
-        list.remove(&r);
-    }
-
-#ifdef UNUSEDXXX
-    // Non-standard, eliminate this call in favor of more manual pop_front/etc
-    void insert(node_type* referenceNode, node_type* nodeToInsert)
-    {
-        list.insert(referenceNode, nodeToInsert);
-    }
-
-    // Non-standard, eliminate this call
-    // (adds to end)
-    void add(node_type* node)
-    {
-        list.add(node);
-    }
-#endif
-};
-#endif
 
 
 template <class T, class TNodeAllocator = node_allocator<T, DoublyLinkedNode>>
 class list :
-        public list_base2<TNodeAllocator, BidirectionalIterator<TNodeAllocator>>
+        public list_base<TNodeAllocator, BidirectionalIterator<TNodeAllocator>>
 {
     typedef T                   value_type;
     typedef value_type&         reference;
     typedef const value_type&   const_reference;
 
-    typedef list_base2<TNodeAllocator, BidirectionalIterator<TNodeAllocator>> base_t;
+    typedef list_base<TNodeAllocator, BidirectionalIterator<TNodeAllocator>> base_t;
     typedef typename base_t::node_traits_t  node_traits_t;
 
     typedef typename base_t::node_type      node_type;
@@ -568,35 +424,34 @@ public:
     typedef BidirectionalIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
-    // not a const like in standard because we expect to actually modify
-    // the prev/next parts of value
-    void push_front(reference value)
+    reference back()
     {
-        node_pointer node = get_node_allocator().allocate(&value);
-
-        base_t::list.insertAtBeginning(node);
+        node_pointer ptr = base_t::list.experimental_get_tail();
+        reference value = get_node_allocator().get_associated_value(ptr);
+        return value;
     }
 
-
-    /*
-    void pop_front()
+    void pop_back()
     {
-        // FIX: almost definitely this isn't gonna work right (not accounting for tail)
-        node_type* node = base_t::pop_front();
-        get_node_allocator().deallocate(node);
-    } */
+        // If not empty
+        if(!base_t::empty())
+        {
+            // grab very last entry
+            node_pointer tail = base_t::list.experimental_get_tail();
 
+            // then grab entry just before last entry
+            node_pointer prev = node_traits_t::get_prev(tail);
 
-    iterator insert_after(const_iterator pos, reference value)
-    {
-        node_type* pos_node = pos.getCurrent();
-        node_type* node = get_node_allocator().allocate(&value);
+            // FIX: removeNext does more work than we need, it
+            // actually does prev->next = prev->next->next
+            prev->removeNext();
 
-        // FIX: insertBetween is overcompliated, the insert_after is cleaner and better
-        // (the getNext() is always the value used, so why bother making it an explicit param)
-        base_t::list.insertBetween(pos_node, pos_node->getNext(), node);
+            // if necessary, deallocate memory for tail node
+            get_node_allocator().deallocate(tail);
 
-        return iterator(node);
+            // now set tail to previous entry
+            base_t::list.experimental_set_tail(prev);
+        }
     }
 };
 

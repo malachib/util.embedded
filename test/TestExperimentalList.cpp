@@ -187,6 +187,13 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
         {
 
         }
+
+        i = list4.begin();
+
+        list4.erase_after(i);
+
+        REQUIRE((*i++).value == 10);
+        REQUIRE((*i).value == 30);
     }
     GIVEN("Replacement functions")
     {
@@ -212,6 +219,13 @@ SCENARIO( "Experimental std::list code", "[exp-list]" )
 
         REQUIRE((*i++).value == 10);
         REQUIRE((*i++).value == 20);
+        REQUIRE((*i).value == 40);
+
+        i = list.begin();
+
+        list.erase_after(i);
+
+        REQUIRE((*i++).value == 10);
         REQUIRE((*i).value == 40);
     }
 }

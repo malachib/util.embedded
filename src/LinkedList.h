@@ -90,6 +90,11 @@ protected:
   SinglyLinkedNode* tail;
 public:
   void add(SinglyLinkedNode* node);
+
+    // Only exists to fuel experimental list code.  Otherwise, DO NOT USE
+    void experimental_set_tail(SinglyLinkedNode* node) { tail = node; }
+    SinglyLinkedNode* experimental_get_tail() { return tail; }
+
 };
 
 class DoublyLinkedList : public SinglyLinkedListWithTail
