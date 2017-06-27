@@ -18,6 +18,10 @@ struct node_traits<SinglyLinkedNode>
     static node_type* null_node() { return nullptr; }
     static node_type* get_next(const node_type* node) { return node->getNext(); }
     static node_type* get_head(const list_type* list) { return list->getHead(); }
+
+    static void remove_next(node_type* node) { node->removeNext(); }
+
+    static bool has_tail() { return false; }
 };
 
 template <>
@@ -25,12 +29,20 @@ struct node_traits<DoublyLinkedNode>
 {
     typedef DoublyLinkedNode node_type;
     typedef DoublyLinkedList list_type;
+    typedef node_type* node_pointer;
+    typedef list_type* list_pointer;
+    typedef const list_type* const_list_pointer;
 
-    static node_type* null_node() { return nullptr; }
-    static node_type* get_next(const node_type* node) { return node->getNext(); }
-    static node_type* get_prev(const node_type* node) { return node->getPrev(); }
-    static node_type* get_head(const list_type* list) { return list->getHead(); }
-    static node_type* get_tail(const list_type* list) { return list->getTail(); }
+    static node_pointer null_node() { return nullptr; }
+    static node_pointer get_next(const node_pointer node) { return node->getNext(); }
+    static node_pointer get_prev(const node_pointer node) { return node->getPrev(); }
+
+    static node_pointer get_head(const_list_pointer list) { return list->getHead(); }
+    static node_pointer get_tail(const_list_pointer list) { return list->getTail(); }
+
+    static void remove_next(node_pointer node) { node->removeNext(); }
+
+    static bool has_tail() { return true; }
 };
 
 
@@ -124,6 +136,7 @@ struct OutputIterator : public TBase
 };
 
 
+#ifdef UNUSEDXXX
 class forward_list_base
 {
 public:
@@ -166,7 +179,7 @@ public:
     bool empty() { return list.getHead() == nullptr; }
 
 };
-
+#endif
 
 template <class TNodeAllocator, class TBase = node_pointer<typename TNodeAllocator::node_type>>
 struct ForwardIterator : public OutputIterator<TNodeAllocator, nullptr, TBase>
@@ -266,7 +279,7 @@ protected:
         return node_traits_t::get_head(&list);
     }
 
-    node_type* _pop_front()
+    node_pointer _pop_front()
     {
         node_pointer node = get_head();
         list.experimental_set_head(node_traits_t::get_next(node));
@@ -293,8 +306,26 @@ public:
 
     void pop_front()
     {
-        node_type* node = _pop_front();
+        node_pointer node = _pop_front();
         get_node_allocator().deallocate(node);
+    }
+
+
+    // TODO: determine if this works properly for double-linked as well
+    // FIX: need to add "tail" awareness probably with SFINAE
+    iterator erase_after(const_iterator pos)
+    {
+        node_pointer pos_node = pos.getCurrent();
+        node_pointer node_to_erase = node_traits_t::get_next(pos_node);
+
+        node_traits_t::remove_next(pos_node);
+
+        if(node_traits_t::has_tail())
+        {
+            // FIX: check here for 'tail' removal
+        }
+        get_node_allocator().deallocate(node_to_erase);
+        return iterator(node_traits_t::get_next(pos_node));
     }
 };
 
@@ -372,16 +403,6 @@ public:
         base_t::list.insertBetween(pos_node, pos_node->getNext(), node);
 
         return iterator(node);
-    }
-
-    iterator erase_after(const_iterator pos)
-    {
-        node_type* pos_node = pos.getCurrent();
-        node_type* node_to_erase = pos_node->getNext();
-
-        pos_node->removeNext();
-        get_node_allocator().deallocate(node_to_erase);
-        return iterator(pos_node->getNext());
     }
 
     // Non-standard, eliminate this call in favor of more manual pop_front/etc
@@ -576,16 +597,6 @@ public:
         base_t::list.insertBetween(pos_node, pos_node->getNext(), node);
 
         return iterator(node);
-    }
-
-    iterator erase_after(const_iterator pos)
-    {
-        node_pointer pos_node = pos.getCurrent();
-        node_pointer node_to_erase = pos_node->getNext();
-
-        pos_node->removeNext();
-        get_node_allocator().deallocate(node_to_erase);
-        return iterator(pos_node->getNext());
     }
 };
 
