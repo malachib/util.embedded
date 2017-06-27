@@ -17,6 +17,8 @@ class GC_base;
 extern GC_base& _gc;
 
 
+#define GC_HANDLERS 4
+
 class GCObject : public SinglyLinkedNode
 {
 public:
@@ -37,12 +39,16 @@ public:
         // means we can never pin this, and instead have to use read/write commands on it
         // NOT implemented yet
         uint32_t fragmentable : 1;
+#if GC_HANDLERS
         uint32_t handler : 3; // which operation manager are we using (0 for none/no special)
+#endif
 
     } attr;
 
     size_t size() { return attr.size; }
+#if GC_HANDLERS
     uint8_t handler() { return attr.handler; }
+#endif
 
     // Shrinks free_gco by a specified amount, moving pointer upwards
     void shrink_up(size_t size)
@@ -522,7 +528,7 @@ public:
     GCPointer2(const GCPointer2&& moveFrom) : GCPointer<T>(&_gco)
     {
         _gco.data = moveFrom._gco.data;
-        _gco.size = moveFrom._gco.size;
+        _gco.attr.size = moveFrom._gco.size();
     }
 };
 
@@ -587,7 +593,7 @@ public:
 };
 
 
-template <size_t size, size_t max_handlers = 0>
+template <size_t size, size_t max_handlers = GC_HANDLERS>
 class GC : public GC_base
 {
 #ifdef UNIT_TEST
