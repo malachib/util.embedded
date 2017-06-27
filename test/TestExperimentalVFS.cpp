@@ -44,19 +44,18 @@ static void responder(uint16_t id, uint16_t parent_id)
 
 SCENARIO( "Virtual File System tests", "[vfs]" )
 {
+// TODO: Once MemoryVFS actually starts returning values properly this
+// should clear up
+#ifndef __clang__
     GIVEN("Test 1")
     {
         INFO("Allocating a vfs");
 
         MemoryVFS<> vfs;
 
-        // TODO: Once MemoryVFS actually starts returning values properly this
-        // should clear up
-#ifndef __clang__
         INFO("Calling the VFS");
 
         vfs.open("test");
-#endif
         INFO("Completing VFS test");
 
     }
@@ -172,4 +171,5 @@ SCENARIO( "Virtual File System tests", "[vfs]" )
                 tree; */
 
     }
+#endif
 }
