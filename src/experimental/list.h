@@ -113,6 +113,9 @@ struct OutputIterator : public TBase
     OutputIterator(node_type* node) : base_t(node) {}
 
 
+    // FIX: doing for(auto i : list) seems to do a *copy* operation
+    // for(value_type& i : list) is required to get a reference.  Check to see if this is
+    // proper behavior
     value_type& operator*()
     {
         return *TNodeAllocator::get_associated_value(base_t::getCurrent(), hint);
@@ -317,8 +320,8 @@ public:
     typedef ForwardIterator<TNodeAllocator>         iterator;
     typedef const iterator   const_iterator;
 
-    iterator begin() { return iterator(list.getHead()); }
-    iterator end() { return iterator(nullptr); }
+    iterator begin() const { return iterator(list.getHead()); }
+    iterator end() const { return iterator(nullptr); }
 
     // not a const like in standard because we expect to actually modify
     // the prev/next parts of value
@@ -401,6 +404,25 @@ public:
     }
 
 
+    // Non-standard, eliminate this call in favor of more manual pop_front/etc
+    void remove(reference r)
+    {
+        list.remove(&r);
+    }
+
+
+    // Non-standard, eliminate this call in favor of more manual pop_front/etc
+    void insert(node_type* referenceNode, node_type* nodeToInsert)
+    {
+        list.insert(referenceNode, nodeToInsert);
+    }
+
+    // Non-standard, eliminate this call
+    // (adds to end)
+    void add(node_type* node)
+    {
+        list.add(node);
+    }
 };
 
 

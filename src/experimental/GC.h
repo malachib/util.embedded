@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../fact/buffer.h"
-#include "../LinkedList.h"
 
+#include "list.h"
 #include "memory.h"
 
 #define GC_DEBUG
@@ -27,9 +27,6 @@ public:
     // revisit this
     typedef uint8_t* ptr_t;
 
-    // TODO: Put this behavior into underlying SinglyLinkedNode
-    GCObject() { next = nullptr; }
-
     ptr_t data;
     struct
     {
@@ -44,6 +41,14 @@ public:
 #endif
 
     } attr;
+
+    // TODO: Put this behavior into underlying SinglyLinkedNode
+    GCObject()
+    {
+        attr.pinned = false;
+        attr.busy = false;
+        next = nullptr;
+    }
 
     size_t size() { return attr.size; }
 #if GC_HANDLERS
@@ -124,13 +129,15 @@ public:
     uint8_t* __alloc(size_t& len)
     {
         //auto node = free.getHead();
-        ll_free_iterator_t i(free);
+        //ll_free_iterator_t i(free);
 
         // TODO: overload i bool operator so that
         // we can properly do while(i)
-        while(i())
+        //while(i())
+        for(free_gco_t& i : free)
         {
-            free_gco_t* node = i;
+            // TODO: Once we verify this is working, clean up to be free_gco_t&
+            free_gco_t* node = &i;
 
             // If we can fit this allocation into the inspected
             // node
@@ -154,7 +161,7 @@ public:
                     len = node->size();
 
 #ifdef __ALLOC2
-                    free.remove(node);
+                    free.remove(*node);
 #endif
                 }
                 else
@@ -180,7 +187,7 @@ public:
 
             }
 
-            i++;
+            //i++;
         }
 
         return nullptr;
@@ -188,14 +195,16 @@ public:
 
     size_t _allocated() const
     {
-        layer1::LinkedListIterator<GCObject> i(allocated);
+        //layer1::LinkedListIterator<GCObject> i(allocated);
 
         size_t total = 0;
 
-        while(i())
+        //while(i())
+        for(GCObject& i : allocated)
         {
-            total += i.getCurrent()->size();
-            i++;
+            total += i.size();
+            //total += i.getCurrent()->size();
+            //i++;
         }
 
         return total;
@@ -215,27 +224,28 @@ public:
 
     typedef GCObject free_gco_t;
     typedef GCObject allocated_gco_t;
-    typedef layer1::LinkedListIterator<allocated_gco_t> ll_iterator_t;
-    typedef layer1::LinkedListIterator<free_gco_t> ll_free_iterator_t;
+    //typedef layer1::LinkedListIterator<allocated_gco_t> ll_iterator_t;
+    //typedef layer1::LinkedListIterator<free_gco_t> ll_free_iterator_t;
 
-    SinglyLinkedList free;
-    SinglyLinkedList allocated;
+    std::experimental::forward_list<free_gco_t>         free;
+    std::experimental::forward_list<allocated_gco_t>    allocated;
 
 #ifdef GC_DEBUG
     void walk_free(const char* msg)
     {
-        ll_free_iterator_t i(free);
+        //auto i = free.begin();
 
         printf("%s\r\n", msg);
 
-        while(i())
+        //while(*i)
+        for(auto current : free)
         {
-            free_gco_t* current = i;
+            //free_gco_t& current = *i;
 
-            printf("Node: addr = %p, size = %lu, next = %p\r\n", current->data, current->size(), current->getNext());
+            printf("Node: addr = %p, size = %lu, next = %p\r\n", current.data, current.size(), current.getNext());
             //std::clog << "TEST";
 
-            i++;
+            //i++;
         }
     }
 #else
@@ -266,20 +276,21 @@ public:
 
     void recombine_all()
     {
-        ll_iterator_t i(free);
+        //ll_iterator_t i(free);
 
-        while(i())
+        //while(i())
+        for(auto current : free)
         {
-            free_gco_t* current = i;
-            auto next = static_cast<free_gco_t*>(current->getNext());
+            //free_gco_t* current = i;
+            auto next = static_cast<free_gco_t*>(current.getNext());
 
-            if(current->data + current->size() == next->data)
+            if(next && (current.data + current.size() == next->data))
             {
-                recombine(current, next);
+                recombine(&current, next);
                 walk_free("recombined");
             }
 
-            i++;
+            //i++;
         }
     }
 
@@ -312,13 +323,14 @@ public:
      */
     void addfree_sorted(free_gco_t* free_gco)
     {
-        layer1::LinkedListIterator<GCObject> i(free);
+        //layer1::LinkedListIterator<GCObject> i(free);
         uint8_t* location = free_gco->data;
 
         // loop through all free nodes
-        while(i())
+        //while(i())
+        for(free_gco_t& i : free)
         {
-            free_gco_t* current = i;
+            free_gco_t* current = &i;
 
             // FIX: move i.getNext() to be i.moveNext();
             //free_gco_t* next = static_cast<free_gco_t*>(current->getNext());
@@ -330,7 +342,7 @@ public:
 
                 // insert before inspected current location
                 // if next location ptr is above this one
-                free.insert(i, free_gco);
+                free.insert(current, free_gco);
                 return;
             }
 
@@ -349,7 +361,7 @@ public:
                 return;
             } */
 
-            i++;
+            //i++;
         }
 
         // if there were no iterations at all...
@@ -410,7 +422,7 @@ public:
     void _free(GCObject& gco)
     {
         addfree(gco.data, gco.size());
-        allocated.remove(&gco);
+        allocated.remove(gco);
     }
 
 
@@ -429,14 +441,16 @@ public:
 
     size_t available() const
     {
-        layer1::LinkedListIterator<GCObject> i(free);
+        //layer1::LinkedListIterator<GCObject> i(free);
 
         size_t total = 0;
 
-        while(i())
+        //while(i())
+        for(auto i : free)
         {
-            total += i.getCurrent()->size();
-            i++;
+            //total += i.getCurrent()->size();
+            total += i.size();
+            //i++;
         }
 
         return total;
@@ -452,7 +466,8 @@ public:
 #ifdef GC_DEBUG
             printf("alloc: buffer = %p / size = %lu\r\n", gco->data, len);
 #endif
-            allocated.insertAtBeginning(gco);
+            //allocated.insertAtBeginning(gco);
+            allocated.push_front(*gco);
             gco->attr.size = len;
         }
     }
