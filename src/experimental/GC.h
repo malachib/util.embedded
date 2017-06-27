@@ -629,18 +629,14 @@ public:
     }
 };
 
-// GC Handles are OPTIONAL, and are not preferred (copying GCObjects around is ideal)
-// - but acceptable and sometimes necessary
-typedef uint8_t gc_handle_t;
-
 
 class GCPoolManagerBase
 {
 protected:
     template <class T, bool (*item_is_unallocated)(T&)>
-    static int alloc(T* pool_array, gc_handle_t array_size, const T& new_item)
+    static inline int alloc(T* pool_array, int array_size, const T& new_item)
     {
-        for(gc_handle_t i = 0; i < array_size; i++)
+        for(int i = 0; i < array_size; i++)
         {
             T& g = pool_array[i];
             if(item_is_unallocated(g))
@@ -662,6 +658,8 @@ struct gc_pool_traits;
 template<>
 struct gc_pool_traits<GCObject>
 {
+    typedef uint8_t handle_type;
+
     static bool is_free(GCObject& gco) { return gco.data == nullptr; }
     static void free(GCObject& gco) { gco.data = nullptr; }
 };
@@ -672,6 +670,9 @@ class GCPoolManager : public GCPoolManagerBase
 protected:
     typedef T value_type;
     typedef TPoolTraits pool_traits;
+// GC Handles are OPTIONAL, and are not preferred (copying GCObjects around is ideal)
+// - but acceptable and sometimes necessary
+    typedef typename pool_traits::handle_type gc_handle_t;
 
     GCObject gc_pool_array;
 
@@ -734,7 +735,6 @@ class GCHandleOperationManager : public GCOperationManager
 public:
     virtual void lock(GCObject& gco)
     {
-
     }
 
     virtual void move(GCObject& gco)
