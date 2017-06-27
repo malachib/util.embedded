@@ -230,6 +230,8 @@ public:
     std::experimental::forward_list<free_gco_t>         free;
     std::experimental::forward_list<allocated_gco_t>    allocated;
 
+    typedef typename std::experimental::forward_list<free_gco_t>::iterator free_iterator;
+
 #ifdef GC_DEBUG
     void walk_free(const char* msg)
     {
@@ -316,21 +318,69 @@ public:
         // TODO: assert free->prior->next == free
     }
 
+    // generic insert sorted for forward list
+    template <class T, bool (*is_less_than)(const T& lhs, const T& rhs)>
+    static void insert_sorted(std::experimental::forward_list<T>& list, T& node_to_insert)
+    {
+        // if no nodes at all, don't bother searching etc. just insert a fresh head node
+        if(list.empty())
+        {
+            list.push_front(node_to_insert);
+            return;
+        }
 
+        auto prev_i = list.end();
+
+        for(auto i = list.begin(); i != list.end(); i++)
+        {
+            const T& current = *i;
+
+            // If location being freed is < current inspected location
+            if(is_less_than(node_to_insert, current))
+            {
+                if(prev_i != list.end())
+                    list.insert_after(prev_i, node_to_insert);
+                else
+                    list.push_front(node_to_insert);
+
+                return;
+            }
+
+            prev_i = i;
+        }
+
+        // if node_to_insert was greater than all present nodes...
+        list.insert_after(prev_i, node_to_insert);
+    }
+
+    static inline bool comparer(const free_gco_t& lhs, const free_gco_t& rhs)
+    {
+        return lhs.data < rhs.data;
+    }
+
+    void addfree_sorted(free_gco_t* free_gco)
+    {
+        insert_sorted<free_gco_t, comparer>(free, *free_gco);
+    }
+
+#ifdef UNUSEDXXX
     /**
      * @brief addfree_sorted - stuff free_gco back into free-linkedlist, sorted by data ptr
      * @param free_gco
      */
-    void addfree_sorted(free_gco_t* free_gco)
+    void addfree_sorted_old_working(free_gco_t* free_gco)
     {
         //layer1::LinkedListIterator<GCObject> i(free);
         uint8_t* location = free_gco->data;
 
         // loop through all free nodes
         //while(i())
-        for(free_gco_t& i : free)
+        free_iterator prev_i = free.end();
+
+        //for(free_gco_t& i : free)
+        for(free_iterator i = free.begin(); i != free.end(); i++)
         {
-            free_gco_t* current = &i;
+            free_gco_t* current = &*i;
 
             // FIX: move i.getNext() to be i.moveNext();
             //free_gco_t* next = static_cast<free_gco_t*>(current->getNext());
@@ -342,7 +392,12 @@ public:
 
                 // insert before inspected current location
                 // if next location ptr is above this one
-                free.insert(current, free_gco);
+                //free.insert(current, free_gco);
+                if(prev_i != free.end())
+                    free.insert_after(prev_i, *free_gco);
+                else
+                    free.push_front(*free_gco);
+
                 return;
             }
 
@@ -361,6 +416,7 @@ public:
                 return;
             } */
 
+            prev_i = i;
             //i++;
         }
 
@@ -368,6 +424,7 @@ public:
         //free.insertAtBeginning(free_gco);
         free.add(free_gco);
     }
+#endif
 
     /**
      * @brief addfree - register a free location

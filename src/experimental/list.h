@@ -140,7 +140,7 @@ protected:
     }
 
 public:
-    bool empty() { return list.getHead(); }
+    bool empty() { return list.getHead() == nullptr; }
 
 };
 
@@ -162,7 +162,7 @@ protected:
     }
 
 public:
-    bool empty() { return list.getHead(); }
+    bool empty() { return list.getHead() == nullptr; }
 
 };
 
@@ -273,7 +273,7 @@ protected:
     }
 
 public:
-    bool empty() { return get_head(); }
+    bool empty() { return get_head() == nullptr; }
 
     iterator begin() { return iterator(get_head()); }
 
@@ -410,7 +410,7 @@ public:
         list.remove(&r);
     }
 
-
+#ifdef UNUSEDXXX
     // Non-standard, eliminate this call in favor of more manual pop_front/etc
     void insert(node_type* referenceNode, node_type* nodeToInsert)
     {
@@ -423,6 +423,7 @@ public:
     {
         list.add(node);
     }
+#endif
 };
 
 
