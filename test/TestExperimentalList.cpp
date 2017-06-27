@@ -17,6 +17,7 @@ class dynamic_node_allocator_base
 
 public:
     typedef TNode node_type;
+    typedef node_type* node_pointer;
 
     node_type* allocate(void *reference)
     {
@@ -47,6 +48,7 @@ struct dynamic_node_allocator : public dynamic_node_allocator_base<util::SinglyL
 {
 public:
     typedef T value_type;
+    typedef value_type* value_pointer;
 
     inline node_type* allocate(T *reference)
     {
