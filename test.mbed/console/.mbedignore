@@ -1,0 +1,15 @@
+# So that we don't pick up stray header files unless we explicitly say "fact/[header].h"
+lib/util.embedded/fact/*
+lib/util.embedded/legacy/*
+ext/*
+
+# Have to do this because mbed + GFX lib are incredibly fat, makes our almost-nothing
+# program take over 60k!! 303K8 "only" has 64k...
+mbed-os/rtos/*
+mbed-os/features/FEATURE_CLIENT/*
+mbed-os/features/FEATURE_COMMON_PAL/*
+mbed-os/features/FEATURE_UVISOR/*
+mbed-os/features/frameworks/*
+mbed-os/features/net/*
+mbed-os/features/netsocket/*
+mbed-os/features/storage/*
