@@ -213,6 +213,8 @@ public:
 #include "streams/iostream_posix_streambuf.h"
 #elif defined(ARDUINO)
 #include "streams/iostream_arduino_streambuf.h"
+#elif defined(ESP_OPEN_RTOS)
+#include "streams/iostream_posix_streambuf.h"
 #else
 #error "Architecture not yet supported"
 #endif

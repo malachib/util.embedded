@@ -20,7 +20,7 @@ namespace FactUtilEmbedded { namespace std
 #ifdef FEATURE_IOS_STREAMBUF_FULL
 ostream cout;
 istream cin;
-#elif defined(__POSIX__)
+#elif defined(__POSIX__) || defined(ESP_OPEN_RTOS)
 ostream cout(*stdout);
 istream cin(*stdin);
 #else
