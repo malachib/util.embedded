@@ -20,7 +20,7 @@
 #endif
 
 using namespace util;
-
+using namespace util::std;
 
 #ifdef __AVR_ATtiny85__
 #define COUT_BPS 9600
@@ -34,6 +34,15 @@ MenuService menuService(svc1);
 
 Menu menu;
 ConsoleMenu console(&menu);
+
+#ifndef FEATURE_IOS_STREAMBUF_FULL
+namespace FactUtilEmbedded { namespace std {
+#if defined(SAMD_SERIES)
+ostream cout(SerialUSB);
+istream cin(SerialUSB);
+#endif
+}}
+#endif
 
 #ifdef ESP8266
 #define ESP_VOID byte v = 0
@@ -134,17 +143,20 @@ void sleep_4(ESP_VOID)
 #ifdef __AVR_ATmega32U4__
   Power.usb.on();
 #endif
-  cout.begin(COUT_BPS);
+#ifdef SAMD_SERIES
+  SerialUSB.begin(COUT_BPS);
+#else
+  Serial.begin(COUT_BPS);
+#endif
   delay(100);
 #endif
 
-  cout.print("Sleep request# ");
-  cout.print(++counter);
-  cout.println();
+  cout << "Sleep request# ";
+  cout << ++counter << endl;
 
 #ifdef SAMD_SERIES
   cout << F("WDT interrupt called: ") << wdt_handler_called;
-  cout.println();
+  cout << endl;
 #endif
 }
 
@@ -160,9 +172,12 @@ void setup()
   digitalWrite(PIN_LED, LOW);
 #endif
 
-  cout.begin(COUT_BPS);
-  cout << F("Starting up");
-  cout.println();
+#ifdef SAMD_SERIES
+  SerialUSB.begin(COUT_BPS);
+#else
+  Serial.begin(COUT_BPS);
+#endif
+  cout << F("Starting up") << endl;
 
 #if not defined(ESP8266) and not defined(SAMD_SERIES)
   Power.timer[1].off();
