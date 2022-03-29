@@ -10,6 +10,8 @@ dev [![Build Status](https://travis-ci.org/malachib/util.embedded.svg?branch=dev
 Overview
 --------
 
+*THIS CODE BASE IS NO LONGER MAINTAINED.  SOME OF ITS FUNCTIONALITY HAS MIGRATED TO https://github.com/malachi-iot/estdlib*
+
 Comprises reusable low-level functionality for use in your embedded and/or
 cross-platform endeavors.
 
